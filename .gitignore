@@ -1,3 +1,7 @@
+# General
+build/
+*.exe
+
 # Prerequisites
 *.d
 
