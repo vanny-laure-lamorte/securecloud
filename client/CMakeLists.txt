@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
 project(client LANGUAGES CXX)
+find_package(Drogon CONFIG REQUIRED)
+target_link_libraries(client PRIVATE Drogon::Drogon)
+
 
 # Set the C++ standard to C++17 and require it
 set(CMAKE_CXX_STANDARD 17)

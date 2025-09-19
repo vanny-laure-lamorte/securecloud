@@ -1,7 +1,5 @@
-# CMake configuration for auth-service
 cmake_minimum_required(VERSION 3.16)
-project(auth-service)
-
-add_executable(auth-service
-    src/main.cpp
-)
+project(auth-service LANGUAGES CXX)
+find_package(Drogon CONFIG REQUIRED)
+add_executable(auth-service src/main.cpp)
+target_link_libraries(auth-service PRIVATE Drogon::Drogon)
