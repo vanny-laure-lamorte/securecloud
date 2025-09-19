@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 3.16)
+project(client LANGUAGES CXX)
+find_package(Drogon CONFIG REQUIRED)
+add_executable(client src/main.cpp)
+target_link_libraries(client PRIVATE Drogon::Drogon)

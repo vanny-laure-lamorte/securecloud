@@ -1,7 +1,5 @@
-# CMake configuration for messaging-service
 cmake_minimum_required(VERSION 3.16)
-project(messaging-service)
-
-add_executable(messaging-service
-    src/main.cpp
-)
+project(messaging-service LANGUAGES CXX)
+find_package(Drogon CONFIG REQUIRED)
+add_executable(messaging-service src/main.cpp)
+target_link_libraries(messaging-service PRIVATE Drogon::Drogon)
