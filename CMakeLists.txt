@@ -16,3 +16,7 @@ add_subdirectory(services/auth-service)
 
 ## Messaging service
 add_subdirectory(services/messaging-service)
+
+# TRANSLATIONS
+find_package(Qt6 COMPONENTS LinguistTools REQUIRED)
+add_subdirectory(client)

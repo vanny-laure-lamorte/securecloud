@@ -126,6 +126,27 @@ securecloud/
 
 #### How to Translate
 
+- Ensure that `lupdate ` and `lrelease` are available in our system `PATH`
+```
+$env:PATH="C:\Qt\6.7.1\mingw_64\bin;" + $env:PATH
+```
+- Check if the source file exists
+```
+dir services\messaging-service\src\main.cpp
+```
+- Extract all translation keys into the `.ts` files
+```
+lupdate services/messaging-service/src/main.cpp -ts i18n/es_ES.ts i18n/fr_FR.ts i18n/en_EN.ts
+```
+- Compile the `.ts` files into `.qm` files
+```
+lrelease i18n/en_EN.ts i18n/fr_FR.ts i18n/es_ES.ts
+```
+- compile traductions
+```
+cmake --build build --target messaging-service
+```
+
 ---
 
 ### 🧪Tests
