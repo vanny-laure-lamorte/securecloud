@@ -21,8 +21,5 @@ endif()
 add_subdirectory(api-gateway)
 add_subdirectory(services/auth-service)
 add_subdirectory(services/messaging-service)
-
-# Client
-# Find required Qt6 modules
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets LinguistTools)
+add_subdirectory(services/audit-service)
 add_subdirectory(client)
