@@ -149,6 +149,19 @@ cmake --build build --target client
 
 ---
 
+### 🌍 Routes
+
+| Action | Route | Description |
+|--------|-------|-------------|
+| **GET** | `/` | Return Gateway Status |
+| **GET** | `/auth/ping` | Return Authentification-service Status |
+| **GET** | `/messaging/ping` | Return Messaging-service Status |
+| **POST** | `/audit/events` | Logs events into Audit database |
+| **POST** | `/audit/services` | Logs services status into Audit database |
+| **GET** | `/audit/services` | Fetch services status from Audit database |
+
+---
+
 ### 🧪Tests
 
 ---
@@ -173,6 +186,5 @@ cmake --build build --target client
 All rights reserved © 2025 SecureCloud Team.
 
 ---
-
 
 
