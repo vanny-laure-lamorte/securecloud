@@ -132,19 +132,19 @@ $env:PATH="C:\Qt\6.7.1\mingw_64\bin;" + $env:PATH
 ```
 - Check if the source file exists
 ```
-dir services\messaging-service\src\main.cpp
+dir client\src\main.cpp
 ```
 - Extract all translation keys into the `.ts` files
 ```
-lupdate services/messaging-service/src/main.cpp -ts i18n/es_ES.ts i18n/fr_FR.ts i18n/en_EN.ts
+lupdate client/src/main.cpp -ts common/i18n/es_ES.ts common/i18n/fr_FR.ts common/i18n/en_US.ts
 ```
 - Compile the `.ts` files into `.qm` files
 ```
-lrelease i18n/en_EN.ts i18n/fr_FR.ts i18n/es_ES.ts
+lrelease common/i18n/en_US.ts common/i18n/fr_FR.ts common/i18n/es_ES.ts
 ```
 - compile traductions
 ```
-cmake --build build --target messaging-service
+cmake --build build --target client
 ```
 
 ---
