@@ -9,7 +9,7 @@ class TranslationManager {
 public:
     TranslationManager(QApplication* app);
 
-    // Initializes translation
+    // Initialize translation
     void initialize();
 
     // Loads a specific language manually

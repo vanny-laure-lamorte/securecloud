@@ -16,7 +16,7 @@ find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets LinguistTools)
 # Define the executable
 add_executable(client
     src/main.cpp
-     ${CMAKE_SOURCE_DIR}/common/src/TranslationManager.cpp
+    ${CMAKE_SOURCE_DIR}/common/src/TranslationManager.cpp
 )
 
 set(HEADER_FILES
