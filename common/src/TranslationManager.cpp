@@ -3,14 +3,14 @@
 #include <QDebug>
 #include <QLocale>
 
-TranslationManager::TranslationManager(QApplication* app)
+TranslationManager::TranslationManager(QCoreApplication* app)
     : m_app(app)
 {
 }
 
 void TranslationManager::initialize()
 {
-    loadLanguage("es_ES");
+    loadLanguage("fr_FR");
 }
 
 bool TranslationManager::loadLanguage(const QString& langCode)

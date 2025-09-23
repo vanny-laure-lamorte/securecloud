@@ -7,7 +7,7 @@
 
 class TranslationManager {
 public:
-    TranslationManager(QApplication* app);
+    explicit TranslationManager(QCoreApplication* app);
 
     // Initialize translation
     void initialize();
@@ -16,7 +16,7 @@ public:
     bool loadLanguage(const QString& langCode);
 
 private:
-    QApplication* m_app;
+    QCoreApplication* m_app;
     QTranslator m_translator;
 };
 
