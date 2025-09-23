@@ -11,7 +11,7 @@ drogon::orm::DbClientPtr gDb;
 void connectPg() {
     const char* env = ::getenv("PG_CONN");
     std::string conn = env ? env
-        : "host=127.0.0.1 port=5432 dbname=audit_service user=postgres password=Lazlo";
+        : "host=DB_HOST port=DB_PORT dbname=DB_NAME user=DB_USER password=DB_PASSWORD";
     gDb = DbClient::newPgClient(conn, 2);
 }
 
