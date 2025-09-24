@@ -1,8 +1,0 @@
--- Active: 1753984165174@@127.0.0.1@5432@audit_service
-CREATE DATABASE IF NOT EXISTS audit_service;
-USE audit_service;
-CREATE TABLE IF NOT EXISTS audit_logs (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    action VARCHAR(255) NOT NULL,
-    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
