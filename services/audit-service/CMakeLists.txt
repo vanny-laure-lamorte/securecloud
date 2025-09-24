@@ -11,12 +11,16 @@ find_package(jsoncpp CONFIG REQUIRED)
 
 add_executable(audit-service
     src/main.cpp
-    src/AuditDb.cpp
-    src/ServiceTargets.cpp
-    src/Refresh.cpp
-    src/Routes.cpp
+    src/AuditRoutes.cpp
+    src/AuditService.cpp
+    ${CMAKE_SOURCE_DIR}/common/db/DbConnection.cpp
 )
-target_include_directories(audit-service PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+target_include_directories(audit-service PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}
+)
+
 target_link_libraries(audit-service PRIVATE Drogon::Drogon JsonCpp::JsonCpp)
 
 set_target_properties(audit-service PROPERTIES

@@ -4,6 +4,12 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
+                "${workspaceFolder}/common/**",
+                "C:/vcpkg/installed/x64-windows/include",
+                "C:/vcpkg/installed/x64-windows/include/Qt6",
+                "C:/vcpkg/installed/x64-windows/include/Qt6/QtCore",
+                "C:/vcpkg/installed/x64-windows/include/Qt6/QtGui",
+                "C:/vcpkg/installed/x64-windows/include/Qt6/QtWidgets",
                 "${default}",
                 "C:/vcpkg/installed/x64-windows/include"
             ],
