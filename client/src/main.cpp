@@ -1,15 +1,13 @@
 #include <QCoreApplication>
 #include <QDebug>
-#include <iostream>
-
 #include <drogon/drogon.h>
 #include <trantor/net/EventLoop.h>
-
-#include "ClientApp.h"
-#include "../../common/include/TranslationManager.h"
-
+#include <iostream>
 #include <thread>
 #include <future>
+
+#include "ClientApp.h"
+#include "TranslationManager.h"
 
 int main(int argc, char *argv[])
 {

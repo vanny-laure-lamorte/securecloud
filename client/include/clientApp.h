@@ -4,36 +4,49 @@
 #include <utility>
 #include <chrono>
 
-class ClientApp {
+class ClientApp
+{
 public:
     // Constructor: takes an HTTP client instance
-    explicit ClientApp(const drogon::HttpClientPtr& client);
+    explicit ClientApp(const drogon::HttpClientPtr &client);
 
     // Main loop: shows menu, reads user input, sends requests
     void run();
 
 private:
-    bool running = true;                  // Controls the main loop
-    drogon::HttpClientPtr client_;        // HTTP client to send requests
+    bool running = true;           // Controls the main loop
+    drogon::HttpClientPtr client_; // HTTP client to send requests
 
-    // Print the interactive menu to the terminal
+    /**
+     * @brief Print the interactive menu to the console
+     */
     static void printMenu();
 
-    // Send a request and wait for the response (with timeout)
-    // Returns (HTTP status code, response body)
-    std::pair<int, std::string>
-    sendAndWait(const drogon::HttpRequestPtr& req,
-                std::chrono::seconds timeout = std::chrono::seconds(5));
-
-    // Send a GET request to a given path and print the result
-    void ping(const std::string& path);
-
-    // Send a POST request to /audit/events with a sample JSON payload
+    /**
+     * @brief Send an HTTP request and wait for the response or timeout
+     * @param req The HTTP request to send
+     * @param timeout Maximum wait time for the response
+     * @return A pair of HTTP status code and response body as string
+     */
+    std::pair<int, std::string> sendAndWait(
+        const drogon::HttpRequestPtr &req,
+        std::chrono::seconds timeout = std::chrono::seconds(5));
+    /**
+     * @brief Send a GET request to the specified path and print the response
+     * @param path The request path (e.g., "/auth/ping")
+     */
+    void ping(const std::string &path);
+    /**
+     * @brief Send a POST request to /audit/events with a sample audit event and print the response
+     */
     void postAuditEvent();
-
-    // Send a GET request to /audit/services and print parsed status
+    /**
+     * @brief Send a GET request to /audit/services to retrieve and print services status
+     */
     void getServicesStatus();
-
-    // Send a POST request to /audit/services to refresh services status
+    /**
+     * @brief Send a POST request to /audit/services to refresh services status
+     * @note This function triggers a status refresh on the server side.
+     */
     void postServicesStatus();
 };

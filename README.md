@@ -18,6 +18,7 @@ Available Languages
 - [Usage](#⚒️usage)
 - [Project Structure](#📁project-structure)
 - [Translation](#🌐translation)
+- [Routes](#🌍routes)
 - [Tests](#🧪tests)
 - [Team](#👥team)
 - [Useful Links](#🔗useful-links)
@@ -149,14 +150,13 @@ cmake --build build --target client
 
 ---
 
-### 🌍 Routes
+### 🌍Routes
 
 | Action | Route | Description |
 |--------|-------|-------------|
 | **GET** | `/` | Return Gateway Status |
 | **GET** | `/auth/ping` | Return Authentification-service Status |
 | **GET** | `/messaging/ping` | Return Messaging-service Status |
-| **POST** | `/audit/events` | Logs events into Audit database |
 | **POST** | `/audit/services` | Logs services status into Audit database |
 | **GET** | `/audit/services` | Fetch services status from Audit database |
 
