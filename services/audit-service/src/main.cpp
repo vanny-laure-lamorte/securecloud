@@ -6,6 +6,7 @@
 #include "AuditService.h"
 #include "common/Env/EnvLoader.h"
 
+
 int main() {
 
     std::string connStr = env::loadEnv("audit-service");
