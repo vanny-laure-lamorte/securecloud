@@ -4,11 +4,12 @@
 #include <common/db/DbConnection.h>
 #include "AuditRoutes.h"
 #include "AuditService.h"
-
+#include "common/Env/EnvLoader.h"
 
 int main() {
 
-    DbConnection db = DbConnection("host=DB_HOST port=DB_PORT dbname=DB_NAME user=DB_USER password=DB_PASSWORD", 2);
+    std::string connStr = env::loadEnv("audit-service");
+    DbConnection db = DbConnection(connStr, 2);
 
     std::vector<TargetService> targets = {
         {"auth",      "http://127.0.0.1:8081", "/auth/ping"},
