@@ -1,10 +1,13 @@
 #include <drogon/drogon.h>
-#include <common/db/DbConnection.h>
-#include "AuditService.h"
-#include "AuditRoutes.h"
 #include <iostream>
 
+#include <common/db/DbConnection.h>
+#include "AuditRoutes.h"
+#include "AuditService.h"
+
+
 int main() {
+
     DbConnection db = DbConnection("host=DB_HOST port=DB_PORT dbname=DB_NAME user=DB_USER password=DB_PASSWORD", 2);
 
     std::vector<TargetService> targets = {
