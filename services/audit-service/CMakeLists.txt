@@ -13,6 +13,7 @@ add_executable(audit-service
     src/main.cpp
     src/AuditRoutes.cpp
     src/AuditService.cpp
+    ${CMAKE_SOURCE_DIR}/common/Env/EnvLoader.cpp
     ${CMAKE_SOURCE_DIR}/common/db/DbConnection.cpp
 )
 

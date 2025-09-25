@@ -7,25 +7,24 @@ find_package(
     OpenSSL REQUIRED
 )
 
-# FetchContent to bring in dotenv-cpp
-include(FetchContent)
-FetchContent_Declare(
-    dotenv-cpp
-    GIT_REPOSITORY https://github.com/laserpants/dotenv-cpp.git
-    GIT_TAG        v0.2.0
-)
-FetchContent_MakeAvailable(dotenv-cpp)
-
 # Define the executable target 'auth-service' with its source files
 add_executable(auth-service
     src/main.cpp
     src/AuthServiceRoutes.cpp
     ${CMAKE_SOURCE_DIR}/common/HashUtils/HashUtils.cpp
+    ${CMAKE_SOURCE_DIR}/common/Env/EnvLoader.cpp
+    ${CMAKE_SOURCE_DIR}/common/db/DbConnection.cpp
+)
+
+# Include header files
+target_include_directories(auth-service PRIVATE
+    ${CMAKE_SOURCE_DIR}/common/HashUtils.h
+    ${CMAKE_SOURCE_DIR}/common/Env/EnvLoader.h
+    ${CMAKE_SOURCE_DIR}/common/db/DbConnection.h
 )
 
 # Link the necessary libraries to the target
 target_link_libraries(auth-service
     PRIVATE Drogon::Drogon
     PRIVATE OpenSSL::Crypto
-    PRIVATE dotenv-cpp::dotenv-cpp
 )
