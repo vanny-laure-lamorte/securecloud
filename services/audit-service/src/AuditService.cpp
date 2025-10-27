@@ -1,10 +1,15 @@
 #include "AuditService.h"
+#include <drogon/drogon.h>
+#include <thread>
+#include <iostream>
+
+using namespace drogon;
 
 AuditService::AuditService(AuditRepository& repo,
                            trantor::EventLoop* eventLoop)
     : repo_(repo), eventLoop_(eventLoop) {
     targets_ = {
-        {"auth", "http://auth-service-api:8081", "/auth/ping"},
+        {"auth",      "http://127.0.0.1:8081", "/auth/ping"},
         {"messaging", "http://127.0.0.1:8082", "/messaging/ping"},
     };
 }
@@ -21,19 +26,11 @@ void AuditService::refreshOnce() {
     }
 }
 
-std::optional<TargetService> AuditService::findTargetByName(const std::string& name) const {
-    for (const auto& t : targets_) {
-        if (t.serviceName == name) return t;
-    }
-    return std::nullopt;
-}
-
-void AuditService::pingSingleNow(const std::string& serviceName) {
-    auto target = findTargetByName(serviceName);
-    if (!target) {
-        throw std::runtime_error("Unknown service: " + serviceName);
-    }
-    pingAndRecord(*target);
+void AuditService::pingSingleNow(const std::string& serviceName,
+                                 const std::string& baseUrl,
+                                 const std::string& healthPath) {
+    TargetService t{serviceName, baseUrl, healthPath};
+    pingAndRecord(t);
 }
 void AuditService::setTargets(std::vector<TargetService> targets) {
     targets_ = std::move(targets);
@@ -74,10 +71,8 @@ void AuditService::pingAndRecord(const TargetService& t) {
             }
         } catch (const std::exception& e) {
             std::cerr << "[audit] repo error: " << e.what() << "\n";
+            std::cerr << "[audit] repo error: " << e.what() << "\n";
         }
     }).detach();
 }
 
-std::vector<ServiceStatus> AuditService::getStatusesByService(const std::string& serviceName) const {
-    return repo_.fetchStatusesByService(serviceName);
-}

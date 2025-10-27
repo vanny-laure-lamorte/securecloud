@@ -1,4 +1,6 @@
 #include "AuditRepository.h"
+#include <drogon/drogon.h>
+using namespace drogon;
 
 void AuditRepository::ensureSchema()
 {
@@ -72,29 +74,6 @@ std::vector<ServiceStatus> AuditRepository::fetchAllStatuses()
         "       last_seen_ts AT TIME ZONE 'UTC' AS last_seen_utc "
         "FROM service_status "
         "ORDER BY service, instance;");
-
-    std::vector<ServiceStatus> results;
-    results.reserve(r.size());
-    for (const auto &row : r)
-    {
-        results.push_back({row["service"].as<std::string>(),
-                           row["instance"].as<std::string>(),
-                           row["status"].as<std::string>(),
-                           row["latency_ms"].as<int>(),
-                           row["last_seen_utc"].as<std::string>()});
-    }
-    return results;
-}
-
-std::vector<ServiceStatus> AuditRepository::fetchStatusesByService(const std::string &serviceName)
-{
-    auto r = db_.client()->execSqlSync(
-        "SELECT service, instance, status, latency_ms, "
-        "       last_seen_ts AT TIME ZONE 'UTC' AS last_seen_utc "
-        "FROM service_status "
-        "WHERE service=$1 "
-        "ORDER BY instance;",
-        serviceName);
 
     std::vector<ServiceStatus> results;
     results.reserve(r.size());

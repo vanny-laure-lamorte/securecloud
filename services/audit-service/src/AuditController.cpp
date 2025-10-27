@@ -1,4 +1,7 @@
 #include "AuditController.h"
+#include <drogon/drogon.h>
+
+using namespace drogon;
 
 AuditController::AuditController(DbConnection &db, trantor::EventLoop *loop)
     : repo_(db), service_(repo_, loop)
@@ -7,8 +10,8 @@ AuditController::AuditController(DbConnection &db, trantor::EventLoop *loop)
     service_.startScheduler(10.0);
 }
 
-bool AuditController::parseJson(const HttpRequestPtr &req, Json::Value &out)
-{
+
+bool AuditController::parseJson(const HttpRequestPtr& req, Json::Value& out) {
     Json::CharReaderBuilder b;
     std::string errs;
     const auto buf = req->getBody();
@@ -152,6 +155,21 @@ HttpResponsePtr AuditController::getOneServiceStatus(const HttpRequestPtr &req)
         err->setStatusCode(k500InternalServerError);
         err->setContentTypeCode(CT_TEXT_PLAIN);
         err->setBody(std::string("db error: ") + e.what());
+        return err;
+    }
+}
+
+HttpResponsePtr AuditController::handleRefresh() {
+    try {
+        service_.refreshOnce();
+        auto ok = HttpResponse::newHttpResponse();
+        ok->setContentTypeCode(CT_TEXT_PLAIN);
+        ok->setBody("ok");
+        return ok;
+    } catch (const std::exception& e) {
+        auto err = HttpResponse::newHttpResponse();
+        err->setStatusCode(k500InternalServerError);
+        err->setBody(std::string("error: ") + e.what());
         return err;
     }
 }
