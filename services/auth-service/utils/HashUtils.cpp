@@ -1,4 +1,3 @@
-#include "HashUtils.h"
 #include <openssl/sha.h>
 #include <openssl/rand.h>
 #include <openssl/buffer.h>
@@ -6,6 +5,9 @@
 #include <stdexcept>
 #include <vector>
 #include <cstring>
+
+#include "HashUtils.h"
+#include "../../../common/Env/EnvLoader.h"
 
 namespace HashUtils {
 
@@ -28,7 +30,9 @@ namespace HashUtils {
         return result;
     }
 
-    std::string hashPassword(const std::string& password, const std::string& salt, const std::string& pepper) {
+    std::string hashPassword(const std::string& password, const std::string& salt) {
+
+        std::string pepper = env::loadPepperSecret("auth-service");
         std::string combined = salt + password + pepper;
 
         unsigned char hash[SHA256_DIGEST_LENGTH];
@@ -45,8 +49,8 @@ namespace HashUtils {
         return hexStr;
     }
 
-    bool verifyPassword(const std::string& password, const std::string& salt, const std::string& pepper, const std::string& hashed) {
-        return hashPassword(password, salt, pepper) == hashed;
+    bool verifyPassword(const std::string& password, const std::string& salt, const std::string& hashed) {
+        return hashPassword(password, salt) == hashed;
     }
 
     std::string generateSalt(int length) {
