@@ -1,39 +1,17 @@
 #include "AuditService.h"
-#include <iostream>
+#include <drogon/drogon.h>
 #include <thread>
+#include <iostream>
+
 using namespace drogon;
 
-AuditService::AuditService(DbConnection& dbConnection,
-                           std::vector<TargetService> targets,
+AuditService::AuditService(AuditRepository& repo,
                            trantor::EventLoop* eventLoop)
-    : database_(dbConnection),
-      targets_(std::move(targets)),
-      eventLoop_(eventLoop) {}
-
-void AuditService::ensureSchema() {
-    database_.client()->execSqlSync(
-        "CREATE TABLE IF NOT EXISTS service_status ("
-        "  service      TEXT NOT NULL,"
-        "  instance     TEXT NOT NULL,"
-        "  last_seen_ts TIMESTAMPTZ NOT NULL DEFAULT TIMESTAMPTZ 'epoch',"
-        "  status       TEXT NOT NULL,"
-        "  latency_ms   INTEGER NOT NULL DEFAULT 0,"
-        "  PRIMARY KEY (service, instance)"
-        ");"
-    );
-    database_.client()->execSqlSync(
-        "CREATE TABLE IF NOT EXISTS events ("
-        "  id BIGSERIAL PRIMARY KEY,"
-        "  ts TIMESTAMPTZ NOT NULL,"
-        "  service TEXT NOT NULL,"
-        "  instance TEXT NOT NULL,"
-        "  level TEXT NOT NULL,"
-        "  class TEXT NOT NULL,"
-        "  type TEXT NOT NULL,"
-        "  correlation_id TEXT,"
-        "  data JSONB NOT NULL DEFAULT '{}'::jsonb"
-        ");"
-    );
+    : repo_(repo), eventLoop_(eventLoop) {
+    targets_ = {
+        {"auth",      "http://127.0.0.1:8081", "/auth/ping"},
+        {"messaging", "http://127.0.0.1:8082", "/messaging/ping"},
+    };
 }
 
 void AuditService::startScheduler(double intervalSeconds) {
@@ -43,15 +21,14 @@ void AuditService::startScheduler(double intervalSeconds) {
 }
 
 void AuditService::refreshOnce() {
-    for (const auto& t : targets_) {
-        pingAndRecord(t);
+    for (const auto& target : targets_) {
+        pingAndRecord(target);
     }
 }
 
 void AuditService::pingSingleNow(const std::string& serviceName,
                                  const std::string& baseUrl,
-                                 const std::string& healthPath)
-{
+                                 const std::string& healthPath) {
     TargetService t{serviceName, baseUrl, healthPath};
     pingAndRecord(t);
 }
@@ -60,45 +37,13 @@ void AuditService::setTargets(std::vector<TargetService> targets) {
     targets_ = std::move(targets);
 }
 
-void AuditService::addTarget(TargetService t) {
-    targets_.push_back(std::move(t));
-}
-
-void AuditService::upsertStatus(const std::string& serviceName,
-                                const std::string& instanceId,
-                                bool isUp,
-                                int latencyMs)
-{
-    if (isUp) {
-        database_.client()->execSqlSync(
-            "INSERT INTO service_status(service,instance,last_seen_ts,status,latency_ms) "
-            "VALUES($1,$2,NOW(),$3,$4) "
-            "ON CONFLICT(service,instance) DO UPDATE SET "
-            "  last_seen_ts = NOW(), "
-            "  status       = EXCLUDED.status, "
-            "  latency_ms   = EXCLUDED.latency_ms;",
-            serviceName, instanceId, "UP", latencyMs
-        );
-    } else {
-        database_.client()->execSqlSync(
-            "INSERT INTO service_status(service,instance,last_seen_ts,status,latency_ms) "
-            "VALUES($1,$2,COALESCE((SELECT last_seen_ts FROM service_status "
-            "                        WHERE service=$1 AND instance=$2),"
-            "                       TIMESTAMPTZ 'epoch'),"
-            "       $3,$4) "
-            "ON CONFLICT(service,instance) DO UPDATE SET "
-            "  status       = EXCLUDED.status, "
-            "  latency_ms   = EXCLUDED.latency_ms, "
-            "  last_seen_ts = service_status.last_seen_ts;",
-            serviceName, instanceId, "DOWN", latencyMs
-        );
-    }
+void AuditService::addTarget(TargetService target) {
+    targets_.push_back(std::move(target));
 }
 
 void AuditService::pingAndRecord(const TargetService& t) {
     auto http = HttpClient::newHttpClient(t.baseUrl, eventLoop_);
-
-    auto req = HttpRequest::newHttpRequest();
+    auto req  = HttpRequest::newHttpRequest();
     req->setMethod(Get);
     req->setPath(t.healthPath);
 
@@ -116,15 +61,18 @@ void AuditService::pingAndRecord(const TargetService& t) {
 
     std::thread([this, f = std::move(fut), name = t.serviceName, instance = t.baseUrl]() mutable {
         auto [up, code, latency] = f.get();
+        (void)code;
         try {
-            upsertStatus(name, instance, up, latency);
-            std::cout << "[audit] " << name << " - "
-                      << (up ? "UP" : "DOWN")
-                      << " (" << code << ") "
-                      << latency << "ms - "
-                      << instance << "\n";
+            if (!repo_.statusExists(name, instance)) {
+                if (up) repo_.insertStatusUp(name, instance, latency);
+                else    repo_.insertStatusDown(name, instance);
+            } else {
+                if (up) repo_.updateStatusUp(name, instance, latency);
+                else    repo_.updateStatusDown(name, instance);
+            }
         } catch (const std::exception& e) {
-            std::cerr << "[audit] upsert failed: " << e.what() << "\n";
+            std::cerr << "[audit] repo error: " << e.what() << "\n";
         }
     }).detach();
 }
+
