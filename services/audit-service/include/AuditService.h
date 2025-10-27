@@ -15,8 +15,7 @@ struct TargetService
     std::string healthPath;
 };
 
-class AuditService
-{
+class AuditService {
 public:
     /**
      * Constructor
