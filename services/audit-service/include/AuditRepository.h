@@ -10,7 +10,7 @@ struct ServiceStatus {
     std::string service;
     std::string instance;
     std::string status;
-    int         latencyMs{};
+    int latencyMs{};
     std::string lastSeenUtc;
 };
 
