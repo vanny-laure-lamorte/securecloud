@@ -7,7 +7,6 @@ AuditController::AuditController(DbConnection &db, trantor::EventLoop *loop)
     service_.startScheduler(10.0);
 }
 
-
 bool AuditController::parseJson(const HttpRequestPtr& req, Json::Value& out) {
     Json::CharReaderBuilder b;
     std::string errs;
@@ -157,16 +156,15 @@ HttpResponsePtr AuditController::getOneServiceStatus(const HttpRequestPtr &req)
 }
 
 HttpResponsePtr AuditController::handleRefresh() {
+    auto resp = HttpResponse::newHttpResponse();
     try {
         service_.refreshOnce();
-        auto ok = HttpResponse::newHttpResponse();
-        ok->setContentTypeCode(CT_TEXT_PLAIN);
-        ok->setBody("ok");
-        return ok;
+        resp->setContentTypeCode(CT_TEXT_PLAIN);
+        resp->setBody("ok");
+        return resp;
     } catch (const std::exception& e) {
-        auto err = HttpResponse::newHttpResponse();
-        err->setStatusCode(k500InternalServerError);
-        err->setBody(std::string("error: ") + e.what());
-        return err;
+        resp->setStatusCode(k500InternalServerError);
+        resp->setBody(std::string("error: ") + e.what());
+        return resp;
     }
 }

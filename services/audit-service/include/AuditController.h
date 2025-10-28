@@ -15,11 +15,11 @@ using namespace drogon;
 class AuditController
 {
 public:
-/**
- * Constructor
- * @param db Database connection
- * @param loop Event loop
- */
+    /**
+     * Constructor
+     * @param db Database connection
+     * @param loop Event loop
+     */
     AuditController(DbConnection& db, trantor::EventLoop* loop);
 
     /**
