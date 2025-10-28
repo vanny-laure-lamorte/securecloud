@@ -1,34 +1,24 @@
 #pragma once
-#include <iostream>
-#include <common/db/DbConnection.h>
-#include <drogon/drogon.h>
-#include <json/json.h>
-#include "AuditService.h"
+#include "AuditController.h"
+#include "common/db/DbConnection.h"
 
-class AuditRoutes
-{
+#include <drogon/drogon.h>
+using namespace drogon;
+
+class AuditRoutes {
 public:
     /**
-     * @brief Construct with DB connection and AuditService instance.
-     * @param db Database connection (for queries)
-     * @param service AuditService instance (for pings)
+     * Constructor
+     * @param db Database connection
+     * @param loop Event loop
      */
-    AuditRoutes(DbConnection &db, AuditService &service);
+    AuditRoutes(DbConnection& db, trantor::EventLoop* loop);
 
     /**
-     * @brief Register all HTTP routes/handlers.
+     * Register all routes
      */
     void registerAll();
 
 private:
-    DbConnection &db_;
-    AuditService &service_;
-
-    /**
-     * @brief Parse JSON body from request into Json::Value.
-     * @param req Input HTTP request
-     * @param out Output Json::Value (if parsing successful)
-     * @return true if parsing was successful, false otherwise
-     */
-    static bool parseJson(const drogon::HttpRequestPtr &req, Json::Value &out);
+    AuditController controller_;
 };

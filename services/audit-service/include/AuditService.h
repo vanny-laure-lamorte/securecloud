@@ -1,66 +1,70 @@
 #pragma once
+#include "AuditRepository.h"
+
+#include <drogon/drogon.h>
 #include <string>
 #include <vector>
-#include <drogon/drogon.h>
-#include <common/db/DbConnection.h>
+#include <thread>
+#include <iostream>
+using namespace drogon;
 
-/** A target service to be pinged. */
-struct TargetService
-{
-    std::string serviceName; ///< e.g. "auth"
-    std::string baseUrl;     ///< e.g. "http://127.0.0.1:8081"
-    std::string healthPath;  ///< e.g. "/auth/ping"
+struct TargetService {
+    std::string serviceName;
+    std::string baseUrl;
+    std::string healthPath;
 };
 
-class AuditService
-{
-public:
-    AuditService(DbConnection &dbConnection,
-                 std::vector<TargetService> targets,
-                 trantor::EventLoop *eventLoop);
+class AuditService {
+    public:
+    /**
+     * Constructor
+     * @param repo Audit repository
+     * @param eventLoop Event loop
+     */
+    AuditService(AuditRepository& repo,
+                 trantor::EventLoop* eventLoop);
 
-    /** Create schema: service_status + events (if not exists). */
-    void ensureSchema();
-
-    /** Schedule periodic pings every intervalSeconds. */
+    /**
+     * Start periodic scheduler to ping services
+     * @param intervalSeconds Interval in seconds
+     */
     void startScheduler(double intervalSeconds);
 
-    /** Ping all configured targets now (non-blocking). */
+    /**
+     * Perform a single refresh of all services statuses
+     */
     void refreshOnce();
 
-    /** Alias for refreshOnce(). */
-    void pingAllNow() { refreshOnce(); }
+    /**
+     * Ping a single service immediately and record its status
+     * @param serviceName Service name
+     * @param baseUrl Base URL of the service
+     * @param healthPath Health check path
+     */
+    void pingSingleNow(const std::string& serviceName,
+                       const std::string& baseUrl,
+                       const std::string& healthPath);
 
-    /** Ping a single service now (non-blocking). */
-    void pingSingleNow(const std::string &serviceName,
-                       const std::string &baseUrl,
-                       const std::string &healthPath);
-
-    /** Replace target list. */
+    /**
+     * Set the list of target services to monitor
+     * @param targets Vector of TargetService
+     */
     void setTargets(std::vector<TargetService> targets);
-    /** Append one target. */
-    void addTarget(TargetService t);
+
+    /**
+     * Add a target service to monitor
+     * @param target TargetService to add
+     */
+    void addTarget(TargetService target);
 
 private:
-    DbConnection &database_;
+    /**
+     * Ping a target service and record its status
+     * @param t TargetService to ping
+     */
+    void pingAndRecord(const TargetService& t);
+
+    AuditRepository& repo_;
     std::vector<TargetService> targets_;
-    trantor::EventLoop *eventLoop_;
-
-    /**
-     * @brief Insert or update service status in DB.
-     * @param serviceName Name of the service (e.g. "auth")
-     * @param instanceId Unique instance identifier (e.g. base URL)
-     * @param isUp true if service is reachable (HTTP 200), false otherwise
-     * @param latencyMs Measured latency in milliseconds
-     */
-    void upsertStatus(const std::string &serviceName,
-                      const std::string &instanceId,
-                      bool isUp,
-                      int latencyMs);
-
-    /**
-     * @brief Ping a target service and record its status in DB.
-     * @param t TargetService struct with service details
-     */
-    void pingAndRecord(const TargetService &t);
+    trantor::EventLoop* eventLoop_;
 };
