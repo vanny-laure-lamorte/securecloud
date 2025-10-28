@@ -1,7 +1,4 @@
 #include "AuditController.h"
-#include <drogon/drogon.h>
-
-using namespace drogon;
 
 AuditController::AuditController(DbConnection& db, trantor::EventLoop* loop)
     : repo_(db), service_(repo_, loop) {
