@@ -64,8 +64,6 @@ void AuthServiceRoutes::registerRoutes()
            std::function<void(const HttpResponsePtr &)> &&cb)
     {
         auto json = req->getJsonObject();
-        std::cout << "Register route called" << std::endl;
-        std::cout << "Request JSON: " << req->getBody() << std::endl;
 
         if (!json || !json->isMember("email") || !json->isMember("password") || !json->isMember("user_id"))
         {
@@ -99,7 +97,6 @@ void AuthServiceRoutes::registerRoutes()
             resp->setStatusCode(k201Created);
             cb(resp);
 
-            std::cout << "User registered: " << email << std::endl;
         }
         catch (const std::exception &e)
         {
