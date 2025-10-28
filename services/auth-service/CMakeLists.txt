@@ -7,18 +7,27 @@ find_package(
     OpenSSL REQUIRED
 )
 
-# Define the executable target 'auth-service' with its source files
+file(GLOB_RECURSE HEADER_FILES
+    "${CMAKE_CURRENT_SOURCE_DIR}/repository/*.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/utils/*.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/routes/*.h"
+)
+
+file(GLOB_RECURSE CPP_FILES
+    "${CMAKE_CURRENT_SOURCE_DIR}/repository/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/utils/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/routes/*.cpp"
+)
 add_executable(auth-service
-    src/main.cpp
-    src/AuthServiceRoutes.cpp
-    ${CMAKE_SOURCE_DIR}/common/HashUtils/HashUtils.cpp
+    main.cpp
+    ${CPP_FILES}
+    ${REPOSITORY_SOURCES}
     ${CMAKE_SOURCE_DIR}/common/Env/EnvLoader.cpp
     ${CMAKE_SOURCE_DIR}/common/db/DbConnection.cpp
 )
 
 # Include header files
 target_include_directories(auth-service PRIVATE
-    ${CMAKE_SOURCE_DIR}/common/HashUtils.h
     ${CMAKE_SOURCE_DIR}/common/Env/EnvLoader.h
     ${CMAKE_SOURCE_DIR}/common/db/DbConnection.h
 )
