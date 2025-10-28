@@ -1,9 +1,4 @@
 #include "AuditService.h"
-#include <drogon/drogon.h>
-#include <thread>
-#include <iostream>
-
-using namespace drogon;
 
 AuditService::AuditService(AuditRepository& repo,
                            trantor::EventLoop* eventLoop)
