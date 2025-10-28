@@ -1,7 +1,4 @@
 #include "AuditRoutes.h"
-#include <drogon/drogon.h>
-
-using namespace drogon;
 
 AuditRoutes::AuditRoutes(DbConnection& db, trantor::EventLoop* loop)
     : controller_(db, loop) {}

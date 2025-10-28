@@ -1,6 +1,4 @@
 #include "AuditRepository.h"
-#include <drogon/drogon.h>
-using namespace drogon;
 
 void AuditRepository::ensureSchema()
 {
