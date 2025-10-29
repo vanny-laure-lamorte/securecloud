@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.16)
 project(auth-service LANGUAGES CXX)
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 # Find the Drogon and OpenSSL packages
 find_package(
     Drogon CONFIG REQUIRED
@@ -18,22 +21,32 @@ file(GLOB_RECURSE CPP_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/utils/*.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/routes/*.cpp"
 )
+
+set(COMMON_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../common/Env/EnvLoader.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../common/db/DbConnection.cpp
+)
+
 add_executable(auth-service
     main.cpp
     ${CPP_FILES}
-    ${REPOSITORY_SOURCES}
-    ${CMAKE_SOURCE_DIR}/common/Env/EnvLoader.cpp
-    ${CMAKE_SOURCE_DIR}/common/db/DbConnection.cpp
+    ${COMMON_SOURCES}
 )
 
 # Include header files
 target_include_directories(auth-service PRIVATE
-    ${CMAKE_SOURCE_DIR}/common/Env/EnvLoader.h
-    ${CMAKE_SOURCE_DIR}/common/db/DbConnection.h
+    ${HEADER_FILES}
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../common
+    ${CMAKE_CURRENT_SOURCE_DIR}/../..
 )
 
 # Link the necessary libraries to the target
 target_link_libraries(auth-service
     PRIVATE Drogon::Drogon
     PRIVATE OpenSSL::Crypto
+    PRIVATE PostgreSQL::PostgreSQL
+)
+
+set_target_properties(auth-service PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/build"
 )

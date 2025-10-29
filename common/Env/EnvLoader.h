@@ -27,4 +27,7 @@ namespace env {
      * @brief Retrieves the value of an environment variable, with an optional fallback.
      */
     std::string getVar(const std::string& key, const std::string& fallback = "");
+
+    std::string loadSecret(const std::string &secretName);
+
 }

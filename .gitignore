@@ -1,6 +1,7 @@
 # General
 build/
 *.env
+secrets/*
 
 # Prerequisites
 *.d
