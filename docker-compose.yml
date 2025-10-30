@@ -1,0 +1,41 @@
+services:
+  audit-db:
+    image: postgres:15
+    container_name: audit-db
+    environment:
+      POSTGRES_DB: audit_service
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    secrets:
+      - db_password
+    volumes:
+      - audit-db-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+  audit-service:
+    build:
+      context: .
+      dockerfile: services/audit-service/Dockerfile
+    container_name: audit-service
+    environment:
+      DB_HOST: audit-db
+      DB_PORT: "5432"
+      DB_NAME: audit_service
+      DB_USER: postgres
+      DB_PASSWORD_FILE: /run/secrets/db_password
+    secrets:
+      - db_password
+    ports:
+      - "8083:8083"
+    depends_on:
+      - audit-db
+    restart: unless-stopped
+
+volumes:
+  audit-db-data:
+
+secrets:
+  db_password:
+    file: ./secrets/db_password.txt
