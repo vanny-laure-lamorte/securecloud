@@ -73,7 +73,6 @@ HttpResponsePtr AuditController::handleServicePing(const HttpRequestPtr &req)
         bad->setBody("invalid json");
         return bad;
     }
-
     const std::string name = j.get("service", "").asString();
     if (name.empty())
     {
