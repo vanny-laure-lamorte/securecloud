@@ -1,8 +1,7 @@
 #include "AuditController.h"
 
-AuditController::AuditController(DbConnection &db, trantor::EventLoop *loop)
-    : repo_(db), service_(repo_, loop)
-{
+AuditController::AuditController(DbConnection& db, trantor::EventLoop* loop)
+    : repo_(db), service_(repo_, loop) {
     repo_.ensureSchema();
     service_.startScheduler(10.0);
 }
@@ -73,7 +72,6 @@ HttpResponsePtr AuditController::handleServicePing(const HttpRequestPtr &req)
         bad->setBody("invalid json");
         return bad;
     }
-
     const std::string name = j.get("service", "").asString();
     if (name.empty())
     {
