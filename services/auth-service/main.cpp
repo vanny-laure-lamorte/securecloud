@@ -5,10 +5,10 @@
 #include "common/Env/EnvLoader.h"
 #include "utils/HashUtils.h"
 
-int main() {
+int main()
+{
     using namespace drogon;
-
-    std::string connStr = env::loadEnv("auth-service");
+    std::string connStr = env::loadEnv("auth");
     DbConnection db = DbConnection(connStr, 2);
 
     app().addListener("0.0.0.0", 8081);

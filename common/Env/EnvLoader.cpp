@@ -1,22 +1,21 @@
 #include "EnvLoader.h"
 #include "dotenv.h"
 #include <string>
+#include <fstream>
+#include <sstream>
 
 namespace env
 {
 
-    std::string withEnvFilePath(const std::string &filename)
+    std::string withEnvFilePath(const std::string &service)
     {
-        return "config/" + filename + ".env";
+        return "config/" + service + "-service.env";
     }
 
-    std::string loadEnv(const std::string &path)
+    std::string loadEnv(const std::string &service)
     {
-        std::string authDbName = loadSecret("auth_db_name");
-
-        if (authDbName.empty()) {
-
-            dotenv::init(withEnvFilePath(path).c_str());
+        if (service != "auth" && service != "audit") {
+            dotenv::init(withEnvFilePath(service).c_str());
             std::string connStr = "host=" + env::getVar("DB_HOST") + " " +
                                   "port=" + env::getVar("DB_PORT") + " " +
                                   "dbname=" + env::getVar("DB_NAME") + " " +
@@ -24,14 +23,13 @@ namespace env
                                   "password=" + env::getVar("DB_PASSWORD");
             return connStr;
         } else{
-            std::string db_name = loadSecret("auth_db_name");
-            std::string db_user = loadSecret("auth_db_user");
-            std::string db_password = loadSecret("auth_db_password");
-
-            std::string connStr = "host=" + getVar("DB_HOST", "db") + " " +
-                                "port=" + getVar("DB_PORT", "5432") + " " +
-                                "dbname=" + db_name + " " +
-                                "user=" + db_user + " " +
+            std::string db_password = loadSecret(service + "_db_password");
+            std::string upper = service;
+            std::transform(upper.begin(), upper.end(), upper.begin(), ::toupper);
+            std::string connStr = "host=" + getVar(upper + "_DB_HOST", "db") + " " +
+                                "port=" + getVar(upper +  "_DB_PORT", "5432") + " " +
+                                "dbname=" + getVar(upper + "_DB_NAME", "5432") + " " +
+                                "user=" + getVar(upper + "_DB_USER", "5432") + " " +
                                 "password=" + db_password;
             return connStr;
         }
