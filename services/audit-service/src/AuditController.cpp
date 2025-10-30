@@ -2,6 +2,7 @@
 
 AuditController::AuditController(DbConnection& db, trantor::EventLoop* loop)
     : repo_(db), service_(repo_, loop) {
+    repo_.ensureSchema();
     service_.startScheduler(10.0);
 }
 
@@ -23,7 +24,6 @@ HttpResponsePtr AuditController::handlePing(const HttpRequestPtr& req) {
         bad->setBody("invalid json");
         return bad;
     }
-
     const std::string name = j.get("service", "").asString();
     const std::string url  = j.get("base_url", "").asString();
     const std::string path = j.get("path", "").asString();

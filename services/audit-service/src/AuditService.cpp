@@ -70,4 +70,3 @@ void AuditService::pingAndRecord(const TargetService& t) {
         }
     }).detach();
 }
-
