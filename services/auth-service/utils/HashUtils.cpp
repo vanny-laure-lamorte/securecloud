@@ -7,7 +7,7 @@
 #include <cstring>
 
 #include "HashUtils.h"
-#include "../../../common/Env/EnvLoader.h"
+#include "common/Env/EnvLoader.h"
 
 namespace HashUtils {
 
@@ -45,7 +45,6 @@ namespace HashUtils {
             hexStr.push_back(hex_chars[(hash[i] >> 4) & 0xF]);
             hexStr.push_back(hex_chars[hash[i] & 0xF]);
         }
-
         return hexStr;
     }
 

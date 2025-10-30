@@ -1,7 +1,7 @@
 #pragma once
 
 #include <drogon/drogon.h>
-#include "../../../common/db/DbConnection.h"
+#include "common/db/DbConnection.h"
 
 #include "../repository/UserRepository.h"
 

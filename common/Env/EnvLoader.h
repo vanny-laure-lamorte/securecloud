@@ -27,4 +27,11 @@ namespace env {
      * @brief Retrieves the value of an environment variable, with an optional fallback.
      */
     std::string getVar(const std::string& key, const std::string& fallback = "");
+
+    /**
+     * @brief Loads a secret from the Docker secrets directory.
+     * @param secretName The name of the secret file.
+     * @return The content of the secret file as a string.
+     */
+    std::string loadSecret(const std::string &secretName);
 }

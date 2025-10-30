@@ -1,8 +1,8 @@
 #include <drogon/drogon.h>
 
 #include "routes/AuthServiceRoutes.h"
-#include "../../../common/db/DbConnection.h"
-#include "../../../common/Env/EnvLoader.h"
+#include "common/db/DbConnection.h"
+#include "common/Env/EnvLoader.h"
 #include "utils/HashUtils.h"
 
 int main() {
