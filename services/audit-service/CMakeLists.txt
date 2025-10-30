@@ -9,13 +9,18 @@ add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 find_package(Drogon CONFIG REQUIRED)
 find_package(jsoncpp CONFIG REQUIRED)
 
-file (GLOB AUDIT_SERVICE_SOURCES src/*.cpp)
+file(GLOB AUDIT_SERVICE_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
+)
+
+set(COMMON_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../common/Env/EnvLoader.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../common/db/DbConnection.cpp
+)
 
 add_executable(audit-service
     ${AUDIT_SERVICE_SOURCES}
-    ${CMAKE_SOURCE_DIR}/common/Env/EnvLoader.cpp
-    ${CMAKE_SOURCE_DIR}/common/db/DbConnection.cpp
-
+    ${COMMON_SOURCES}
 )
 
 target_include_directories(audit-service PRIVATE

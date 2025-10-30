@@ -1,8 +1,7 @@
 #include "AuditController.h"
 
-AuditController::AuditController(DbConnection &db, trantor::EventLoop *loop)
-    : repo_(db), service_(repo_, loop)
-{
+AuditController::AuditController(DbConnection& db, trantor::EventLoop* loop)
+    : repo_(db), service_(repo_, loop) {
     repo_.ensureSchema();
     service_.startScheduler(10.0);
 }
