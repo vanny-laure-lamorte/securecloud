@@ -20,13 +20,14 @@ public:
      * @param db Database connection
      * @param loop Event loop
      */
-    AuditController(DbConnection& db, trantor::EventLoop* loop);
+    AuditController(DbConnection &db, trantor::EventLoop *loop);
 
     /**
-     * Handle ping request
+     * Handle ping for a single service
      * @param req HTTP request
+     * @param json JSON payload containing service name
      */
-    drogon::HttpResponsePtr handlePing(const drogon::HttpRequestPtr& req);
+    drogon::HttpResponsePtr handleServicePing(const drogon::HttpRequestPtr &req);
 
     /**
      * Handle list of all services and their statuses
@@ -53,14 +54,22 @@ public:
     drogon::HttpResponsePtr getOneServiceStatus(const drogon::HttpRequestPtr &req);
 
 private:
+    AuditRepository repo_;
+    AuditService service_;
+
     /**
      * Parse JSON from HTTP request
      * @param req HTTP request
      * @param out Output JSON value
      * @return true if parsing was successful, false otherwise
      */
-    bool parseJson(const drogon::HttpRequestPtr& req, Json::Value& out);
+    bool parseJson(const drogon::HttpRequestPtr &req, Json::Value &out);
 
-    AuditRepository repo_;
-    AuditService service_;
+    /**
+     * Extract service name from HTTP request JSON payload
+     * @param req HTTP request
+     * @param parsedJsonOpt Optional output parameter to receive parsed JSON
+     * @return Extracted service name, or empty string if not found
+     */
+    std::string extractServiceName(const drogon::HttpRequestPtr &req, Json::Value *parsedJsonOpt);
 };

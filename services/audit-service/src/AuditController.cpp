@@ -1,12 +1,14 @@
 #include "AuditController.h"
 
-AuditController::AuditController(DbConnection& db, trantor::EventLoop* loop)
-    : repo_(db), service_(repo_, loop) {
+AuditController::AuditController(DbConnection &db, trantor::EventLoop *loop)
+    : repo_(db), service_(repo_, loop)
+{
     repo_.ensureSchema();
     service_.startScheduler(10.0);
 }
 
-bool AuditController::parseJson(const HttpRequestPtr& req, Json::Value& out) {
+bool AuditController::parseJson(const HttpRequestPtr &req, Json::Value &out)
+{
     Json::CharReaderBuilder b;
     std::string errs;
     const auto buf = req->getBody();
@@ -71,6 +73,7 @@ HttpResponsePtr AuditController::handleServicePing(const HttpRequestPtr &req)
         bad->setBody("invalid json");
         return bad;
     }
+
     const std::string name = j.get("service", "").asString();
     if (name.empty())
     {
@@ -151,19 +154,5 @@ HttpResponsePtr AuditController::getOneServiceStatus(const HttpRequestPtr &req)
         err->setContentTypeCode(CT_TEXT_PLAIN);
         err->setBody(std::string("db error: ") + e.what());
         return err;
-    }
-}
-
-HttpResponsePtr AuditController::handleRefresh() {
-    auto resp = HttpResponse::newHttpResponse();
-    try {
-        service_.refreshOnce();
-        resp->setContentTypeCode(CT_TEXT_PLAIN);
-        resp->setBody("ok");
-        return resp;
-    } catch (const std::exception& e) {
-        resp->setStatusCode(k500InternalServerError);
-        resp->setBody(std::string("error: ") + e.what());
-        return resp;
     }
 }
