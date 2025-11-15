@@ -31,22 +31,34 @@ private:
     std::pair<int, std::string> sendAndWait(
         const drogon::HttpRequestPtr &req,
         std::chrono::seconds timeout = std::chrono::seconds(5));
+
     /**
      * @brief Send a GET request to the specified path and print the response
      * @param path The request path (e.g., "/auth/ping")
      */
     void ping(const std::string &path);
+
     /**
      * @brief Send a POST request to /audit/events with a sample audit event and print the response
      */
     void postAuditEvent();
+
     /**
      * @brief Send a GET request to /audit/services to retrieve and print services status
      */
-    void getServicesStatus();
+    void getAllServicesStatus();
+
+    void getOneServiceStatus(const std::string &serviceName);
+
     /**
      * @brief Send a POST request to /audit/services to refresh services status
      * @note This function triggers a status refresh on the server side.
      */
     void postServicesStatus();
+
+    /**
+     * @brief Send a POST request to /audit/service_ping to ping a specific service
+     * @param serviceName The name of the service to ping (e.g., "auth")
+     */
+    void auditServicePing(const std::string &serviceName);
 };
