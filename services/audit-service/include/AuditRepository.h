@@ -76,6 +76,13 @@ public:
     void updateStatusDown(const std::string& serviceName,
                           const std::string& instanceId);
 
+    /**
+     * Fetch statuses for a specific service
+     * @param serviceName Service name
+     * @return Vector of ServiceStatus
+     */
+    std::vector<ServiceStatus> fetchStatusesByService(const std::string& serviceName);
+
 private:
     DbConnection& db_;
 };
