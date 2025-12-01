@@ -21,7 +21,6 @@ static void forwardToBackend(const HttpRequestPtr &inReq,
     outReq->setMethod(inReq->getMethod());
     outReq->setPath(backendPath);
 
-    // copy body if present (string_view -> string)
     auto inBody = inReq->getBody();
     if (!inBody.empty())
     {

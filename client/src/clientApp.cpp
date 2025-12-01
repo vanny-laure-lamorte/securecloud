@@ -4,10 +4,15 @@
 #include <iostream>
 #include <future>
 #include <memory>
+#include <limits>
 
 using namespace drogon;
 
-ClientApp::ClientApp(const HttpClientPtr &client) : client_(client) {}
+ClientApp::ClientApp(const HttpClientPtr &client, WsSendCallback wsSendCallback)
+    : client_(client),
+      wsSendCallback_(std::move(wsSendCallback))
+{
+}
 
 void ClientApp::printMenu()
 {
@@ -18,6 +23,7 @@ void ClientApp::printMenu()
                  "  4) POST services refresh via API Gateway (/audit/services)\n"
                  "  5) POST -> Ping Auth service via Audit-service (/auth/services/ping)\n"
                  "  6) POST -> Ping Messaging service via Audit-service (/auth/services/ping)\n"
+                 "  7) Send WebSocket message via gateway\n"
                  "  0) Quit\n> ";
 }
 
@@ -124,6 +130,30 @@ void ClientApp::postServicesStatus()
     std::cout << "[Audit Service] " << code << " | Services status refreshed\n";
 }
 
+std::string ClientApp::selectFakeUser()
+{
+    std::cout << "Select fake user:\n"
+                 "  1) alice\n"
+                 "  2) bob\n"
+                 "  3) charlie\n"
+                 "> ";
+
+    int choice = 0;
+    if (!(std::cin >> choice)) {
+        std::cout << "Invalid input, defaulting to 'alice'\n";
+        return "alice";
+    }
+
+    switch (choice) {
+    case 1: return "alice";
+    case 2: return "bob";
+    case 3: return "charlie";
+    default:
+        std::cout << "Unknown choice, defaulting to 'alice'\n";
+        return "alice";
+    }
+}
+
 void ClientApp::run()
 {
     while (running)
@@ -159,6 +189,29 @@ void ClientApp::run()
         case 6:
             auditServicePing("messaging");
             break;
+        case 7:
+        {
+            if (!wsSendCallback_)
+            {
+                std::cout << "[Client] WebSocket not available.\n";
+                break;
+            }
+
+            std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
+
+            std::cout << "Enter WS message: ";
+            std::string msg;
+            std::getline(std::cin, msg);
+
+            if (msg.empty())
+            {
+                std::cout << "[Client] Empty message, nothing sent.\n";
+                break;
+            }
+
+            wsSendCallback_(msg);
+            break;
+        }
         default:
             std::cout << "[Client] Invalid choice.\n";
             break;

@@ -7,15 +7,22 @@
 class ClientApp
 {
 public:
+
+    using WsSendCallback = std::function<void(const std::string&)>;
+
     // Constructor: takes an HTTP client instance
-    explicit ClientApp(const drogon::HttpClientPtr &client);
+    explicit ClientApp(const drogon::HttpClientPtr &client,
+                       WsSendCallback wsSendCallback = nullptr);
 
     // Main loop: shows menu, reads user input, sends requests
     void run();
 
+    std::string selectFakeUser();
+
 private:
     bool running = true;           // Controls the main loop
     drogon::HttpClientPtr client_; // HTTP client to send requests
+    WsSendCallback wsSendCallback_; // Callback to send messages via WebSocket
 
     /**
      * @brief Print the interactive menu to the console
