@@ -1,3 +1,4 @@
+# version: '3.9'
 services:
   # === AUTH DB ===
   auth-db:
@@ -70,6 +71,18 @@ services:
     secrets:
       - audit_db_password
     restart: unless-stopped
+
+  # === SQITCH SERVICE ===
+  sqitch:
+    image: sqitch/sqitch:latest
+    container_name: sqitch
+    depends_on:
+      - auth-db
+      - audit-db
+    working_dir: /sqitch
+    volumes:
+      - ./db:/sqitch/DB
+      - ./secrets:/sqitch/secrets:ro
 
 volumes:
   auth-db-data:

@@ -1,0 +1,4 @@
+%syntax-version=1.0.0
+%project=auth
+
+20251201_version_migrations 2025-12-01T09:43:19Z sqitch <sqitch@0c8665071fee> # Create table x
