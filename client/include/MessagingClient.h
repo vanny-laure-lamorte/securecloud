@@ -10,7 +10,7 @@ class MessagingClient : public QObject
 {
     Q_OBJECT
 public:
-    explicit MessagingClient(const QString &userId, QObject *parent = nullptr)
+    explicit MessagingClient(const QString& userId, QObject* parent = nullptr)
         : QObject(parent),
           userId_(userId)
     {
@@ -24,8 +24,7 @@ public:
 
     void maybeConnect(bool auth)
     {
-        if (!auth)
-        {
+        if (!auth) {
             qDebug() << "Not authenticated, no WS connection.";
             return;
         }
@@ -34,21 +33,13 @@ public:
         ws_.open(url);
     }
 
-    void sendTestMessage(const QString &msg)
+    void sendTestMessage(const QString& msg)
     {
-        if (ws_.state() == QAbstractSocket::ConnectedState)
-        {
+        if (ws_.state() == QAbstractSocket::ConnectedState) {
             ws_.sendTextMessage(msg);
-        }
-        else
-        {
+        } else {
             qDebug() << "WS not connected, can't send.";
         }
-    }
-
-    void setUserId(const QString &userId)
-    {
-        userId_ = userId;
     }
 
 private slots:
@@ -72,7 +63,7 @@ private slots:
         qDebug() << "[Qt] WS disconnected";
     }
 
-    void onMessageReceived(const QString &msg)
+    void onMessageReceived(const QString& msg)
     {
         qDebug() << "[Qt] WS message:" << msg;
     }
