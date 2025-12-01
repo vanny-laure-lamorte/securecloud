@@ -8,10 +8,14 @@ if (MSVC)
     add_compile_options(/Zc:__cplusplus /permissive-)
 endif()
 
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
+
 # ---- Dépendances ----
 find_package(Drogon CONFIG REQUIRED)
 find_package(jsoncpp CONFIG REQUIRED)
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets LinguistTools)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets LinguistTools WebSockets)
 
 # ---- Sources ----
 set(SRC_FILES
@@ -22,6 +26,7 @@ set(SRC_FILES
 
 set(HEADER_FILES
     include/ClientApp.h
+    include/MessagingClient.h
     ${CMAKE_SOURCE_DIR}/common/include/TranslationManager.h
 )
 
@@ -40,6 +45,7 @@ target_link_libraries(client
         Qt6::Core
         Qt6::Gui
         Qt6::Widgets
+        Qt6::WebSockets
 )
 
 # ---- Translations ----

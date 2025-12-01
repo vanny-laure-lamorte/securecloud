@@ -8,6 +8,8 @@
 
 #include "ClientApp.h"
 #include "TranslationManager.h"
+#include "MessagingClient.h"
+#include <QMetaObject>
 
 int main(int argc, char *argv[])
 {
@@ -17,6 +19,7 @@ int main(int argc, char *argv[])
 
     std::cout << QObject::tr("K.Hello").toStdString() << std::endl;
 
+    // Event loop Drogon (HTTP)
     std::promise<trantor::EventLoop*> loopProm;
     auto loopFut = loopProm.get_future();
 
@@ -27,14 +30,39 @@ int main(int argc, char *argv[])
     });
 
     trantor::EventLoop* loop = loopFut.get();
-    auto client = drogon::HttpClient::newHttpClient("http://127.0.0.1:8080", loop);
+    auto httpClient = drogon::HttpClient::newHttpClient("http://127.0.0.1:8080", loop);
 
-    ClientApp drogonClient(client);
+    ClientApp tmpClient(httpClient);
+    std::string fakeUser = tmpClient.selectFakeUser();
+    qDebug() << "Fake user selected:" << QString::fromStdString(fakeUser);
 
-    drogonClient.run();
+    MessagingClient wsClient(QString::fromStdString(fakeUser));
+    bool auth = true;
+    wsClient.maybeConnect(auth);
+
+    auto wsSendCb = [&wsClient](const std::string &msg) {
+        QString qmsg = QString::fromStdString(msg);
+        QMetaObject::invokeMethod(
+            &wsClient,
+            [qmsg, &wsClient]() {
+                wsClient.sendTestMessage(qmsg);
+            },
+            Qt::QueuedConnection
+        );
+    };
+
+    ClientApp drogonClient(httpClient, wsSendCb);
+
+    std::thread consoleThread([&]() {
+        drogonClient.run();
+        QMetaObject::invokeMethod(&app, "quit", Qt::QueuedConnection);
+    });
+
+    int ret = app.exec();
 
     loop->queueInLoop([loop]{ loop->quit(); });
     loopThread.join();
+    consoleThread.join();
 
-    return 0;
+    return ret;
 }
