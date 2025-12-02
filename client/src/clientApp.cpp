@@ -16,6 +16,8 @@ void ClientApp::printMenu()
                  "  2) Ping messaging via API Gateway (/messaging/ping)\n"
                  "  3) GET services status (DB) via API Gateway (/audit/services)\n"
                  "  4) POST services refresh via API Gateway (/audit/services)\n"
+                 "  5) POST -> Ping Auth service via Audit-service (/auth/services/ping)\n"
+                 "  6) POST -> Ping Messaging service via Audit-service (/auth/services/ping)\n"
                  "  0) Quit\n> ";
 }
 
@@ -44,18 +46,43 @@ void ClientApp::ping(const std::string &path)
     req->setMethod(Get);
     req->setPath(path);
 
-    auto [code, body] = sendAndWait(req);
-    std::cout << "[Client] " << code << " | " << body << "\n";
+    auto [code, respBody] = sendAndWait(req);
+    std::cout << "[Client] " << code << " | " << respBody << "\n";
 }
 
-void ClientApp::getServicesStatus()
+void ClientApp::auditServicePing(const std::string &serviceName)
+{
+    Json::Value payload;
+    payload["service"] = serviceName;
+    auto req = HttpRequest::newHttpJsonRequest(payload);
+    req->setMethod(Post);
+    req->setPath("/audit/service_ping");
+
+    auto [code, respBody] = sendAndWait(req);
+    std::cout << "[Client] " << code << " | " << respBody << "\n";
+}
+
+void ClientApp::getOneServiceStatus(const std::string &serviceName)
+{
+    Json::Value payload;
+    payload["service"] = serviceName;
+    auto req = HttpRequest::newHttpJsonRequest(payload);
+    req->setMethod(Get);
+    req->setPath("/audit/get_one_service_status");
+
+    auto [code, respBody] = sendAndWait(req);
+    std::cout << "[Client] " << code << " | " << respBody << "\n";
+}
+
+void ClientApp::getAllServicesStatus()
 {
     auto req = HttpRequest::newHttpRequest();
     req->setMethod(Get);
     req->setPath("/audit/services");
 
     auto [code, body] = sendAndWait(req);
-    if (code != 200) {
+    if (code != 200)
+    {
         std::cout << "[Client] " << code << " | " << body << "\n";
         return;
     }
@@ -64,12 +91,14 @@ void ClientApp::getServicesStatus()
     Json::CharReaderBuilder b;
     std::string errs;
     std::unique_ptr<Json::CharReader> r(b.newCharReader());
-    if (!r->parse(body.data(), body.data() + body.size(), &arr, &errs) || !arr.isArray()) {
+    if (!r->parse(body.data(), body.data() + body.size(), &arr, &errs) || !arr.isArray())
+    {
         std::cout << "[Client] invalid JSON\n";
         return;
     }
 
-    for (const auto &it : arr) {
+    for (const auto &it : arr)
+    {
         const std::string svc = it.get("service", "").asString();
         const std::string inst = it.get("instance", "").asString();
         const std::string stat = it.get("status", "").asString();
@@ -87,7 +116,8 @@ void ClientApp::postServicesStatus()
     req->setPath("/audit/services");
 
     auto [code, body] = sendAndWait(req);
-    if (code != 200) {
+    if (code != 200)
+    {
         std::cout << "[Client] " << code << " | " << body << "\n";
         return;
     }
@@ -96,10 +126,12 @@ void ClientApp::postServicesStatus()
 
 void ClientApp::run()
 {
-    while (running) {
+    while (running)
+    {
         printMenu();
         int choice = -1;
-        if (!(std::cin >> choice)) {
+        if (!(std::cin >> choice))
+        {
             std::cout << "[Client] Bye.\n";
             break;
         }
@@ -116,10 +148,16 @@ void ClientApp::run()
             ping("/messaging/ping");
             break;
         case 3:
-            getServicesStatus();
+            getAllServicesStatus();
             break;
         case 4:
             postServicesStatus();
+            break;
+        case 5:
+            auditServicePing("auth");
+            break;
+        case 6:
+            auditServicePing("messaging");
             break;
         default:
             std::cout << "[Client] Invalid choice.\n";
