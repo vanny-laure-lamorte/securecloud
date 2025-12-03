@@ -1,0 +1,139 @@
+/* ---------- BUTTONS ---------- */
+
+QPushButton#primaryButton {
+    background-color: #005449;
+    color: #E8F4F8;
+    border-radius: 5px;
+    padding: 8px 16px;
+}
+
+/* ---------- SEPARATOR ---------- */
+
+/* Gey Line */
+QLabel#horizontalSeparator {
+    background-color: #aaa;
+}
+
+
+/* ---------- FRAME ---------- */
+
+QFrame#loginContainer {
+    background-color: #fcfcfd;
+    border-radius: 15px;
+    width: 350px;
+}
+
+/* ---------- SECURE CLOUD STYLE ---------- */
+
+QLabel#title {
+    font-size: 40px;
+    font-weight: bold;
+    color: #005449 ;
+}
+
+
+/* Label */
+
+QLabel {
+    color: #1A1A1A;
+}
+
+QLabel a {
+    color: #00473c; /* couleur des liens */
+    text-decoration: none;
+}
+
+QLabel a:hover {
+    text-decoration: underline;
+    color: red;
+}
+
+QLabel#label {
+    font-size: 14px;
+}
+
+/* ---------- SECURE CLOUD CUSTOM STYLE ---------- */
+
+
+QString {
+    color: #1A1A1A;
+}
+
+/* --- input start --- */
+
+QLineEdit#input {
+    border: 1px solid #D0D0D0;
+    border-radius: 6px;
+    padding: 10px 12px;
+    background-color: #FFFFFF;
+    color: #1A1A1A;
+    font-size: 14px;
+}
+
+QLineEdit#input:focus {
+    border: 2px solid #00473c;
+    background-color: #E8F4F8;
+}
+
+QLineEdit#input:hover {
+    border: 1px solid #004d42;
+}
+
+/* --- checkbox --- */
+
+QCheckBox#checkbox {
+    color: #1A1A1A;
+    font-size: 14px;
+    spacing: 5px;
+}
+
+QCheckBox#checkbox::indicator {
+    width: 18px;
+    height: 18px;
+}
+
+QCheckBox#checkbox::indicator:unchecked {
+    border: 2px solid #D0D0D0;
+    border-radius: 3px;
+    background-color: #FFFFFF;
+}
+
+QCheckBox#checkbox::indicator:checked {
+    border: 2px solid #00473c;
+    border-radius: 3px;
+    background-color: #00473c;
+    image: url(:/assets/icons/check.png);
+}
+
+QCheckBox::indicator:hover {
+    border: 2px solid #004d42;
+}
+
+/* Dropdown Language ===== */
+
+QComboBox#language {
+    border: 2px solid #aaa;
+    border-radius: 6px;
+    padding: 4px 6px;
+    background-color: #FFFFFF;
+    color: black;
+}
+
+QComboBox#language:focus {
+    border: 2px solid #00473c;
+    background-color: #E8F4F8;
+}
+
+QComboBox#language::drop-down {
+    border: none;
+    background-color: transparent;
+}
+
+QComboBox#language::down-arrow {
+    image: url(:/icons/dropdown-arrow.png);
+    width: 12px;
+    height: 12px;
+}
+
+
+
