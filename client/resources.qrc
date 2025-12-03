@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/">
+        <file>assets/icons/logo.png</file>
+        <file>assets/icons/check.png</file>
+        <file>assets/icons/envelope.png</file>
+        <file>assets/icons/lock.png</file>
+        <file>assets/flags/fr.png</file>
+        <file>assets/flags/fr.png</file>
+        <file>assets/flags/es.png</file>
+        <file>assets/flags/de.png</file>
+        <file>assets/flags/it.png</file>
+        <file>assets/flags/en.png</file>
+        <file>styles/secure-cloud-style.qss</file>
+    </qresource>
+</RCC>

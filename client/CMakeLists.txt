@@ -8,25 +8,39 @@ if (MSVC)
     add_compile_options(/Zc:__cplusplus /permissive-)
 endif()
 
-# ---- Dépendances ----
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
+
+# --- Dependency --- #
+
 find_package(Drogon CONFIG REQUIRED)
 find_package(jsoncpp CONFIG REQUIRED)
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets LinguistTools)
 
-# ---- Sources ----
-set(SRC_FILES
-    src/main.cpp
-    src/ClientApp.cpp
+# --- Sources --- #
+
+file( GLOB SRC_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
     ${CMAKE_SOURCE_DIR}/common/src/TranslationManager.cpp
 )
 
-set(HEADER_FILES
-    include/ClientApp.h
+set(RESOURCE_FILES
+    resources.qrc
+)
+
+file( GLOB HEADER_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/*.h
     ${CMAKE_SOURCE_DIR}/common/include/TranslationManager.h
 )
 
-# ---- Exécutable ----
-add_executable(client ${SRC_FILES} ${HEADER_FILES})
+# --- Executable --- #
+
+add_executable(client
+    ${SRC_FILES}
+    ${HEADER_FILES}
+    ${RESOURCE_FILES}
+)
 
 target_include_directories(client PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -42,7 +56,8 @@ target_link_libraries(client
         Qt6::Widgets
 )
 
-# ---- Translations ----
+# --- Translations --- #
+
 set(TS_FILES
     ${CMAKE_SOURCE_DIR}/common/i18n/fr_FR.ts
     ${CMAKE_SOURCE_DIR}/common/i18n/es_ES.ts

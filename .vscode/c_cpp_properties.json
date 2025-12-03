@@ -10,6 +10,8 @@
                 "C:/vcpkg/installed/x64-windows/include/Qt6/QtCore",
                 "C:/vcpkg/installed/x64-windows/include/Qt6/QtGui",
                 "C:/vcpkg/installed/x64-windows/include/Qt6/QtWidgets",
+                "C:/vcpkg/installed/x64-windows/include/Qt6/QtWebSockets",
+                "C:/vcpkg/installed/x64-windows/include/gtest",
                 "${workspaceFolder}/common/**",
                 "${default}",
                 "C:/vcpkg/installed/x64-windows/include"
