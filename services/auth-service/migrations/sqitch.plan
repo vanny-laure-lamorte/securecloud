@@ -2,5 +2,3 @@
 %project=auth
 
 20251201141947_version_migrations 2025-12-01T13:19:58Z sqitch <sqitch@42fbc0b38ed4> # Create table x
-20251201142005_version_migrations 2025-12-01T13:20:16Z sqitch <sqitch@77b234dd874d> # Create table x
-20251201142023_version_migrations 2025-12-01T13:20:34Z sqitch <sqitch@b636d8efe408> # Create table x
