@@ -16,6 +16,14 @@ public:
                  const std::string &hashedPassword,
                  int userId);
 
+    /**
+     * Get username by email
+     * @param email User email
+     * @return username
+     */
+    std::string getUsernameByEmail(const std::string &email);
+
 private:
+
     DbConnection &db_;
 };

@@ -5,6 +5,8 @@
 #include <QDebug>
 #include <QJsonObject>
 #include <QJsonDocument>
+#include <QUrl>
+#include <QUrlQuery>
 
 class MessagingClient : public QObject
 {
@@ -22,15 +24,21 @@ public:
                 this, &MessagingClient::onError);
     }
 
-    void maybeConnect(bool auth)
+    bool maybeConnect(const QString& jwt)
     {
-        if (!auth) {
-            qDebug() << "Not authenticated, no WS connection.";
-            return;
+        if (jwt.isEmpty()) {
+            qDebug() << "Empty JWT, no WS connection.";
+            return false;
         }
+
         QUrl url(QStringLiteral("ws://127.0.0.1:8080/ws/messaging"));
+        QUrlQuery query;
+        query.addQueryItem("token", jwt);
+        url.setQuery(query);
+
         qDebug() << "Connecting to" << url << "as user" << userId_;
         ws_.open(url);
+        return true;
     }
 
     void sendTestMessage(const QString& msg)

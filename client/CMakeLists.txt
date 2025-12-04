@@ -18,15 +18,13 @@ find_package(jsoncpp CONFIG REQUIRED)
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets LinguistTools WebSockets)
 
 # ---- Sources ----
-set(SRC_FILES
-    src/main.cpp
-    src/ClientApp.cpp
+file(GLOB_RECURSE SRC_FILES
+    src/*.cpp
     ${CMAKE_SOURCE_DIR}/common/src/TranslationManager.cpp
 )
 
-set(HEADER_FILES
-    include/ClientApp.h
-    include/MessagingClient.h
+file(GLOB_RECURSE HEADER_FILES
+    include/*.h
     ${CMAKE_SOURCE_DIR}/common/include/TranslationManager.h
 )
 

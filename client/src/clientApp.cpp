@@ -1,162 +1,108 @@
 #include "ClientApp.h"
-#include <json/json.h>
+#include "api/AuthClient.h"
+#include "api/AuditClient.h"
+#include "core/WsGatewayClient.h"
 
 #include <iostream>
-#include <future>
-#include <memory>
 #include <limits>
+#include <string>
 
-using namespace drogon;
-
-ClientApp::ClientApp(const HttpClientPtr &client, WsSendCallback wsSendCallback)
-    : client_(client),
-      wsSendCallback_(std::move(wsSendCallback))
+ClientApp::ClientApp(AuthClient &auth,
+                     AuditClient &audit,
+                     WsGatewayClient *wsClient)
+    : auth_(auth),
+      audit_(audit),
+      wsClient_(wsClient)
 {
 }
 
 void ClientApp::printMenu()
 {
     std::cout << "Menu:\n"
-                 "  1) Ping auth via API Gateway (/auth/ping)\n"
-                 "  2) Ping messaging via API Gateway (/messaging/ping)\n"
+                 "  1) Login via API Gateway (/auth/login)\n"
+                 "  2) Ping auth via API Gateway (/auth/ping)\n"
                  "  3) GET services status (DB) via API Gateway (/audit/services)\n"
                  "  4) POST services refresh via API Gateway (/audit/services)\n"
-                 "  5) POST -> Ping Auth service via Audit-service (/auth/services/ping)\n"
-                 "  6) POST -> Ping Messaging service via Audit-service (/auth/services/ping)\n"
+                 "  5) POST -> Ping Auth service via Audit-service (/audit/service_ping: auth)\n"
+                 "  6) POST -> Ping Messaging service via Audit-service (/audit/service_ping: messaging)\n"
                  "  7) Send WebSocket message via gateway\n"
                  "  0) Quit\n> ";
 }
 
-std::pair<int, std::string>
-ClientApp::sendAndWait(const HttpRequestPtr &req, std::chrono::seconds timeout)
+void ClientApp::handleLogin()
 {
-    auto prom = std::make_shared<std::promise<std::pair<int, std::string>>>();
-    auto fut = prom->get_future();
+    std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
 
-    client_->sendRequest(req, [prom](ReqResult r, const HttpResponsePtr &resp)
-                         {
-        if (r == ReqResult::Ok && resp) {
-            auto v = resp->getBody();
-            prom->set_value({(int)resp->getStatusCode(), std::string(v.data(), v.size())});
-        } else {
-            prom->set_value({502, "bad gateway (no response)"}); } });
+    std::string email;
+    std::string password;
 
-    if (fut.wait_for(timeout) != std::future_status::ready)
-        return {408, "timeout"};
-    return fut.get();
-}
+    std::cout << "Email: ";
+    std::getline(std::cin, email);
 
-void ClientApp::ping(const std::string &path)
-{
-    auto req = HttpRequest::newHttpRequest();
-    req->setMethod(Get);
-    req->setPath(path);
-
-    auto [code, respBody] = sendAndWait(req);
-    std::cout << "[Client] " << code << " | " << respBody << "\n";
-}
-
-void ClientApp::auditServicePing(const std::string &serviceName)
-{
-    Json::Value payload;
-    payload["service"] = serviceName;
-    auto req = HttpRequest::newHttpJsonRequest(payload);
-    req->setMethod(Post);
-    req->setPath("/audit/service_ping");
-
-    auto [code, respBody] = sendAndWait(req);
-    std::cout << "[Client] " << code << " | " << respBody << "\n";
-}
-
-void ClientApp::getOneServiceStatus(const std::string &serviceName)
-{
-    Json::Value payload;
-    payload["service"] = serviceName;
-    auto req = HttpRequest::newHttpJsonRequest(payload);
-    req->setMethod(Get);
-    req->setPath("/audit/get_one_service_status");
-
-    auto [code, respBody] = sendAndWait(req);
-    std::cout << "[Client] " << code << " | " << respBody << "\n";
-}
-
-void ClientApp::getAllServicesStatus()
-{
-    auto req = HttpRequest::newHttpRequest();
-    req->setMethod(Get);
-    req->setPath("/audit/services");
-
-    auto [code, body] = sendAndWait(req);
-    if (code != 200)
+    std::cout << "Password: ";
+    std::getline(std::cin, password);
+    if (auth_.login(email, password))
     {
-        std::cout << "[Client] " << code << " | " << body << "\n";
+        std::cout << "[Client] Login OK.\n";
+        wsClient_->connectWithJwt(auth_.getJwt());
+    }
+    else
+    {
+        std::cout << "[Client] Login FAILED.\n";
+    }
+}
+
+void ClientApp::handleAuthPing()
+{
+    auth_.ping();
+}
+
+void ClientApp::handleAuditAll()
+{
+    audit_.getAllServicesStatus();
+}
+
+void ClientApp::handleAuditRefresh()
+{
+    audit_.refreshServices();
+}
+
+void ClientApp::handleAuditPingAuth()
+{
+    audit_.pingService("auth");
+}
+
+void ClientApp::handleAuditPingMessaging()
+{
+    audit_.pingService("messaging");
+}
+
+void ClientApp::handleWsSend()
+{
+    if (!wsClient_)
+    {
+        std::cout << "[Client] WebSocket not available.\n";
         return;
     }
 
-    Json::Value arr;
-    Json::CharReaderBuilder b;
-    std::string errs;
-    std::unique_ptr<Json::CharReader> r(b.newCharReader());
-    if (!r->parse(body.data(), body.data() + body.size(), &arr, &errs) || !arr.isArray())
+    std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
+
+    std::cout << "Enter WS message: ";
+    std::string msg;
+    std::getline(std::cin, msg);
+
+    if (msg.empty())
     {
-        std::cout << "[Client] invalid JSON\n";
+        std::cout << "[Client] Empty message, nothing sent.\n";
         return;
     }
 
-    for (const auto &it : arr)
-    {
-        const std::string svc = it.get("service", "").asString();
-        const std::string inst = it.get("instance", "").asString();
-        const std::string stat = it.get("status", "").asString();
-        const int lat = it.get("latency_ms", 0).asInt();
-        const std::string ls = it.get("last_seen_utc", "").asString();
-        std::cout << svc << " - " << stat << " - " << lat << "ms - " << inst
-                  << " Last seen - " << ls << "\n";
-    }
-}
-
-void ClientApp::postServicesStatus()
-{
-    auto req = HttpRequest::newHttpRequest();
-    req->setMethod(Post);
-    req->setPath("/audit/services");
-
-    auto [code, body] = sendAndWait(req);
-    if (code != 200)
-    {
-        std::cout << "[Client] " << code << " | " << body << "\n";
-        return;
-    }
-    std::cout << "[Audit Service] " << code << " | Services status refreshed\n";
-}
-
-std::string ClientApp::selectFakeUser()
-{
-    std::cout << "Select fake user:\n"
-                 "  1) alice\n"
-                 "  2) bob\n"
-                 "  3) charlie\n"
-                 "> ";
-
-    int choice = 0;
-    if (!(std::cin >> choice)) {
-        std::cout << "Invalid input, defaulting to 'alice'\n";
-        return "alice";
-    }
-
-    switch (choice) {
-    case 1: return "alice";
-    case 2: return "bob";
-    case 3: return "charlie";
-    default:
-        std::cout << "Unknown choice, defaulting to 'alice'\n";
-        return "alice";
-    }
+    wsClient_->send(msg);
 }
 
 void ClientApp::run()
 {
-    while (running)
+    while (running_)
     {
         printMenu();
         int choice = -1;
@@ -172,46 +118,26 @@ void ClientApp::run()
             std::cout << "[Client] Bye.\n";
             return;
         case 1:
-            ping("/auth/ping");
+            handleLogin();
             break;
         case 2:
-            ping("/messaging/ping");
+            handleAuthPing();
             break;
         case 3:
-            getAllServicesStatus();
+            handleAuditAll();
             break;
         case 4:
-            postServicesStatus();
+            handleAuditRefresh();
             break;
         case 5:
-            auditServicePing("auth");
+            handleAuditPingAuth();
             break;
         case 6:
-            auditServicePing("messaging");
+            handleAuditPingMessaging();
             break;
         case 7:
-        {
-            if (!wsSendCallback_)
-            {
-                std::cout << "[Client] WebSocket not available.\n";
-                break;
-            }
-
-            std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
-
-            std::cout << "Enter WS message: ";
-            std::string msg;
-            std::getline(std::cin, msg);
-
-            if (msg.empty())
-            {
-                std::cout << "[Client] Empty message, nothing sent.\n";
-                break;
-            }
-
-            wsSendCallback_(msg);
+            handleWsSend();
             break;
-        }
         default:
             std::cout << "[Client] Invalid choice.\n";
             break;

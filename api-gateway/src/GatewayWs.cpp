@@ -66,6 +66,18 @@ void GatewayWs::handleNewConnection(const HttpRequestPtr &req,
             if (r == ReqResult::Ok)
             {
                 std::cout << "[GatewayWS] Connected to messaging backend\n";
+
+                session->backendReady = true;
+
+                auto backConn = wsPtr->getConnection();
+                if (backConn && backConn->connected())
+                {
+                    for (const auto &msg : session->pendingMessages)
+                    {
+                        backConn->send(msg);
+                    }
+                }
+                session->pendingMessages.clear();
             }
             else
             {
@@ -84,6 +96,7 @@ void GatewayWs::handleNewConnection(const HttpRequestPtr &req,
         sessions_[frontConn.get()] = session;
     }
 }
+
 
 void GatewayWs::handleConnectionClosed(const WebSocketConnectionPtr &frontConn)
 {
@@ -113,18 +126,18 @@ void GatewayWs::handleNewMessage(const WebSocketConnectionPtr &frontConn,
     if (!session || !session->backendClient)
     {
         std::cout << "[GatewayWS] No backend client for this session\n";
-        frontConn->send("Backend not connected");
+        frontConn->send("Messaging service not connected");
         return;
     }
 
     auto backConn = session->backendClient->getConnection();
-    if (backConn && backConn->connected())
+    if (backConn && backConn->connected() && session->backendReady)
     {
         backConn->send(message);
     }
     else
     {
-        std::cout << "[GatewayWS] Backend WS not connected yet\n";
-        frontConn->send("Backend not connected");
+        std::cout << "[GatewayWS] Backend WS not connected yet, buffering message\n";
+        session->pendingMessages.push_back(message);
     }
 }

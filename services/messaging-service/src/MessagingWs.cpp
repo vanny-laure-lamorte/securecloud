@@ -16,7 +16,7 @@ void MessagingWs::handleNewConnection(const HttpRequestPtr &,
     }
 
     std::cout << "[Messaging] New WS connection\n";
-    wsConn->send("Welcome to messaging service");
+    wsConn->send("Messaging service connected to gateway");
 }
 
 void MessagingWs::handleConnectionClosed(const WebSocketConnectionPtr &wsConn)
