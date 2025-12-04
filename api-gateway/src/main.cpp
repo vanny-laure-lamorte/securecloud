@@ -21,6 +21,15 @@ static void forwardToBackend(const HttpRequestPtr &inReq,
     outReq->setMethod(inReq->getMethod());
     outReq->setPath(backendPath);
 
+    outReq->setContentTypeCode(inReq->getContentType());
+
+    for (const auto &h : inReq->getHeaders())
+    {
+        if (h.first == "host" || h.first == "Host")
+            continue;
+        outReq->addHeader(h.first, h.second);
+    }
+
     auto inBody = inReq->getBody();
     if (!inBody.empty())
     {
@@ -38,7 +47,7 @@ static void forwardToBackend(const HttpRequestPtr &inReq,
                                  std::cout << "[Gateway] Backend response: " << body << std::endl;
 
                                  auto out = HttpResponse::newHttpResponse();
-                                 out->setContentTypeCode(CT_TEXT_PLAIN);
+                                 out->setContentTypeCode(CT_APPLICATION_JSON);
                                  out->setBody(std::move(body));
                                  cb(out);
                              }

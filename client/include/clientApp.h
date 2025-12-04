@@ -1,71 +1,68 @@
+// ui/ClientApp.h
 #pragma once
-#include <drogon/drogon.h>
+#include <functional>
 #include <string>
-#include <utility>
-#include <chrono>
+
+class AuthClient;
+class AuditClient;
+class WsGatewayClient;
 
 class ClientApp
 {
 public:
+    ClientApp(AuthClient &auth,
+              AuditClient &audit,
+              WsGatewayClient *wsClient = nullptr);
 
-    using WsSendCallback = std::function<void(const std::string&)>;
-
-    // Constructor: takes an HTTP client instance
-    explicit ClientApp(const drogon::HttpClientPtr &client,
-                       WsSendCallback wsSendCallback = nullptr);
-
-    // Main loop: shows menu, reads user input, sends requests
+    /**
+     * Runs the main application loop.
+     */
     void run();
 
-    std::string selectFakeUser();
-
 private:
-    bool running = true;           // Controls the main loop
-    drogon::HttpClientPtr client_; // HTTP client to send requests
-    WsSendCallback wsSendCallback_; // Callback to send messages via WebSocket
+    /**
+     * Prints the main menu options.
+     */
+    void printMenu();
 
     /**
-     * @brief Print the interactive menu to the console
+     * Handles user login.
      */
-    static void printMenu();
+    void handleLogin();
 
     /**
-     * @brief Send an HTTP request and wait for the response or timeout
-     * @param req The HTTP request to send
-     * @param timeout Maximum wait time for the response
-     * @return A pair of HTTP status code and response body as string
+     * Handles authentication service ping.
      */
-    std::pair<int, std::string> sendAndWait(
-        const drogon::HttpRequestPtr &req,
-        std::chrono::seconds timeout = std::chrono::seconds(5));
+    void handleAuthPing();
 
     /**
-     * @brief Send a GET request to the specified path and print the response
-     * @param path The request path (e.g., "/auth/ping")
+     * Handle services status retrieval.
      */
-    void ping(const std::string &path);
+    void handleAuditAll();
 
     /**
-     * @brief Send a POST request to /audit/events with a sample audit event and print the response
+     * Handle audit service refresh.
      */
-    void postAuditEvent();
+
+    void handleAuditRefresh();
 
     /**
-     * @brief Send a GET request to /audit/services to retrieve and print services status
+     * Handles pinging the auth service via the audit service.
      */
-    void getAllServicesStatus();
-
-    void getOneServiceStatus(const std::string &serviceName);
+    void handleAuditPingAuth();
 
     /**
-     * @brief Send a POST request to /audit/services to refresh services status
-     * @note This function triggers a status refresh on the server side.
+     * Handles pinging the messaging service via the audit service.
      */
-    void postServicesStatus();
+    void handleAuditPingMessaging();
 
     /**
-     * @brief Send a POST request to /audit/service_ping to ping a specific service
-     * @param serviceName The name of the service to ping (e.g., "auth")
+     * Handles sending a message via WebSocket.
      */
-    void auditServicePing(const std::string &serviceName);
+    void handleWsSend();
+
+    AuthClient &auth_;
+    AuditClient &audit_;
+    WsGatewayClient *wsClient_;
+    bool running_ = true;
 };

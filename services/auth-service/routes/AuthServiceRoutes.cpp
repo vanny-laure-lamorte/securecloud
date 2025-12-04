@@ -22,8 +22,8 @@ void AuthServiceRoutes::registerRoutes()
 
     app().registerHandler(
         "/auth/login",
-        [](const HttpRequestPtr &req,
-           std::function<void(const HttpResponsePtr &)> &&cb)
+        [this](const HttpRequestPtr &req,
+            std::function<void(const HttpResponsePtr &)> &&cb)
         {
             auto json = req->getJsonObject();
             if (!json || !json->isMember("email") || !json->isMember("password"))
@@ -44,6 +44,18 @@ void AuthServiceRoutes::registerRoutes()
             if (email == "test@test.com" && password == "123456")
             {
                 respJson["message"] = "Login successful";
+                respJson["access_token"] = "temp-jwt-for-" + email;
+
+                try
+                {
+                    std::string username = userRepository_.getUsernameByEmail(email);
+                    respJson["username"] = username;
+                }
+                catch (const std::exception &e)
+                {
+                    respJson["username"] = "unknown";
+                }
+
                 auto resp = HttpResponse::newHttpJsonResponse(respJson);
                 resp->setStatusCode(k200OK);
                 cb(resp);
