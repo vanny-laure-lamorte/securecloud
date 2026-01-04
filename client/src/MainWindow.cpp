@@ -5,11 +5,9 @@
 #include <QLabel>
 #include <QFile>
 
-
 MainWindow::MainWindow(QWidget *parent)
     : QWidget(parent)
 {
-
     // Get style file
     QFile file(":/styles/secure-cloud-style.qss");
     if (file.open(QFile::ReadOnly | QFile::Text)) {

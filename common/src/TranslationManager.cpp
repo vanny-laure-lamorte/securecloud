@@ -1,5 +1,4 @@
 #include "../include/TranslationManager.h"
-#include <QCoreApplication>
 #include <QDebug>
 #include <QLocale>
 
@@ -8,52 +7,53 @@
 #include <windows.h>
 #endif
 
-TranslationManager::TranslationManager(QCoreApplication* app)
-    : m_app(app)
-{
-}
+#include <iostream>
+using namespace std;
 
-void TranslationManager::initialize()
+TranslationManager::TranslationManager(QApplication* app, QObject* parent)
+    : QObject(parent), m_app(app)
 {
-    // Get system language
-    QString langCode;
-    #ifdef _WIN32
-        LANGID langId = GetUserDefaultUILanguage();
 
-        wchar_t localeName[LOCALE_NAME_MAX_LENGTH] = {0};
-        if (LCIDToLocaleName(MAKELCID(langId, SORT_DEFAULT), localeName, LOCALE_NAME_MAX_LENGTH, 0))
-        {
-            langCode = QString::fromWCharArray(localeName);
-            langCode.replace("-", "_");
-        }
-        else
-        {
-            langCode = "en_US";
-        }
-    #else
-        // langCode = QLocale::system().uiLanguages().first().replace("-", "_");
-    #endif
-    qDebug() << "User language :" << langCode;
-    if (!loadLanguage(langCode))
-    {
-        loadLanguage("en_US");
-    }
 }
 
 bool TranslationManager::loadLanguage(const QString& langCode)
 {
     QString qmFile = QCoreApplication::applicationDirPath() + "/i18n/" + langCode + ".qm";
+
     m_app->removeTranslator(&m_translator);
 
     if (m_translator.load(qmFile))
     {
         m_app->installTranslator(&m_translator);
-        qDebug() << "Traduction chargée :" << qmFile;
+        m_currentLang = langCode;
+        qDebug() << "File loaded for traduction :" << qmFile;
         return true;
     }
     else
     {
-        qDebug() << "Impossible de charger la traduction :" << qmFile;
+        qDebug() << "File not loaded" << qmFile;
         return false;
     }
+}
+
+QString TranslationManager::getOsLanguage()
+{
+    QString langCode;
+
+#ifdef _WIN32
+    LANGID langId = GetUserDefaultUILanguage();
+    wchar_t localeName[LOCALE_NAME_MAX_LENGTH] = {0};
+    if (LCIDToLocaleName(MAKELCID(langId, SORT_DEFAULT), localeName, LOCALE_NAME_MAX_LENGTH, 0))
+    {
+        langCode = QString::fromWCharArray(localeName).replace("-", "_");
+    }
+    else
+    {
+        langCode = "en_US";
+    }
+#else
+    langCode = QLocale::system().uiLanguages().first().replace("-", "_");
+#endif
+
+    return langCode;
 }

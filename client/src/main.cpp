@@ -1,19 +1,24 @@
 #include <QApplication>
 #include "MainWindow.h"
 #include "TranslationManager.h"
+
 #include "ClientApp.h"
 #include <drogon/drogon.h>
 #include <trantor/net/EventLoop.h>
 #include <thread>
 #include <future>
+
+// TO DO: remove after debug
 #include <iostream>
+using namespace std;
 
 int runQtWindow(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
     TranslationManager translationManager(&app);
-    translationManager.initialize();
+    QString osLang = translationManager.getOsLanguage();
+    translationManager.loadLanguage(osLang);
     MainWindow mainWindow;
     mainWindow.show();
     return app.exec();

@@ -22,7 +22,6 @@ private:
     QWidget* header;
     QWidget* body;
     QWidget* footer;
-
     QVBoxLayout* mainLayout;
 };
 
