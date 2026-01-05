@@ -4,48 +4,57 @@
 <context>
     <name>Login</name>
     <message>
+        <location filename="../../client/src/login.cpp" line="38"/>
+        <location filename="../../client/src/login.cpp" line="112"/>
         <source>LOGIN.PAGE_TITLE</source>
-        <translation type="obsolete">Login</translation>
+        <translation type="unfinished">Login</translation>
     </message>
     <message>
+        <location filename="../../client/src/login.cpp" line="59"/>
         <source>LOGIN.EMAIL</source>
-        <translation type="obsolete">Email</translation>
+        <translation type="unfinished">Email</translation>
     </message>
     <message>
+        <location filename="../../client/src/login.cpp" line="62"/>
         <source>LOGIN.ENTER_YOUR_EMAIL</source>
-        <translation type="obsolete">exemple@domain.com</translation>
+        <translation type="unfinished">exemple@domain.com</translation>
     </message>
     <message>
+        <location filename="../../client/src/login.cpp" line="75"/>
         <source>LOGIN.PASSWORD</source>
-        <translation type="obsolete">Password</translation>
+        <translation type="unfinished">Password</translation>
     </message>
     <message>
+        <location filename="../../client/src/login.cpp" line="78"/>
         <source>LOGIN.ENTER_YOUR_PASSWORD</source>
-        <translation type="obsolete">Enter your password</translation>
+        <translation type="unfinished">Enter your password</translation>
     </message>
     <message>
+        <location filename="../../client/src/login.cpp" line="94"/>
         <source>LOGIN.REMEMBER_ME</source>
-        <translation type="obsolete">Remember me</translation>
+        <translation type="unfinished">Remember me</translation>
     </message>
     <message>
+        <location filename="../../client/src/login.cpp" line="99"/>
         <source>LOGIN.LOST_PASSWORD</source>
-        <translation type="obsolete">Lost Password ?</translation>
+        <translation type="unfinished">Lost Password ?</translation>
     </message>
     <message>
+        <location filename="../../client/src/login.cpp" line="119"/>
         <source>LOGIN.NO_ACCOUNT</source>
-        <translation type="obsolete">No account ?</translation>
+        <translation type="unfinished">No account ?</translation>
     </message>
     <message>
+        <location filename="../../client/src/login.cpp" line="119"/>
         <source>LOGIN.SIGN_UP</source>
-        <translation type="obsolete">Subscribe here</translation>
+        <translation type="unfinished">Subscribe here</translation>
     </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../client/src/main.cpp" line="42"/>
         <source>K.Hello</source>
-        <translation type="unfinished">Hello</translation>
+        <translation type="obsolete">Hello</translation>
     </message>
 </context>
 </TS>

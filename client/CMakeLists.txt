@@ -24,6 +24,10 @@ file(GLOB_RECURSE SRC_FILES
     ${CMAKE_SOURCE_DIR}/common/src/TranslationManager.cpp
 )
 
+set(RESOURCE_FILES
+    resources.qrc
+)
+
 file(GLOB_RECURSE HEADER_FILES
     include/*.h
     ${CMAKE_SOURCE_DIR}/common/include/TranslationManager.h

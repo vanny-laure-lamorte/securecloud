@@ -15,7 +15,7 @@ Header::Header(QWidget *parent)
 
     // TO DO: replace with the right logo and add App name
     logoLabel = new QLabel(this);
-    QPixmap logo(":/assets/logo.png");
+    QPixmap logo(":/assets/icons/logo.png");
     logoLabel->setPixmap(logo.scaled(32, 32, Qt::KeepAspectRatio, Qt::SmoothTransformation));
     QLabel* label = new QLabel("Header : Zone fixe", this);
     layout->addWidget(label);
