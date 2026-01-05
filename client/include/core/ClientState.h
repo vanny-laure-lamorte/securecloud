@@ -9,7 +9,7 @@ struct ClientState
 {
     bool authenticated = false;
 
-    std::string userNamme;
+    std::string userName;
     std::string email;
     std::string jwt;
 };

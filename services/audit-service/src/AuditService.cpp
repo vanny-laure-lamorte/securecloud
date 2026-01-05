@@ -5,7 +5,7 @@ AuditService::AuditService(AuditRepository& repo,
     : repo_(repo), eventLoop_(eventLoop) {
     targets_ = {
         {"auth", "http://auth-service-api:8081", "/auth/ping"},
-        {"messaging", "http://127.0.0.1:8082", "/messaging/ping"},
+        {"messaging", "http://messaging-service-api:8082", "/messaging/ping"},
     };
 }
 

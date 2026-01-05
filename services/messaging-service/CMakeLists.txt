@@ -13,6 +13,11 @@ set(SRC_FILES
     src/MessagingWs.cpp
 )
 
+set(COMMON_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../common/Env/EnvLoader.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../common/db/DbConnection.cpp
+)
+
 set(HEADER_FILES
     include/MessagingWs.h
 )
@@ -20,10 +25,12 @@ set(HEADER_FILES
 add_executable(messaging-service
     ${SRC_FILES}
     ${HEADER_FILES}
+    ${COMMON_SOURCES}
 )
 
 target_include_directories(messaging-service PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/../..
 )
 
 target_link_libraries(messaging-service

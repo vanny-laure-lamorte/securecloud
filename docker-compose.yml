@@ -35,6 +35,42 @@ services:
       - auth_db_password
     restart: unless-stopped
 
+  # === MESSAGING DB ===
+  messaging-db:
+    image: postgres:15
+    container_name: messaging-db
+    environment:
+      POSTGRES_DB: messaging_service
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD_FILE: /run/secrets/messaging_db_password
+    secrets:
+      - messaging_db_password
+    volumes:
+      - messaging-db-data:/var/lib/postgresql/data
+    ports:
+      - "5435:5432"
+    restart: unless-stopped
+
+  # === MESSAGING API ===
+  messaging-service-api:
+    build:
+      context: .
+      dockerfile: services/messaging-service/Dockerfile
+    container_name: messaging-container
+    depends_on:
+      - messaging-db
+    ports:
+      - "8082:8082"
+    environment:
+      MESSAGING_DB_HOST: messaging-db
+      MESSAGING_DB_PORT: "5432"
+      MESSAGING_DB_NAME: messaging_service
+      MESSAGING_DB_USER: postgres
+      MESSAGING_DB_PASSWORD_FILE: /run/secrets/messaging_db_password
+    secrets:
+      - messaging_db_password
+    restart: unless-stopped
+
   # === AUDIT DB ===
   audit-db:
     image: postgres:15
@@ -86,9 +122,12 @@ services:
 volumes:
   auth-db-data:
   audit-db-data:
+  messaging-db-data:
 
 secrets:
   auth_db_password:
     file: ./secrets/auth_db_password.txt
   audit_db_password:
     file: ./secrets/audit_db_password.txt
+  messaging_db_password:
+    file: ./secrets/messaging_db_password.txt

@@ -2,6 +2,6 @@
 
 BEGIN;
 
--- XXX Add verifications here.
+SELECT 1 FROM connexion LIMIT 1;
 
 ROLLBACK;

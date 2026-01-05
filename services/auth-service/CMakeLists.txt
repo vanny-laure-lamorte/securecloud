@@ -14,12 +14,14 @@ file(GLOB_RECURSE HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/repository/*.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/utils/*.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/routes/*.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/service/*.h"
 )
 
 file(GLOB_RECURSE CPP_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/repository/*.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/utils/*.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/routes/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/service/*.cpp"
 )
 
 set(COMMON_SOURCES

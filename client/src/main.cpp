@@ -39,8 +39,8 @@ int main(int argc, char *argv[])
     AuditClient auditClient(httpGateway);
 
     // --- WebSocket / Messaging ---
-    std::string fakeUser = "fakeJwtUser";
-    MessagingClient messagingImpl(QString::fromStdString(fakeUser));
+    std::string tempClient = "MSG_CLIENT_";
+    MessagingClient messagingImpl(QString::fromStdString(tempClient));
     WsGatewayClient wsGateway(&messagingImpl);
 
     // --- Console app (menu CLI) ---
