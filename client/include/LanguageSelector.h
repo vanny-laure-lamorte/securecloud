@@ -11,6 +11,9 @@ public:
     explicit LanguageSelector(QWidget* parent = nullptr);
 
 signals:
+
+    /* Signal emitted when the language is changed
+    */
     void languageChanged(const QString& lang);
 
 private slots:
@@ -19,6 +22,8 @@ private slots:
     * @param langCode (e.g., "en_US", "fr_FR" etc .)
     */
     void changeLanguageWithFlag(const QString &langCode);
+
+    /* Slot called when user selects a language from the combo box */
     void onUserSelectedLanguage(int index);
 
 private:

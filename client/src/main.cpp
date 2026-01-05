@@ -1,12 +1,12 @@
-#include <QApplication>
+#include "ClientApp.h"
 #include "MainWindow.h"
 #include "TranslationManager.h"
 
-#include "ClientApp.h"
+#include <QApplication>
 #include <drogon/drogon.h>
+#include <future>
 #include <trantor/net/EventLoop.h>
 #include <thread>
-#include <future>
 
 // TO DO: remove after debug
 #include <iostream>
