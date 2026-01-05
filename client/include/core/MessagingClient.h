@@ -12,7 +12,7 @@ class MessagingClient : public QObject
 {
     Q_OBJECT
 public:
-    explicit MessagingClient(const QString& userId, QObject* parent = nullptr)
+    explicit MessagingClient(const QString &userId, QObject *parent = nullptr)
         : QObject(parent),
           userId_(userId)
     {
@@ -24,9 +24,10 @@ public:
                 this, &MessagingClient::onError);
     }
 
-    bool maybeConnect(const QString& jwt)
+    bool maybeConnect(const QString &jwt)
     {
-        if (jwt.isEmpty()) {
+        if (jwt.isEmpty())
+        {
             qDebug() << "Empty JWT, no WS connection.";
             return false;
         }
@@ -41,11 +42,14 @@ public:
         return true;
     }
 
-    void sendTestMessage(const QString& msg)
+    void sendTestMessage(const QString &msg)
     {
-        if (ws_.state() == QAbstractSocket::ConnectedState) {
+        if (ws_.state() == QAbstractSocket::ConnectedState)
+        {
             ws_.sendTextMessage(msg);
-        } else {
+        }
+        else
+        {
             qDebug() << "WS not connected, can't send.";
         }
     }
@@ -54,7 +58,7 @@ public:
      * @brief Sets the user ID for identification upon connection.
      * @param userId The user ID to set.
      */
-    void setUserId(const QString& userId) { userId_ = userId; }
+    void setUserId(const QString &userId) { userId_ = userId; }
 
 private slots:
     void onConnected()
@@ -77,7 +81,7 @@ private slots:
         qDebug() << "[Qt] WS disconnected";
     }
 
-    void onMessageReceived(const QString& msg)
+    void onMessageReceived(const QString &msg)
     {
         qDebug() << "[Qt] WS message:" << msg;
     }
