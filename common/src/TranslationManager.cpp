@@ -1,28 +1,59 @@
 #include "../include/TranslationManager.h"
-#include <QCoreApplication>
 #include <QDebug>
 #include <QLocale>
 
-TranslationManager::TranslationManager(QCoreApplication* app)
-    : m_app(app)
-{
-}
+#ifdef _WIN32
+#define RPC_NO_WINDOWS_H
+#include <windows.h>
+#endif
 
-void TranslationManager::initialize()
+#include <iostream>
+using namespace std;
+
+TranslationManager::TranslationManager(QApplication* app, QObject* parent)
+    : QObject(parent), m_app(app)
 {
-    loadLanguage("fr_FR");
+
 }
 
 bool TranslationManager::loadLanguage(const QString& langCode)
 {
-     QString qmFile = QCoreApplication::applicationDirPath() + "/i18n/" + langCode + ".qm";
+    QString qmFile = QCoreApplication::applicationDirPath() + "/i18n/" + langCode + ".qm";
 
-    if (m_translator.load(qmFile)) {
+    m_app->removeTranslator(&m_translator);
+
+    if (m_translator.load(qmFile))
+    {
         m_app->installTranslator(&m_translator);
-        qDebug() << "Translation loaded:" << qmFile;
+        m_currentLang = langCode;
+        qDebug() << "File loaded for traduction :" << qmFile;
         return true;
-    } else {
-        qDebug() << "Failed to load translation:" << qmFile;
+    }
+    else
+    {
+        qDebug() << "File not loaded" << qmFile;
         return false;
     }
+}
+
+QString TranslationManager::getOsLanguage()
+{
+    QString langCode;
+
+#ifdef _WIN32
+    LANGID langId = GetUserDefaultUILanguage();
+    wchar_t localeName[LOCALE_NAME_MAX_LENGTH] = {0};
+    if (LCIDToLocaleName(MAKELCID(langId, SORT_DEFAULT), localeName, LOCALE_NAME_MAX_LENGTH, 0))
+    {
+        langCode = QString::fromWCharArray(localeName).replace("-", "_");
+    }
+    else
+    {
+        langCode = "en_US";
+    }
+#else
+    langCode = QLocale::system().uiLanguages().first().replace("-", "_");
+#endif
+
+    return langCode;
 }

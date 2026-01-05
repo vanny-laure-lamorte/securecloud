@@ -1,23 +1,23 @@
-#ifndef TRANSLATIONMANAGER_H
-#define TRANSLATIONMANAGER_H
-
+#pragma once
+#include <QObject>
 #include <QTranslator>
-#include <QString>
 #include <QApplication>
 
-class TranslationManager {
+class TranslationManager : public QObject {
+    Q_OBJECT
 public:
-    explicit TranslationManager(QCoreApplication* app);
+    explicit TranslationManager(QApplication* app, QObject* parent = nullptr);
 
-    // Initialize translation
-    void initialize();
+    QString currentLanguage() const { return m_currentLang; }
 
-    // Loads a specific language manually
     bool loadLanguage(const QString& langCode);
+    QString getOsLanguage();
+
+signals:
+    void languageChanged(const QString& langCode);
 
 private:
-    QCoreApplication* m_app;
+    QApplication* m_app;
     QTranslator m_translator;
+    QString m_currentLang;
 };
-
-#endif // TRANSLATIONMANAGER_H
