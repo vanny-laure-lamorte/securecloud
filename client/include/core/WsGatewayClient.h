@@ -15,7 +15,6 @@ class WsGatewayClient
 {
 public:
     WsGatewayClient(MessagingClient*);
-    ~WsGatewayClient();
 
     /**
      * Connects to the WebSocket gateway using the provided JWT.

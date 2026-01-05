@@ -14,28 +14,25 @@ namespace env
 
     std::string loadEnv(const std::string &service)
     {
-        const char *dbHostEnv = std::getenv("DB_HOST");
-        if (dbHostEnv != nullptr)
-        {
-            std::string host = std::getenv("DB_HOST") ? std::getenv("DB_HOST") : "";
-            std::string port = std::getenv("DB_PORT") ? std::getenv("DB_PORT") : "";
-            std::string name = std::getenv("DB_NAME") ? std::getenv("DB_NAME") : "";
-            std::string user = std::getenv("DB_USER") ? std::getenv("DB_USER") : "";
-            std::string pass = readPassword();
-
-            return std::string("host=") + host +
-                   " port=" + port +
-                   " dbname=" + name +
-                   " user=" + user +
-                   " password=" + pass;
+        if (service != "auth" && service != "audit" && service != "messaging") {
+            dotenv::init(withEnvFilePath(service).c_str());
+            std::string connStr = "host=" + env::getVar("DB_HOST") + " " +
+                                  "port=" + env::getVar("DB_PORT") + " " +
+                                  "dbname=" + env::getVar("DB_NAME") + " " +
+                                  "user=" + env::getVar("DB_USER") + " " +
+                                  "password=" + env::getVar("DB_PASSWORD");
+            return connStr;
+        } else{
+            std::string db_password = loadSecret(service + "_db_password");
+            std::string upper = service;
+            std::transform(upper.begin(), upper.end(), upper.begin(), ::toupper);
+            std::string connStr = "host=" + getVar(upper + "_DB_HOST", "db") + " " +
+                                "port=" + getVar(upper +  "_DB_PORT", "5432") + " " +
+                                "dbname=" + getVar(upper + "_DB_NAME", "5432") + " " +
+                                "user=" + getVar(upper + "_DB_USER", "5432") + " " +
+                                "password=" + db_password;
+            return connStr;
         }
-
-        dotenv::init(withEnvFilePath(service).c_str());
-        return "host=" + env::getVar("DB_HOST") + " " +
-               "port=" + env::getVar("DB_PORT") + " " +
-               "dbname=" + env::getVar("DB_NAME") + " " +
-               "user=" + env::getVar("DB_USER") + " " +
-               "password=" + env::getVar("DB_PASSWORD");
     }
 
     std::string loadPepperSecret(const std::string &path)

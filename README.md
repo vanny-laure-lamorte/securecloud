@@ -39,14 +39,14 @@ Available Languages
 
 ### 🧱Architecture
 
-Qt Client (UI)  
-│  
-API Gateway (JWT + Routing)  
-├── auth-service  
-├── messaging-service  
-├── files-service  
-├── audit-service  
-└── deploy-service  
+Qt Client (UI)
+│
+API Gateway (JWT + Routing)
+├── auth-service
+├── messaging-service
+├── files-service
+├── audit-service
+└── deploy-service
 
 ---
 
@@ -91,10 +91,10 @@ cmake --build .
 
 ### 📁Project Structure
 
-securecloud/  
-├── tests/  
-├── docs/  
-└── README.md  
+securecloud/
+├── tests/
+├── docs/
+└── README.md
 
 #### 📐 Conventions
 
@@ -106,20 +106,20 @@ securecloud/
 • text
 • text
 
-1. Gitmoji  
-2. Type  
-    feat: new feature  
-    fix: bug fix  
-    refactor: code refactoring (no behavior change)  
-    docs: documentation update  
-    style: formatting changes (indentation, spaces, etc.)  
-    test: add/modify tests  
-    chore: tasks with no direct functional impact (dependency updates, configs, etc.)  
-3. Scope: auth/login/ui etc.  
-4. Message  
-    - Sentence starting with a lowercase letter  
-    - No period at the end  
-    - Use single quotes for terms (e.g., 'token', 'userId')  
+1. Gitmoji
+2. Type
+    feat: new feature
+    fix: bug fix
+    refactor: code refactoring (no behavior change)
+    docs: documentation update
+    style: formatting changes (indentation, spaces, etc.)
+    test: add/modify tests
+    chore: tasks with no direct functional impact (dependency updates, configs, etc.)
+3. Scope: auth/login/ui etc.
+4. Message
+    - Sentence starting with a lowercase letter
+    - No period at the end
+    - Use single quotes for terms (e.g., 'token', 'userId')
 
 ---
 
@@ -130,6 +130,8 @@ securecloud/
 - Ensure that `lupdate ` and `lrelease` are available in our system `PATH`
 ```
 $env:PATH="C:\Qt\6.7.1\mingw_64\bin;" + $env:PATH
+$env:PATH="C:\vcpkg\installed\x64-windows\tools\Qt6\bin;" + $env:PATH
+
 ```
 - Check if the source file exists
 ```

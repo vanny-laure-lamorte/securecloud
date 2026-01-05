@@ -14,14 +14,22 @@ HttpGatewayClient::send(const HttpRequestPtr &req, std::chrono::seconds timeout)
     auto prom = std::make_shared<std::promise<std::pair<int, std::string>>>();
     auto fut = prom->get_future();
 
-    client_->sendRequest(req, [prom](ReqResult r, const HttpResponsePtr &resp) {
-        if (r == ReqResult::Ok && resp) {
+    client_->sendRequest(req, [prom](ReqResult r, const HttpResponsePtr &resp)
+                         {
+        if ((int)resp->getStatusCode() >= 200 && (int)resp->getStatusCode() < 300)
+        {
             auto v = resp->getBody();
             prom->set_value({(int)resp->getStatusCode(), std::string(v.data(), v.size())});
-        } else {
-            prom->set_value({502, "bad gateway (no response)"});
         }
-    });
+        else if ((int)resp->getStatusCode() != 502)
+        {
+            auto v = resp->getBody();
+            prom->set_value({(int)resp->getStatusCode(), std::string(v.data(), v.size())});
+        }
+        else
+        {
+            prom->set_value({502, "bad gateway (no response)"});
+        } });
 
     if (fut.wait_for(timeout) != std::future_status::ready)
         return {408, "timeout"};

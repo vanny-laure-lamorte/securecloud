@@ -4,6 +4,7 @@
 #include "common/db/DbConnection.h"
 
 #include "../repository/UserRepository.h"
+#include "../service/UserService.h"
 
 /**
  * @brief Class to register authentication service routes.
@@ -18,6 +19,6 @@ public:
      */
     void registerRoutes();
 
-    UserRepository userRepository_;
-private:
+    private:
+    UserService userService_;
 };

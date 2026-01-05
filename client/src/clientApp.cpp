@@ -20,12 +20,14 @@ void ClientApp::printMenu()
 {
     std::cout << "Menu:\n"
                  "  1) Login via API Gateway (/auth/login)\n"
-                 "  2) Ping auth via API Gateway (/auth/ping)\n"
-                 "  3) GET services status (DB) via API Gateway (/audit/services)\n"
-                 "  4) POST services refresh via API Gateway (/audit/services)\n"
-                 "  5) POST -> Ping Auth service via Audit-service (/audit/service_ping: auth)\n"
-                 "  6) POST -> Ping Messaging service via Audit-service (/audit/service_ping: messaging)\n"
-                 "  7) Send WebSocket message via gateway\n"
+                 "  2) Register via API Gateway (/auth/register)\n"
+                 "  3) Ping auth via API Gateway (/auth/ping)\n"
+                 "  4) GET services status (DB) via API Gateway (/audit/services)\n"
+                 "  5) POST services refresh via API Gateway (/audit/services)\n"
+                 "  6) POST -> Ping Auth service via Audit-service (/audit/service_ping: auth)\n"
+                 "  7) POST -> Ping Messaging service via Audit-service (/audit/service_ping: messaging)\n"
+                 "  8) Send WebSocket message via gateway\n"
+                 "  9) Logout\n"
                  "  0) Quit\n> ";
 }
 
@@ -49,6 +51,53 @@ void ClientApp::handleLogin()
     else
     {
         std::cout << "[Client] Login FAILED.\n";
+    }
+}
+
+//TODO : Fix crash on logout (Probably due to wsClient_ using invalid jwt after logout)
+void ClientApp::handleLogout(){
+    if(auth_.state_->authenticated){
+        if(auth_.logout(auth_.state_->email)){
+            std::cout << "[Client] Logout OK.\n";
+            // running_ = false;
+        } else {
+            std::cout << "[Client] Logout FAILED.\n";
+        }
+    }
+}
+
+void ClientApp::handleRegister()
+{
+    std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
+
+    std::string email;
+    std::string password;
+    std::string username;
+    std::string firstName;
+    std::string lastName;
+
+    std::cout << "Email: ";
+    std::getline(std::cin, email);
+
+    std::cout << "Password: ";
+    std::getline(std::cin, password);
+
+    std::cout << "Username: ";
+    std::getline(std::cin, username);
+
+    std::cout << "First Name: ";
+    std::getline(std::cin, firstName);
+
+    std::cout << "Last Name: ";
+    std::getline(std::cin, lastName);
+
+    if (auth_.registerUser(email, password, username, firstName, lastName))
+    {
+        std::cout << "[Client] Registration OK.\n";
+    }
+    else
+    {
+        std::cout << "[Client] Registration FAILED.\n";
     }
 }
 
@@ -115,28 +164,35 @@ void ClientApp::run()
         switch (choice)
         {
         case 0:
+            handleLogout();
             std::cout << "[Client] Bye.\n";
             return;
         case 1:
             handleLogin();
             break;
         case 2:
-            handleAuthPing();
+            handleRegister();
             break;
         case 3:
-            handleAuditAll();
+            handleAuthPing();
             break;
         case 4:
-            handleAuditRefresh();
+            handleAuditAll();
             break;
         case 5:
-            handleAuditPingAuth();
+            handleAuditRefresh();
             break;
         case 6:
-            handleAuditPingMessaging();
+            handleAuditPingAuth();
             break;
         case 7:
+            handleAuditPingMessaging();
+            break;
+        case 8:
             handleWsSend();
+            break;
+        case 9:
+            handleLogout();
             break;
         default:
             std::cout << "[Client] Invalid choice.\n";

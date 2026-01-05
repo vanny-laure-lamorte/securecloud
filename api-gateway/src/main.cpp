@@ -47,6 +47,7 @@ static void forwardToBackend(const HttpRequestPtr &inReq,
                                  std::cout << "[Gateway] Backend response: " << body << std::endl;
 
                                  auto out = HttpResponse::newHttpResponse();
+                                 out->setStatusCode(resp->getStatusCode());
                                  out->setContentTypeCode(CT_APPLICATION_JSON);
                                  out->setBody(std::move(body));
                                  cb(out);
@@ -61,6 +62,12 @@ static void forwardToBackend(const HttpRequestPtr &inReq,
                                  cb(out);
                              }
                          });
+}
+
+int getUserIdFromToken(const std::string &authHeader)
+{
+    (void)authHeader;
+    return -1;
 }
 
 int main()
@@ -89,6 +96,36 @@ int main()
         {drogon::Get});
 
     // ===== AUTH SERVICE=====
+app().registerHandler(
+    "/auth/logout",
+    [authClient](const HttpRequestPtr &req,
+           std::function<void(const HttpResponsePtr &)> &&cb)
+    {
+        auto json = req->getJsonObject();
+        std::string email;
+
+        if (json && json->isMember("email"))
+        {
+            email = (*json)["email"].asString();
+        }
+
+        std::cout << "[AuthService] Logout requested";
+        if (!email.empty())
+            std::cout << " for email=" << email;
+        std::cout << std::endl;
+
+        // TODO: get userId from JWT token or session
+        // int userId = getUserIdFromToken(req->getHeader("Authorization"));
+
+        Json::Value respJson;
+        respJson["message"] = "Logout successful";
+
+        auto resp = HttpResponse::newHttpJsonResponse(respJson);
+        resp->setStatusCode(k200OK);
+        cb(resp);
+    },
+    {Post});
+
     app().registerHandler(
         "/auth/{_path}",
         [authClient](const HttpRequestPtr &req,

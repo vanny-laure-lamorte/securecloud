@@ -50,6 +50,12 @@ public:
         }
     }
 
+    /**
+     * @brief Sets the user ID for identification upon connection.
+     * @param userId The user ID to set.
+     */
+    void setUserId(const QString& userId) { userId_ = userId; }
+
 private slots:
     void onConnected()
     {

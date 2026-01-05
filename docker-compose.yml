@@ -1,4 +1,77 @@
 services:
+  # === AUTH DB ===
+  auth-db:
+    image: postgres:15
+    container_name: auth-db
+    environment:
+      POSTGRES_DB: auth_service
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD_FILE: /run/secrets/auth_db_password
+    secrets:
+      - auth_db_password
+    volumes:
+      - auth-db-data:/var/lib/postgresql/data
+    ports:
+      - "5434:5432"
+    restart: unless-stopped
+
+  # === AUTH API ===
+  auth-service-api:
+    build:
+      context: .
+      dockerfile: services/auth-service/Dockerfile
+    container_name: auth-container
+    depends_on:
+      - auth-db
+    ports:
+      - "8081:8081"
+    environment:
+      AUTH_DB_HOST: auth-db
+      AUTH_DB_PORT: "5432"
+      AUTH_DB_NAME: auth_service
+      AUTH_DB_USER: postgres
+      AUTH_DB_PASSWORD_FILE: /run/secrets/auth_db_password
+    secrets:
+      - auth_db_password
+    restart: unless-stopped
+
+  # === MESSAGING DB ===
+  messaging-db:
+    image: postgres:15
+    container_name: messaging-db
+    environment:
+      POSTGRES_DB: messaging_service
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD_FILE: /run/secrets/messaging_db_password
+    secrets:
+      - messaging_db_password
+    volumes:
+      - messaging-db-data:/var/lib/postgresql/data
+    ports:
+      - "5435:5432"
+    restart: unless-stopped
+
+  # === MESSAGING API ===
+  messaging-service-api:
+    build:
+      context: .
+      dockerfile: services/messaging-service/Dockerfile
+    container_name: messaging-container
+    depends_on:
+      - messaging-db
+    ports:
+      - "8082:8082"
+    environment:
+      MESSAGING_DB_HOST: messaging-db
+      MESSAGING_DB_PORT: "5432"
+      MESSAGING_DB_NAME: messaging_service
+      MESSAGING_DB_USER: postgres
+      MESSAGING_DB_PASSWORD_FILE: /run/secrets/messaging_db_password
+    secrets:
+      - messaging_db_password
+    restart: unless-stopped
+
+  # === AUDIT DB ===
   audit-db:
     image: postgres:15
     container_name: audit-db
@@ -35,7 +108,12 @@ services:
 
 volumes:
   audit-db-data:
+  messaging-db-data:
 
 secrets:
-  db_password:
-    file: ./secrets/db_password.txt
+  auth_db_password:
+    file: ./secrets/auth_db_password.txt
+  audit_db_password:
+    file: ./secrets/audit_db_password.txt
+  messaging_db_password:
+    file: ./secrets/messaging_db_password.txt

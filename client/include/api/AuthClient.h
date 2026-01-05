@@ -25,6 +25,12 @@ public:
     bool login(const std::string &email, const std::string &password);
 
     /**
+     * Logs out the user with the given email.
+     * @param email User's email.
+     */
+    bool logout(const std::string &email);
+
+    /**
      * Pings the authentication service to check its availability.
      */
     void ping();
@@ -35,8 +41,13 @@ public:
      */
     std::string getJwt() const;
 
+    bool registerUser(const std::string &email,
+                      const std::string &password,
+                      const std::string &username,
+                      const std::string &firstName,
+                      const std::string &lastName);
 
+    std::shared_ptr<ClientState> state_;
 private:
     HttpGatewayClient &http_;
-    std::shared_ptr<ClientState> state_;
 };

@@ -2,7 +2,7 @@
 #include "../utils/HashUtils.h"
 
 AuthServiceRoutes::AuthServiceRoutes(DbConnection &db_)
-    : userRepository_(db_) {}
+    : userService_(db_) {}
 
 void AuthServiceRoutes::registerRoutes()
 {
@@ -23,7 +23,7 @@ void AuthServiceRoutes::registerRoutes()
     app().registerHandler(
         "/auth/login",
         [this](const HttpRequestPtr &req,
-            std::function<void(const HttpResponsePtr &)> &&cb)
+               std::function<void(const HttpResponsePtr &)> &&cb)
         {
             auto json = req->getJsonObject();
             if (!json || !json->isMember("email") || !json->isMember("password"))
@@ -41,21 +41,14 @@ void AuthServiceRoutes::registerRoutes()
             std::string password = (*json)["password"].asString();
 
             Json::Value respJson;
-            if (email == "test@test.com" && password == "123456")
+            if (userService_.loginUser(email, password))
             {
                 respJson["message"] = "Login successful";
-                respJson["access_token"] = "temp-jwt-for-" + email;
-
-                try
-                {
-                    std::string username = userRepository_.getUsernameByEmail(email);
-                    respJson["username"] = username;
-                }
-                catch (const std::exception &e)
-                {
-                    respJson["username"] = "unknown";
-                }
-
+                respJson["access_token"] = "temp-jwt-for-" + email; // TODO : Generate a real JWT token here
+                // TODO : Add more user info / Create a model for user info
+                // TODO : Set last login timestamp in DB
+                // TODO : Add jwt in db to validate token later
+                
                 auto resp = HttpResponse::newHttpJsonResponse(respJson);
                 resp->setStatusCode(k200OK);
                 cb(resp);
@@ -71,57 +64,95 @@ void AuthServiceRoutes::registerRoutes()
         {Post});
 
     app().registerHandler(
-    "/auth/register",
-    [this](const HttpRequestPtr &req,
-           std::function<void(const HttpResponsePtr &)> &&cb)
-    {
-        auto json = req->getJsonObject();
-
-        if (!json || !json->isMember("email") || !json->isMember("password") || !json->isMember("user_id"))
+        "/auth/register",
+        [this](const HttpRequestPtr &req,
+               std::function<void(const HttpResponsePtr &)> &&cb)
         {
+            auto json = req->getJsonObject();
+
+            if (!json || !json->isMember("email") || !json->isMember("password") || !json->isMember("username"))
+            {
+                Json::Value respJson;
+                respJson["status"] = "error";
+                respJson["message"] = "Missing email, password, or username";
+
+                auto resp = HttpResponse::newHttpJsonResponse(respJson);
+                resp->setStatusCode(k400BadRequest);
+                cb(resp);
+                return;
+            }
+
+            std::string email = (*json)["email"].asString();
+            std::string password = (*json)["password"].asString();
+            std::string username = (*json)["username"].asString();
+            std::string first_name = (*json)["first_name"].asString();
+            std::string last_name = (*json)["last_name"].asString();
+
+            try
+            {
+                userService_.registerUser(email, password, username, first_name, last_name);
+
+                Json::Value respJson;
+                respJson["status"] = "success";
+                respJson["message"] = "User registered successfully";
+                respJson["email"] = email;
+
+                auto resp = HttpResponse::newHttpJsonResponse(respJson);
+                resp->setStatusCode(k201Created);
+                cb(resp);
+            }
+            catch (const std::runtime_error &e)
+            {
+                Json::Value respJson;
+                respJson["status"] = "error";
+
+                if (std::string(e.what()) == "USER_ALREADY_EXISTS")
+                {
+                    respJson["message"] = "User already exists with email " + email;
+
+                    auto resp = HttpResponse::newHttpJsonResponse(respJson);
+                    resp->setStatusCode(k409Conflict);
+                    cb(resp);
+                }
+                else
+                {
+                    respJson["message"] = e.what();
+
+                    auto resp = HttpResponse::newHttpJsonResponse(respJson);
+                    resp->setStatusCode(k500InternalServerError);
+                    cb(resp);
+                }
+            }
+        },
+        {Post});
+
+    app().registerHandler(
+        "/auth/logout",
+        [this](const HttpRequestPtr &req,
+               std::function<void(const HttpResponsePtr &)> &&cb)
+        {
+            auto json = req->getJsonObject();
+            if (!json || !json->isMember("userId"))
+            {
+                Json::Value respJson;
+                respJson["error"] = "Missing userId";
+
+                auto resp = HttpResponse::newHttpJsonResponse(respJson);
+                resp->setStatusCode(k400BadRequest);
+                cb(resp);
+                return;
+            }
+
+            int userId = (*json)["userId"].asInt();
+
             Json::Value respJson;
-            respJson["status"] = "error";
-            respJson["message"] = "Missing email, password, or user_id";
+            respJson["message"] = "Logout successful";
 
             auto resp = HttpResponse::newHttpJsonResponse(respJson);
-            resp->setStatusCode(k400BadRequest);
+            resp->setStatusCode(k200OK);
             cb(resp);
-            return;
-        }
-
-        std::string email = (*json)["email"].asString();
-        std::string password = (*json)["password"].asString();
-        int userId = (*json)["user_id"].asInt();
-
-        std::string salt = HashUtils::generateSalt(10);
-        std::string hashedPassword = HashUtils::hashPassword(password, salt);
-
-        try
-        {
-            userRepository_.addUser(email, hashedPassword, userId);
-
-            Json::Value respJson;
-            respJson["status"] = "success";
-            respJson["message"] = "User registered successfully";
-            respJson["email"] = email;
-
-            auto resp = HttpResponse::newHttpJsonResponse(respJson);
-            resp->setStatusCode(k201Created);
-            cb(resp);
-
-        }
-        catch (const std::exception &e)
-        {
-            std::cerr << "Error registering user: " << e.what() << std::endl;
-
-            Json::Value respJson;
-            respJson["status"] = "error";
-            respJson["message"] = std::string("Registration failed: ") + e.what();
-
-            auto resp = HttpResponse::newHttpJsonResponse(respJson);
-            resp->setStatusCode(k500InternalServerError);
-            cb(resp);
-        }
-    },
-    {Post});
+        },
+        {Post});
 }
+
+// TODO : Implement logout route --> Update last active timestamp in DB

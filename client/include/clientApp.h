@@ -31,6 +31,11 @@ private:
     void handleLogin();
 
     /**
+     * Handles user registration.
+     */
+    void handleRegister();
+
+    /**
      * Handles authentication service ping.
      */
     void handleAuthPing();
@@ -60,6 +65,8 @@ private:
      * Handles sending a message via WebSocket.
      */
     void handleWsSend();
+
+    void handleLogout();
 
     AuthClient &auth_;
     AuditClient &audit_;
