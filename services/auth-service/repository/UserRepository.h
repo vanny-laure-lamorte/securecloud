@@ -1,6 +1,7 @@
 #pragma once
 #include "common/db/DbConnection.h"
 #include "../model/UserProfile.h"
+
 #include <drogon/drogon.h>
 #include <drogon/orm/Result.h>
 #include <ctime>

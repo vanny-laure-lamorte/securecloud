@@ -1,15 +1,11 @@
 #pragma once
 #include "AuditRepository.h"
 #include "AuditService.h"
-#include "AuditRepository.h"
-#include "AuditService.h"
 
-#include <drogon/drogon.h>
 #include <drogon/drogon.h>
 #include <drogon/HttpResponse.h>
 #include <drogon/HttpRequest.h>
 #include <json/json.h>
-using namespace drogon;
 using namespace drogon;
 
 class AuditController

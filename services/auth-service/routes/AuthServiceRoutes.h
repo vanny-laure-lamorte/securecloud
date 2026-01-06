@@ -1,10 +1,9 @@
 #pragma once
-
-#include <drogon/drogon.h>
 #include "common/db/DbConnection.h"
-
 #include "../repository/UserRepository.h"
 #include "../service/UserService.h"
+
+#include <drogon/drogon.h>
 
 /**
  * @brief Class to register authentication service routes.

@@ -72,9 +72,9 @@ int getUserIdFromToken(const std::string &authHeader)
 
 int main()
 {
-    const std::string AUTH_URL = "http://127.0.0.1:8081";
-    const std::string MSG_URL = "http://127.0.0.1:8082";
-    const std::string AUDIT_URL = "http://127.0.0.1:8083";
+    const std::string AUTH_URL  = "http://auth-service-api:8081";
+    const std::string MSG_URL   = "http://messaging-service-api:8082";
+    const std::string AUDIT_URL = "http://audit-service:8083";
 
     auto authClient = HttpClient::newHttpClient(AUTH_URL);
     auto msgClient = HttpClient::newHttpClient(MSG_URL);

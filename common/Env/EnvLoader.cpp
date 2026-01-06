@@ -46,20 +46,13 @@ namespace env
         return dotenv::getenv(key.c_str(), fallback);
     }
 
-    std::string readPassword()
+    std::string loadSecret(const std::string &secretName)
     {
-        if (const char *pwFile = std::getenv("DB_PASSWORD_FILE"))
-        {
-            std::ifstream in(pwFile);
-            std::stringstream buf;
-            buf << in.rdbuf();
-            return buf.str();
+        std::ifstream file("/run/secrets/" + secretName);
+        std::string content;
+        if (file.is_open()) {
+            std::getline(file, content);
         }
-
-        if (const char *pw = std::getenv("DB_PASSWORD"))
-        {
-            return std::string(pw);
-        }
-        return "";
+        return content;
     }
 }

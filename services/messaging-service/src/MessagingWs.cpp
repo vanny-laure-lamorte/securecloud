@@ -1,6 +1,4 @@
 #include "MessagingWs.h"
-#include <iostream>
-
 using namespace drogon;
 
 void MessagingWs::handleNewConnection(const HttpRequestPtr &,

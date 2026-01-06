@@ -2,6 +2,7 @@
 #include <drogon/WebSocketController.h>
 #include <unordered_set>
 #include <mutex>
+#include <iostream>
 
 /**
  * Session data for a connected user.

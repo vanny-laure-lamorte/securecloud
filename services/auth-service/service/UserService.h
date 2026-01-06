@@ -1,13 +1,12 @@
 // USERSERVICE.H
-
 #pragma once
-#include <drogon/orm/DbClient.h>
-#include <drogon/drogon.h>
-#include <iostream>
-
 #include "../repository/UserRepository.h"
 #include "../model/UserProfile.h"
 #include "../utils/HashUtils.h"
+
+#include <drogon/orm/DbClient.h>
+#include <drogon/drogon.h>
+#include <iostream>
 
 using namespace drogon;
 class UserService

@@ -1,4 +1,5 @@
 #include "GatewayWs.h"
+
 #include <iostream>
 
 using namespace drogon;
@@ -96,7 +97,6 @@ void GatewayWs::handleNewConnection(const HttpRequestPtr &req,
         sessions_[frontConn.get()] = session;
     }
 }
-
 
 void GatewayWs::handleConnectionClosed(const WebSocketConnectionPtr &frontConn)
 {
