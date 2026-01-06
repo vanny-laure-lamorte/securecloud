@@ -1,9 +1,9 @@
 #pragma once
+#include "common/db/DbConnection.h"
+#include "../repository/UserRepository.h"
+#include "../services/UserService.h"
 
 #include <drogon/drogon.h>
-#include "common/db/DbConnection.h"
-
-#include "../repository/UserRepository.h"
 
 /**
  * @brief Class to register authentication service routes.
@@ -18,6 +18,6 @@ public:
      */
     void registerRoutes();
 
-    UserRepository userRepository_;
-private:
+    private:
+    UserService userService_;
 };

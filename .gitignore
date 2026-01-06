@@ -47,5 +47,3 @@ secrets/*
 
 .vs
 .vscode
-
-/secrets/*.txt

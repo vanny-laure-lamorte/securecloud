@@ -16,12 +16,11 @@ set(CMAKE_AUTOUIC ON)
 
 find_package(Drogon CONFIG REQUIRED)
 find_package(jsoncpp CONFIG REQUIRED)
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets LinguistTools)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets LinguistTools WebSockets)
 
-# --- Sources --- #
-
-file( GLOB SRC_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
+# ---- Sources ----
+file(GLOB_RECURSE SRC_FILES
+    src/*.cpp
     ${CMAKE_SOURCE_DIR}/common/src/TranslationManager.cpp
 )
 
@@ -29,8 +28,8 @@ set(RESOURCE_FILES
     resources.qrc
 )
 
-file( GLOB HEADER_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/*.h
+file(GLOB_RECURSE HEADER_FILES
+    include/*.h
     ${CMAKE_SOURCE_DIR}/common/include/TranslationManager.h
 )
 
@@ -54,6 +53,7 @@ target_link_libraries(client
         Qt6::Core
         Qt6::Gui
         Qt6::Widgets
+        Qt6::WebSockets
 )
 
 # --- Translations --- #

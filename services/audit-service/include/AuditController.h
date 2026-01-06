@@ -35,6 +35,11 @@ public:
      * Handle refresh of all services statuses
      * @return HTTP response
      */
+
+    /**
+     * Handle refresh of all services statuses
+     * @return HTTP response
+     */
     drogon::HttpResponsePtr handleRefresh();
 
     /**

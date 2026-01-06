@@ -14,7 +14,7 @@ namespace env
 
     std::string loadEnv(const std::string &service)
     {
-        if (service != "auth" && service != "audit") {
+        if (service != "auth" && service != "audit" && service != "messaging") {
             dotenv::init(withEnvFilePath(service).c_str());
             std::string connStr = "host=" + env::getVar("DB_HOST") + " " +
                                   "port=" + env::getVar("DB_PORT") + " " +

@@ -21,7 +21,15 @@ static void forwardToBackend(const HttpRequestPtr &inReq,
     outReq->setMethod(inReq->getMethod());
     outReq->setPath(backendPath);
 
-    // copy body if present (string_view -> string)
+    outReq->setContentTypeCode(inReq->getContentType());
+
+    for (const auto &h : inReq->getHeaders())
+    {
+        if (h.first == "host" || h.first == "Host")
+            continue;
+        outReq->addHeader(h.first, h.second);
+    }
+
     auto inBody = inReq->getBody();
     if (!inBody.empty())
     {
@@ -39,7 +47,8 @@ static void forwardToBackend(const HttpRequestPtr &inReq,
                                  std::cout << "[Gateway] Backend response: " << body << std::endl;
 
                                  auto out = HttpResponse::newHttpResponse();
-                                 out->setContentTypeCode(CT_TEXT_PLAIN);
+                                 out->setStatusCode(resp->getStatusCode());
+                                 out->setContentTypeCode(CT_APPLICATION_JSON);
                                  out->setBody(std::move(body));
                                  cb(out);
                              }
@@ -55,11 +64,17 @@ static void forwardToBackend(const HttpRequestPtr &inReq,
                          });
 }
 
+int getUserIdFromToken(const std::string &authHeader)
+{
+    (void)authHeader;
+    return -1;
+}
+
 int main()
 {
-    const std::string AUTH_URL = "http://127.0.0.1:8081";
-    const std::string MSG_URL = "http://127.0.0.1:8082";
-    const std::string AUDIT_URL = "http://127.0.0.1:8083";
+    const std::string AUTH_URL  = "http://auth-service-api:8081";
+    const std::string MSG_URL   = "http://messaging-service-api:8082";
+    const std::string AUDIT_URL = "http://audit-service:8083";
 
     auto authClient = HttpClient::newHttpClient(AUTH_URL);
     auto msgClient = HttpClient::newHttpClient(MSG_URL);
@@ -81,6 +96,36 @@ int main()
         {drogon::Get});
 
     // ===== AUTH SERVICE=====
+app().registerHandler(
+    "/auth/logout",
+    [authClient](const HttpRequestPtr &req,
+           std::function<void(const HttpResponsePtr &)> &&cb)
+    {
+        auto json = req->getJsonObject();
+        std::string email;
+
+        if (json && json->isMember("email"))
+        {
+            email = (*json)["email"].asString();
+        }
+
+        std::cout << "[AuthService] Logout requested";
+        if (!email.empty())
+            std::cout << " for email=" << email;
+        std::cout << std::endl;
+
+        // TODO: get userId from JWT token or session
+        // int userId = getUserIdFromToken(req->getHeader("Authorization"));
+
+        Json::Value respJson;
+        respJson["message"] = "Logout successful";
+
+        auto resp = HttpResponse::newHttpJsonResponse(respJson);
+        resp->setStatusCode(k200OK);
+        cb(resp);
+    },
+    {Post});
+
     app().registerHandler(
         "/auth/{_path}",
         [authClient](const HttpRequestPtr &req,
