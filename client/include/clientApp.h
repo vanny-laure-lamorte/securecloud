@@ -66,6 +66,9 @@ private:
      */
     void handleWsSend();
 
+    /**
+     * Handles user logout.
+     */
     void handleLogout();
 
     AuthClient &auth_;

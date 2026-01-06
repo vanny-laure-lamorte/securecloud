@@ -1,8 +1,8 @@
-// core/HttpGatewayClient.h
 #pragma once
 #include "core/ClientState.h"
-#include <drogon/drogon.h>
+
 #include <chrono>
+#include <drogon/drogon.h>
 #include <string>
 #include <utility>
 
@@ -32,4 +32,3 @@ private:
     drogon::HttpClientPtr client_;
     std::shared_ptr<ClientState> state_;
 };
-

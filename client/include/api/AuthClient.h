@@ -41,12 +41,24 @@ public:
      */
     std::string getJwt() const;
 
+    /**
+     * Registers a new user with the provided details.
+     * @param email User's email.
+     * @param password User's password.
+     * @param username Desired username.
+     * @param firstName User's first name.
+     * @param lastName User's last name.
+     * @return true if registration is successful, false otherwise.
+     */
     bool registerUser(const std::string &email,
                       const std::string &password,
                       const std::string &username,
                       const std::string &firstName,
                       const std::string &lastName);
 
+    /**
+     * Shared client state (authentication, JWT, etc.)
+     */
     std::shared_ptr<ClientState> state_;
 private:
     HttpGatewayClient &http_;

@@ -48,7 +48,7 @@ void AuthServiceRoutes::registerRoutes()
                 // TODO : Add more user info / Create a model for user info
                 // TODO : Set last login timestamp in DB
                 // TODO : Add jwt in db to validate token later
-                
+
                 auto resp = HttpResponse::newHttpJsonResponse(respJson);
                 resp->setStatusCode(k200OK);
                 cb(resp);

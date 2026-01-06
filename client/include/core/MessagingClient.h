@@ -1,12 +1,12 @@
 #pragma once
 #include <QCoreApplication>
-#include <QWebSocket>
-#include <QTimer>
 #include <QDebug>
-#include <QJsonObject>
 #include <QJsonDocument>
+#include <QJsonObject>
+#include <QTimer>
 #include <QUrl>
 #include <QUrlQuery>
+#include <QWebSocket>
 
 class MessagingClient : public QObject
 {
@@ -24,6 +24,11 @@ public:
                 this, &MessagingClient::onError);
     }
 
+    /**
+     * @brief Attempts to connect to the messaging WebSocket server using the provided JWT.
+     * @param jwt The JSON Web Token for authentication.
+     * @return true if the connection attempt was initiated, false if the JWT is empty.
+     */
     bool maybeConnect(const QString &jwt)
     {
         if (jwt.isEmpty())
@@ -42,6 +47,10 @@ public:
         return true;
     }
 
+    /**
+     * @brief Sends a test message over the WebSocket connection.
+     * @param msg The message to send.
+     */
     void sendTestMessage(const QString &msg)
     {
         if (ws_.state() == QAbstractSocket::ConnectedState)
@@ -61,6 +70,9 @@ public:
     void setUserId(const QString &userId) { userId_ = userId; }
 
 private slots:
+    /**
+     * @brief Slot called when the WebSocket connection is established.
+     */
     void onConnected()
     {
         qDebug() << "[Qt] WS connected to gateway";
@@ -71,21 +83,30 @@ private slots:
 
         QJsonDocument doc(identify);
         ws_.sendTextMessage(QString::fromUtf8(doc.toJson(QJsonDocument::Compact)));
-
-        // Message de test
         ws_.sendTextMessage("Hello from Qt client via gateway!");
     }
 
+    /**
+     * @brief Slot called when the WebSocket connection is closed.
+     */
     void onDisconnected()
     {
         qDebug() << "[Qt] WS disconnected";
     }
 
+    /**
+     * @brief Slot called when a text message is received from the WebSocket server.
+     * @param msg The received message.
+     */
     void onMessageReceived(const QString &msg)
     {
         qDebug() << "[Qt] WS message:" << msg;
     }
 
+    /**
+     * @brief Slot called when a WebSocket error occurs.
+     * @param error The type of socket error.
+     */
     void onError(QAbstractSocket::SocketError)
     {
         qDebug() << "[Qt] WS error:" << ws_.errorString();

@@ -1,21 +1,21 @@
 #include "ClientApp.h"
 #include "MainWindow.h"
 #include "TranslationManager.h"
+#include "api/AuditClient.h"
+#include "api/AuthClient.h"
 #include "core/ClientState.h"
 #include "core/HttpGatewayClient.h"
-#include "core/WsGatewayClient.h"
 #include "core/MessagingClient.h"
-#include "api/AuthClient.h"
-#include "api/AuditClient.h"
+#include "core/WsGatewayClient.h"
 
+#include <drogon/drogon.h>
+#include <future>
+#include <iostream>
+#include <thread>
+#include <trantor/net/EventLoop.h>
 #include <QApplication>
 #include <QMetaObject>
 #include <QDebug>
-#include <drogon/drogon.h>
-#include <trantor/net/EventLoop.h>
-#include <future>
-#include <thread>
-#include <iostream>
 
 static MessagingClient* g_wsClient = nullptr;
 static trantor::EventLoop* g_loop = nullptr;
@@ -23,7 +23,6 @@ static trantor::EventLoop* g_loop = nullptr;
 static std::promise<void> g_qtReadyProm;
 static std::shared_future<void> g_qtReadyFut;
 
-// Qt Window + event loop
 int runQtWindow(int argc, char *argv[])
 {
     QApplication app(argc, argv);
@@ -45,7 +44,6 @@ int runQtWindow(int argc, char *argv[])
     return app.exec();
 }
 
-// Drogon / Trantor backend
 void startBackend()
 {
     g_qtReadyFut.wait();
@@ -62,9 +60,7 @@ void startBackend()
 
     g_loop = loopFut.get();
 
-    auto httpClient =
-        drogon::HttpClient::newHttpClient("http://127.0.0.1:8080", g_loop);
-
+    auto httpClient = drogon::HttpClient::newHttpClient("http://127.0.0.1:8080", g_loop);
     auto clientState = std::make_shared<ClientState>();
     HttpGatewayClient httpGateway(httpClient, clientState);
     AuthClient authClient(httpGateway, clientState);
@@ -92,7 +88,6 @@ void startBackend()
     loopThread.join();
 }
 
-// main
 int main(int argc, char *argv[])
 {
     g_qtReadyFut = g_qtReadyProm.get_future().share();
