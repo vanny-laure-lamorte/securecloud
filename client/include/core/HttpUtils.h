@@ -5,31 +5,61 @@
 
 namespace HttpUtils {
 
-inline bool isSuccess(int code) {
-    return code >= 200 && code < 300;
+inline bool isSuccess(int code) { return code >= 200 && code < 300; }
+
+inline const char* classOf(int code)
+{
+    if (code >= 200 && code < 300) return "2xx(SUCCESS)";
+    if (code >= 300 && code < 400) return "3xx(REDIRECT)";
+    if (code >= 400 && code < 500) return "4xx(CLIENT)";
+    if (code >= 500 && code < 600) return "5xx(SERVER)";
+    return "OTHER";
 }
 
-inline std::string extractMessageFromBody(const std::string &body) {
-    if (body.empty())
-        return {};
-
-    Json::Value json;
-    Json::CharReaderBuilder b;
-    std::string errs;
-    std::unique_ptr<Json::CharReader> r(b.newCharReader());
-
-    if (!r->parse(body.data(), body.data() + body.size(), &json, &errs)) {
-        return body;
+inline bool looksLikeJson(const std::string& body)
+{
+    for (char c : body)
+    {
+        if (c == ' ' || c == '\n' || c == '\r' || c == '\t') continue;
+        return c == '{' || c == '[';
     }
+    return false;
+}
 
-    if (json.isMember("message") && json["message"].isString())
-        return json["message"].asString();
-    if (json.isMember("error") && json["error"].isString())
-        return json["error"].asString();
-    if (json.isMember("status") && json["status"].isString())
-        return json["status"].asString();
+inline std::string truncate(const std::string& s, size_t maxLen = 500)
+{
+    if (s.size() <= maxLen) return s;
+    return s.substr(0, maxLen) + "...(truncated)";
+}
 
-    return body;
+inline std::string extractMessageFromBodySafe(const std::string &body)
+{
+    if (body.empty()) return {};
+    if (!looksLikeJson(body)) return truncate(body);
+
+    try
+    {
+        Json::Value json;
+        Json::CharReaderBuilder b;
+        std::string errs;
+        auto r = std::unique_ptr<Json::CharReader>(b.newCharReader());
+
+        if (!r->parse(body.data(), body.data() + body.size(), &json, &errs))
+            return truncate(body);
+
+        if (json.isObject())
+        {
+            if (json.isMember("message") && json["message"].isString()) return json["message"].asString();
+            if (json.isMember("error")   && json["error"].isString())   return json["error"].asString();
+            if (json.isMember("status")  && json["status"].isString())  return json["status"].asString();
+        }
+
+        return truncate(body);
+    }
+    catch (...)
+    {
+        return truncate(body);
+    }
 }
 
 inline void logServiceCall(const std::string &serviceName,
@@ -37,17 +67,10 @@ inline void logServiceCall(const std::string &serviceName,
                            int code,
                            const std::string &body)
 {
-    const char *cls = "OTHER";
-    if (code >= 200 && code < 300)      cls = "2xx(SUCCESS)";
-    else if (code >= 300 && code < 400) cls = "3xx(REDIRECT)";
-    else if (code >= 400 && code < 500) cls = "4xx(CLIENT)";
-    else if (code >= 500 && code < 600) cls = "5xx(SERVER)";
-
-    std::string msg = extractMessageFromBody(body);
-
     std::cout << "[" << serviceName << "][" << operation << "] "
-              << code << " " << cls
-              << " | " << msg << "\n";
+              << code << " " << classOf(code)
+              << " | " << extractMessageFromBodySafe(body)
+              << "\n";
 }
 
 }

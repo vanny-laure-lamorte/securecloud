@@ -1,8 +1,11 @@
 #include "ClientApp.h"
 #include "MainWindow.h"
 #include "TranslationManager.h"
+
 #include "api/AuditClient.h"
 #include "api/AuthClient.h"
+#include "api/MessagingApiClient.h"
+
 #include "core/ClientState.h"
 #include "core/HttpGatewayClient.h"
 #include "core/MessagingClient.h"
@@ -65,8 +68,9 @@ void startBackend()
     HttpGatewayClient httpGateway(httpClient, clientState);
     AuthClient authClient(httpGateway, clientState);
     AuditClient auditClient(httpGateway);
+    MessagingApiClient messagingApi(httpGateway);
     WsGatewayClient wsGateway{ g_wsClient };
-    ClientApp consoleApp(authClient, auditClient, &wsGateway);
+    ClientApp consoleApp(authClient, auditClient, messagingApi, &wsGateway);
     consoleApp.run();
 
     const std::string jwtStd = clientState->jwt;

@@ -11,6 +11,8 @@ find_package(Drogon CONFIG REQUIRED)
 set(SRC_FILES
     src/main.cpp
     src/MessagingWs.cpp
+    src/repository/GroupRepository.cpp
+    src/repository/MessageRepository.cpp
 )
 
 set(COMMON_SOURCES
@@ -18,22 +20,17 @@ set(COMMON_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../../common/db/DbConnection.cpp
 )
 
-set(HEADER_FILES
-    include/MessagingWs.h
-)
-
 add_executable(messaging-service
     ${SRC_FILES}
-    ${HEADER_FILES}
     ${COMMON_SOURCES}
 )
 
-target_include_directories(messaging-service PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/../..
+target_include_directories(messaging-service
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/../..
 )
 
 target_link_libraries(messaging-service
-    PRIVATE
-        Drogon::Drogon
+    PRIVATE Drogon::Drogon
 )
