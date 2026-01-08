@@ -20,15 +20,11 @@ void GatewayWs::removeSession(const WebSocketConnectionPtr &wsConn)
 }
 
 void GatewayWs::handleNewConnection(const HttpRequestPtr &req,
-                                    const WebSocketConnectionPtr &frontConn)
-{
-    std::cout << "[GatewayWS] New client WS connection from "
-              << req->peerAddr().toIpPort() << "\n";
-
+                                    const WebSocketConnectionPtr &frontConn){
     auto session = std::make_shared<WsSession>();
     session->frontConn = frontConn;
 
-    session->backendClient = WebSocketClient::newWebSocketClient("127.0.0.1", 8082);
+    session->backendClient = WebSocketClient::newWebSocketClient("ws://messaging-service-api:8082/ws/messaging");
 
     session->backendClient->setMessageHandler(
         [session](const std::string &message,
@@ -47,7 +43,6 @@ void GatewayWs::handleNewConnection(const HttpRequestPtr &req,
     session->backendClient->setConnectionClosedHandler(
         [session](const WebSocketClientPtr &)
         {
-            std::cout << "[GatewayWS] Backend WS closed\n";
             if (session->frontConn && session->frontConn->connected())
             {
                 session->frontConn->shutdown();
@@ -66,7 +61,6 @@ void GatewayWs::handleNewConnection(const HttpRequestPtr &req,
         {
             if (r == ReqResult::Ok)
             {
-                std::cout << "[GatewayWS] Connected to messaging backend\n";
 
                 session->backendReady = true;
 
@@ -82,8 +76,6 @@ void GatewayWs::handleNewConnection(const HttpRequestPtr &req,
             }
             else
             {
-                std::cout << "[GatewayWS] Failed to connect backend WS: "
-                          << (resp ? resp->getStatusCode() : kUnknown) << "\n";
                 if (session->frontConn && session->frontConn->connected())
                 {
                     session->frontConn->shutdown();
@@ -100,7 +92,6 @@ void GatewayWs::handleNewConnection(const HttpRequestPtr &req,
 
 void GatewayWs::handleConnectionClosed(const WebSocketConnectionPtr &frontConn)
 {
-    std::cout << "[GatewayWS] Front WS closed\n";
     auto session = getSession(frontConn);
     if (session && session->backendClient)
     {
@@ -125,7 +116,6 @@ void GatewayWs::handleNewMessage(const WebSocketConnectionPtr &frontConn,
     auto session = getSession(frontConn);
     if (!session || !session->backendClient)
     {
-        std::cout << "[GatewayWS] No backend client for this session\n";
         frontConn->send("Messaging service not connected");
         return;
     }
@@ -137,7 +127,6 @@ void GatewayWs::handleNewMessage(const WebSocketConnectionPtr &frontConn,
     }
     else
     {
-        std::cout << "[GatewayWS] Backend WS not connected yet, buffering message\n";
         session->pendingMessages.push_back(message);
     }
 }
