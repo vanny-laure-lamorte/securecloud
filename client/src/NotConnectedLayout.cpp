@@ -15,7 +15,7 @@ NotConnectedLayout::NotConnectedLayout(QWidget *parent)
     // body = new Login(this);
     // mainLayout->addWidget(body);
 
-    body = new MainPage(this);
+    body = new Home(this);
     mainLayout->addWidget(body);
 
     // Footer

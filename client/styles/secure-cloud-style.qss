@@ -7,12 +7,12 @@ QPushButton#primaryButton {
     padding: 8px 16px;
 }
 
-QPushButton#dangerBtn {
+QPushButton#emergencyBtn {
     border-radius: 25px;
     background-color: #8b3722;
 }
 
-QPushButton#dangerBtn:hover {
+QPushButton#emergencyBtn:hover {
     background-color: #d92c20;
 }
 

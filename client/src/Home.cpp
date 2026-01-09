@@ -1,4 +1,5 @@
-#include "MainPage.h"
+#include "Home.h"
+
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QPushButton>
@@ -10,7 +11,7 @@
 #include <QStackedWidget>
 #include <QHBoxLayout>
 
-MainPage::MainPage(QWidget *parent)
+Home::Home(QWidget *parent)
     : QWidget(parent)
 {
     // --- Layout principal horizontal ---
@@ -29,7 +30,7 @@ MainPage::MainPage(QWidget *parent)
     leftLayout->setContentsMargins(0, 10, 0, 10);
     leftLayout->setSpacing(10);
 
-    // Avatar container + status dot
+    // Avatar + status dot
     QFrame *avatarContainer = new QFrame(leftSidebar);
     avatarContainer->setFixedSize(42, 42);
     leftLayout->addWidget(avatarContainer, 0, Qt::AlignHCenter);
@@ -38,7 +39,7 @@ MainPage::MainPage(QWidget *parent)
     QPixmap avatar(":/assets/icons/user-profil.png");
     avatarLabel->setPixmap(avatar.scaled(40, 40, Qt::KeepAspectRatio, Qt::SmoothTransformation));
     avatarLabel->setFixedSize(40, 40);
-    avatarLabel->move(1,1);
+    avatarLabel->move(1, 1);
     avatarLabel->setStyleSheet("border-radius:20px");
 
     QLabel *statusDot = new QLabel(avatarContainer);
@@ -55,6 +56,36 @@ MainPage::MainPage(QWidget *parent)
     logoSeparator->setObjectName("separator");
     leftLayout->addWidget(logoSeparator, 0, Qt::AlignHCenter);
 
+    QStackedWidget *stackedContent = new QStackedWidget();
+    stackedContent->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+    // Stacked widget pages
+    ChatPage *chatPage = new ChatPage();
+    GroupPage *groupPage = new GroupPage();
+    ContactPage *contactPage = new ContactPage();
+    CalendarPage *calendarPage = new CalendarPage();
+    ActivityPage *activityPage = new ActivityPage();
+    FilterPage *filterPage = new FilterPage();
+    EmergencyPage *emergencyPage = new EmergencyPage();
+    SettingPage *settingPage = new SettingPage();
+
+    /*
+    *  * 2. Group Page
+    * 3. Contact Page
+    * 4. Calendar Page
+    * 5. Activity Page
+    * 6. Filter Page
+    * 8. Emergency Page
+    * 7. Setting Page
+    */
+    stackedContent->addWidget(chatPage);
+    stackedContent->addWidget(groupPage);
+    stackedContent->addWidget(contactPage);
+    stackedContent->addWidget(calendarPage);
+    stackedContent->addWidget(activityPage);
+    stackedContent->addWidget(filterPage);
+    stackedContent->addWidget(emergencyPage);
+    stackedContent->addWidget(settingPage);
 
     // left Sidebar Buttons: Chat, Group, Contact, Calendar, Activity
     struct SidebarButton
@@ -70,38 +101,52 @@ MainPage::MainPage(QWidget *parent)
         {tr("MAIN_PAGE.CALENDAR"), ":/assets/icons/calendar.png"},
         {tr("MAIN_PAGE.ACTIVITY"), ":/assets/icons/notification.png"}};
 
-    for (const SidebarButton &btnData : buttons)
+    for (int i = 0; i < buttons.size(); ++i)
     {
         QPushButton *btn = new QPushButton(leftSidebar);
-        btn->setIcon(QIcon(btnData.iconPath));
+        btn->setIcon(QIcon(buttons[i].iconPath));
         btn->setIconSize(QSize(24, 24));
         btn->setFixedSize(50, 50);
-        btn->setToolTip(btnData.text);
+        btn->setToolTip(buttons[i].text);
         btn->setStyleSheet(
             "QPushButton { border-radius: 25px; background-color: #00473c;}"
             "QPushButton:hover { background-color: #017f6a;}");
         leftLayout->addWidget(btn, 0, Qt::AlignHCenter);
-    }
 
+        // Connexion lambda avec l'indice correct
+        connect(btn, &QPushButton::clicked, [stackedContent, i]()
+            { stackedContent->setCurrentIndex(i);
+        });
+    }
     leftLayout->addStretch();
 
-    // Bouton Danger
-    QPushButton *dangerBtn = new QPushButton(leftSidebar);
-    dangerBtn->setIcon(QIcon(":/assets/icons/danger.png"));
-    dangerBtn->setIconSize(QSize(24, 24));
-    dangerBtn->setFixedSize(50, 50);
-    dangerBtn->setToolTip(tr("MAIN_PAGE.DANGER"));
-    dangerBtn->setObjectName("dangerBtn");
-    leftLayout->addWidget(dangerBtn, 0, Qt::AlignHCenter);
+    // Button Danger
+    QPushButton *emergencyBtn = new QPushButton(leftSidebar);
+    emergencyBtn->setIcon(QIcon(":/assets/icons/danger.png"));
+    emergencyBtn->setIconSize(QSize(24, 24));
+    emergencyBtn->setFixedSize(50, 50);
+    emergencyBtn->setToolTip(tr("MAIN_PAGE.DANGER"));
+    emergencyBtn->setObjectName("emergencyBtn");
 
-    // Bouton Settings
+    leftLayout->addWidget(emergencyBtn, 0, Qt::AlignHCenter);
+        connect(emergencyBtn, &QPushButton::clicked, [stackedContent]() {
+        stackedContent->setCurrentIndex(6);
+    });
+
+    // Button Settings
     QPushButton *settingsBtn = new QPushButton(leftSidebar);
     settingsBtn->setIcon(QIcon(":/assets/icons/settings.png"));
     settingsBtn->setIconSize(QSize(24, 24));
     settingsBtn->setFixedSize(50, 50);
     settingsBtn->setToolTip(tr("MAIN_PAGE.SETTINGS"));
     settingsBtn->setObjectName("NoBackgroundBtn");
+
     leftLayout->addWidget(settingsBtn, 0, Qt::AlignHCenter);
+    leftLayout->addWidget(settingsBtn, 0, Qt::AlignHCenter);
+
+    connect(settingsBtn, &QPushButton::clicked, [stackedContent]()
+        { stackedContent->setCurrentIndex(7);
+    });
 
     // --- Separator between left and right sidebar ---
     QFrame *separator = new QFrame(this);
@@ -112,7 +157,6 @@ MainPage::MainPage(QWidget *parent)
     separator->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 
     // --- Right Sidebar dynamique ---
-
     QFrame *rightArea = new QFrame(this);
     rightArea->setStyleSheet("background-color:#002d24;");
     rightArea->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -121,9 +165,7 @@ MainPage::MainPage(QWidget *parent)
     rightAreaVLayout->setContentsMargins(0, 0, 0, 0);
     rightAreaVLayout->setSpacing(0);
 
-    // =========================
-    // PROFILE HEADER (top full width)
-    // =========================
+    // profile header
     QFrame *profileHeader = new QFrame(rightArea);
     profileHeader->setFixedHeight(70);
     profileHeader->setStyleSheet("background-color:#002d24;");
@@ -136,25 +178,26 @@ MainPage::MainPage(QWidget *parent)
     // User info
     QVBoxLayout *userInfoLayout = new QVBoxLayout();
     userInfoLayout->setSpacing(2);
-    userInfoLayout->setContentsMargins(0,0,0,0);
+    userInfoLayout->setContentsMargins(0, 0, 0, 0);
     userInfoLayout->setSpacing(0);
 
+    // User name
     QLabel *userName = new QLabel("John Doe");
     userName->setStyleSheet("color:white; font-weight:bold; font-size:12px; line-height:12px;");
-    userName->setContentsMargins(0,0,0,0);
+    userName->setContentsMargins(0, 0, 0, 0);
     userName->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
     userName->setFixedHeight(10);
     userInfoLayout->addWidget(userName);
 
+    // User role
     QLabel *userRole = new QLabel(tr("MAIN_PAGE.USER_ROLE"));
     userRole->setStyleSheet("color:#cccccc; font-size:10px;");
-    userRole->setContentsMargins(0,0,0,0);
+    userRole->setContentsMargins(0, 0, 0, 0);
     userRole->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
     userRole->setFixedHeight(12);
     userInfoLayout->addWidget(userRole);
 
-
-    // Layout pour les icônes
+    // Layout user icônes
     QHBoxLayout *iconsLayout = new QHBoxLayout();
     iconsLayout->setSpacing(10);
     iconsLayout->setContentsMargins(0, 0, 0, 0);
@@ -169,7 +212,6 @@ MainPage::MainPage(QWidget *parent)
     QPixmap scaled = pix.scaled(16, 16, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     QAction *searchAction = new QAction(QIcon(scaled), "", searchBar);
     searchBar->addAction(searchAction, QLineEdit::TrailingPosition);
-
 
     // User options: filter, camera, new chat
     struct UserOptionsBtn
@@ -195,7 +237,6 @@ MainPage::MainPage(QWidget *parent)
             "QPushButton { border-radius: 15px; background-color: #00473c; }"
             "QPushButton:hover { background-color: #017f6a; }"
         );
-
         iconsLayout->addWidget(btn);
     }
 
@@ -207,9 +248,7 @@ MainPage::MainPage(QWidget *parent)
 
     rightAreaVLayout->addWidget(profileHeader);
 
-    // =========================
-    // CONTENT AREA (channels + main)
-    // =========================
+    // Channels + dynamic main content
     QFrame *contentArea = new QFrame(rightArea);
     contentArea->setStyleSheet("background-color:#002d24;");
     contentArea->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -218,7 +257,7 @@ MainPage::MainPage(QWidget *parent)
     contentLayout->setContentsMargins(0, 0, 0, 0);
     contentLayout->setSpacing(0);
 
-    // --- Channels panel (scrollable)
+    // --- Channels panel scrollable ---
     QFrame *channelSidebar = new QFrame(contentArea);
     channelSidebar->setFixedWidth(260);
     channelSidebar->setStyleSheet("background-color:#002d24;");
@@ -231,8 +270,7 @@ MainPage::MainPage(QWidget *parent)
     channelTitle->setStyleSheet("color:#B9BBBE;font-weight:bold;");
     channelLayout->addWidget(channelTitle);
 
-    QVector<QString> channels = {"#general", "#chat1", "#chat2", "#groupe1", "#groupe2", "#random", "#development", "#design", "#marketing", "#sales", "#support", "#hr", "#announcements", "#events",
-                                 "#off-topic", "#memes", "#music", "#movies", "#gaming", "#chat1", "#chat2", "#groupe1", "#groupe2", "#random", "#development", "#design", "#marketing", "#sales", "#support", "#hr", "#announcements", "#events", "#off-topic", "#memes", "#music", "#movies", "#gaming", "#chat1", "#chat2", "#groupe1", "#groupe2", "#random", "#development", "#design", "#marketing", "#sales", "#support", "#hr", "#announcements", "#events", "#off-topic", "#memes", "#music", "#movies", "#gaming", "#chat1", "#chat2", "#groupe1", "#groupe2", "#random", "#development", "#design", "#marketing", "#sales", "#support", "#hr", "#announcements", "#events", "#off-topic", "#memes", "#music", "#movies", "#gaming"};
+    QVector<QString> channels = {"#general", "#chat1", "#chat2", "#groupe1", "#groupe2", "#random", "#development", "#design", "#marketing", "#sales", "#support", "#hr"};
 
     for (const QString &ch : channels)
     {
@@ -249,40 +287,24 @@ MainPage::MainPage(QWidget *parent)
     scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     scrollArea->setFixedWidth(260);
     scrollArea->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-
     contentLayout->addWidget(scrollArea);
 
-    // --- Main section (dynamic)
+    // --- Main section dynamic ---
     QFrame *mainContent = new QFrame(contentArea);
     mainContent->setStyleSheet("background-color:#1e1f22;");
     mainContent->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     contentLayout->addWidget(mainContent);
 
+    // Add stacked widget to main content
     QVBoxLayout *mainContentLayout = new QVBoxLayout(mainContent);
     mainContentLayout->setContentsMargins(0, 0, 0, 0);
-
-    QStackedWidget *stackedContent = new QStackedWidget(mainContent);
-
-    QLabel *chatPage = new QLabel("💬 Chat");
-    chatPage->setAlignment(Qt::AlignCenter);
-    chatPage->setStyleSheet("color:white;font-size:24px;");
-
-    QLabel *calendarPage = new QLabel("📅 Calendar");
-    calendarPage->setAlignment(Qt::AlignCenter);
-    calendarPage->setStyleSheet("color:white;font-size:24px;");
-
-    stackedContent->addWidget(chatPage);
-    stackedContent->addWidget(calendarPage);
-
     mainContentLayout->addWidget(stackedContent);
 
     contentLayout->addWidget(mainContent);
 
     rightAreaVLayout->addWidget(contentArea);
 
-    // =========================
-    // ASSEMBLAGE FINAL
-    // =========================
+    // Assemble main layout
     mainLayout->addWidget(leftSidebar);
     mainLayout->addWidget(separator);
     mainLayout->addWidget(rightArea);

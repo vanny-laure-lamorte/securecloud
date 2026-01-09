@@ -7,7 +7,7 @@
 #include "Footer.h"
 #include "Header.h"
 #include "Login.h"
-#include "MainPage.h"
+#include "Home.h"
 
 class NotConnectedLayout : public QWidget
 {
