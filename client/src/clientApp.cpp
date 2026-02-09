@@ -1,6 +1,7 @@
 #include "ClientApp.h"
 #include "api/AuthClient.h"
 #include "api/AuditClient.h"
+#include "api/MessagingApiClient.h"
 #include "core/WsGatewayClient.h"
 
 #include <iostream>
@@ -9,9 +10,11 @@
 
 ClientApp::ClientApp(AuthClient &auth,
                      AuditClient &audit,
+                     MessagingApiClient &messaging,
                      WsGatewayClient *wsClient)
     : auth_(auth),
       audit_(audit),
+      messaging_(messaging),
       wsClient_(wsClient)
 {
 }
@@ -28,6 +31,8 @@ void ClientApp::printMenu()
                  "  7) POST -> Ping Messaging service via Audit-service (/audit/service_ping: messaging)\n"
                  "  8) Send WebSocket message via gateway\n"
                  "  9) Logout\n"
+                 "  10) GET messaging groups (/messaging/groups)\n"
+                 "  11) GET ALL messages (/messaging/messages)\n"
                  "  0) Quit\n> ";
 }
 
@@ -46,7 +51,8 @@ void ClientApp::handleLogin()
     if (auth_.login(email, password))
     {
         std::cout << "[Client] Login OK.\n";
-        wsClient_->connectWithJwt(auth_.getJwt());
+        if (wsClient_)
+            wsClient_->connectWithJwt(auth_.getJwt());
     }
     else
     {
@@ -92,13 +98,9 @@ void ClientApp::handleRegister()
     std::getline(std::cin, lastName);
 
     if (auth_.registerUser(email, password, username, firstName, lastName))
-    {
         std::cout << "[Client] Registration OK.\n";
-    }
     else
-    {
         std::cout << "[Client] Registration FAILED.\n";
-    }
 }
 
 void ClientApp::handleAuthPing()
@@ -149,6 +151,16 @@ void ClientApp::handleWsSend()
     wsClient_->send(msg);
 }
 
+void ClientApp::handleMessagingGroups()
+{
+    messaging_.getGroups();
+}
+
+void ClientApp::handleMessagingAllMessages()
+{
+    messaging_.getAllMessages();
+}
+
 void ClientApp::run()
 {
     while (running_)
@@ -193,6 +205,12 @@ void ClientApp::run()
             break;
         case 9:
             handleLogout();
+            break;
+        case 10:
+            handleMessagingGroups();
+            break;
+        case 11:
+            handleMessagingAllMessages();
             break;
         default:
             std::cout << "[Client] Invalid choice.\n";

@@ -5,6 +5,7 @@
 
 class AuthClient;
 class AuditClient;
+class MessagingApiClient;
 class WsGatewayClient;
 
 class ClientApp
@@ -12,6 +13,7 @@ class ClientApp
 public:
     ClientApp(AuthClient &auth,
               AuditClient &audit,
+              MessagingApiClient &messaging,
               WsGatewayClient *wsClient = nullptr);
 
     /**
@@ -71,8 +73,19 @@ private:
      */
     void handleLogout();
 
+    /**
+     * Handles retrieving messaging groups.
+     */
+    void handleMessagingGroups();
+
+    /**
+     * Handles retrieving all messages.
+     */
+    void handleMessagingAllMessages();
+
     AuthClient &auth_;
     AuditClient &audit_;
+    MessagingApiClient &messaging_;
     WsGatewayClient *wsClient_;
     bool running_ = true;
 };
