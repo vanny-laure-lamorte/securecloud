@@ -12,17 +12,11 @@ WITH g AS (
 )
 INSERT INTO messages (sender_id, receiver_user_id, receiver_group_id, content, created_at, updated_at)
 VALUES
--- 1 -> 2 personal
 (1, 2, NULL, 'PERS: user1 -> user2', NOW() - INTERVAL '6 minutes', NOW()),
--- 2 -> 1 personal
 (2, 1, NULL, 'PERS: user2 -> user1', NOW() - INTERVAL '5 minutes', NOW()),
--- 1 -> group1
 (1, NULL, (SELECT g1 FROM g), 'GRP1: user1 -> group1', NOW() - INTERVAL '4 minutes', NOW()),
--- 2 -> group1
 (2, NULL, (SELECT g1 FROM g), 'GRP1: user2 -> group1', NOW() - INTERVAL '3 minutes', NOW()),
--- 1 -> group2
 (1, NULL, (SELECT g2 FROM g), 'GRP2: user1 -> group2', NOW() - INTERVAL '2 minutes', NOW()),
--- 2 -> group2
 (2, NULL, (SELECT g2 FROM g), 'GRP2: user2 -> group2', NOW() - INTERVAL '1 minutes', NOW());
 
 COMMIT;

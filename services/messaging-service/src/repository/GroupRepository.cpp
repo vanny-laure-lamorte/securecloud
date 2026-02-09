@@ -12,12 +12,12 @@ std::vector<GroupModel> GroupRepository::getAllGroups() const
     std::vector<GroupModel> groups;
     for (const auto &row : res)
     {
-        GroupModel g;
-        g.groupId   = row["group_id"].as<int>();
-        g.name      = row["name"].as<std::string>();
-        g.createdAt = row["created_at"].as<std::string>();
-        g.updatedAt = row["updated_at"].as<std::string>();
-        groups.push_back(std::move(g));
+        GroupModel group;
+        group.groupId   = row["group_id"].as<int>();
+        group.name      = row["name"].as<std::string>();
+        group.createdAt = row["created_at"].as<std::string>();
+        group.updatedAt = row["updated_at"].as<std::string>();
+        groups.push_back(std::move(group));
     }
     return groups;
 }
@@ -33,10 +33,10 @@ GroupModel GroupRepository::getGroupById(int groupId) const
     if (res.empty())
         throw std::runtime_error("Group not found");
 
-    GroupModel g;
-    g.groupId   = res[0]["group_id"].as<int>();
-    g.name      = res[0]["name"].as<std::string>();
-    g.createdAt = res[0]["created_at"].as<std::string>();
-    g.updatedAt = res[0]["updated_at"].as<std::string>();
-    return g;
+    GroupModel group;
+    group.groupId   = res[0]["group_id"].as<int>();
+    group.name      = res[0]["name"].as<std::string>();
+    group.createdAt = res[0]["created_at"].as<std::string>();
+    group.updatedAt = res[0]["updated_at"].as<std::string>();
+    return group;
 }

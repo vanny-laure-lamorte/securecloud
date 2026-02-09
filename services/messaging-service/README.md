@@ -1,19 +1,24 @@
 #### Sqitch
 
-1. Télécharger l’image Docker de Sqitch
+1. Download the Sqitch Docker image
 ```bash
 docker pull sqitch/sqitch:latest
 ```
-2. Vérifier que Sqitch est bien installé et voir sa version
+2. Verify that Sqitch is installed and check its version
 ```bash
 docker run --rm -it sqitch/sqitch:latest --version
 ```
-3. Cette commande permet de créer un dossier 'migrations' qui contiendra:
-    - 3 sous dossiers de configuration (deploy, revert et verify)
-    - fichier sqitch.conf
-    - fichier sqitch.plan
 
-   remplacer <path> par le chemin souhaité. Dans notre cas "\services\messaging-service" pour créer un dossier migrations dans auth-service.
+3. Initialize the migrations directory
+
+This command creates a migrations folder containing:
+- Three subdirectories: deploy, revert, and verify
+- The sqitch.conf file
+- The sqitch.plan file
+
+Replace <path> with the desired location.
+
+In our case: \services\messaging-service to create the migrations folder inside messaging-service.
 
 ```bash
 docker run --rm -it `
@@ -22,23 +27,34 @@ docker run --rm -it `
   sqitch/sqitch:latest init messaging pg
 ```
 
-4. Générer des scripts de migrations dans deploy, revert et verify. Voici le nommage des fichiers "<date du jour>_version_migrations"
+4. Generate migration scripts
+
+This command generates migration scripts in the deploy, revert, and verify directories.
+
+The naming convention is: <current_date>_version_migrations
 ```bash
 docker run --rm -it `
   -v "${PWD}\services\messaging-service/migrations:/repo" `
   -w /repo `
   sqitch/sqitch:latest add "$(date +%Y%m%d%H%M%S)_version_migrations" -n "Create table x"
 ```
-5. Modifier le fichier sqitch.conf en de-commantant le contenu et en spécifiant 'engine'. Dans notre cas on mettre 'pg' pour Postegres.
+5. Configure sqitch.conf
+
+Uncomment the content and specify the database engine.
+In our case, we use pg for PostgreSQL.
 ```bash
 [core]
 	engine = pg
 	plan_file = sqitch.plan
 	top_dir = .
 ```
-6. Vérifier que le nom des 3 fichiers .sql correspond à ceux dans squitch.plan.
-Dans notre cas les fichiers portent le nom de '20251031_version_migrations'. Voici le squitch.plan
+6. Verify migration filenames
 
+Ensure that the names of the three .sql files match the entry in sqitch.plan.
+
+In our case, the files are named: 20251031_version_migrations
+
+Here is the corresponding sqitch.plan:
 ```bash
 %syntax-version=1.0.0
 %project=messaging
@@ -47,7 +63,7 @@ Dans notre cas les fichiers portent le nom de '20251031_version_migrations'. Voi
 
 ```
 
-7. Supprimer '-- XXX Add DDLs here.' et remplir les 3 fichiers sql
+Remove -- XXX Add DDLs here. and complete the three SQL files.
 
 ```bash
 
@@ -70,11 +86,15 @@ SELECT 1 FROM message LIMIT 1;
 
 ```
 
-8. Déployer les migrations sur PostgreSQL. Remplacer <action> par:
-    - deploy: lancer les scripts de création ou de modification
-    - revert: annuler les changements faits dans deploy/
-    -verify: vérifier que la migration s’est bien appliquée
-Si cette commande ne fonctionne pas, supprimer le registre Sqitch
+8. Run Sqitch actions on PostgreSQL
+
+Replace <action> with one of the following:
+- deploy → Apply creation or modification scripts
+- revert → Undo changes applied in deploy/
+- verify → Check that the migration was successfully applied
+
+If this command fails, you may need to remove the Sqitch registry.
+
 ```bash
 $pw = Get-Content ./secrets/messaging_db_password.txt -Raw
 docker run --rm -it `
@@ -85,7 +105,10 @@ docker run --rm -it `
   <action> db:pg://postgres@messaging-db:5432/messaging_service --chdir /repo/
 ```
 
-9. Déployer les migrations sur PostgreSQL. Si cette commande ne fonctionne pas, supprimer le registre Sqitch
+9. Deploy migrations (direct command)
+
+If needed, you can directly run the deploy command:
+
 ```bash
 $pw = Get-Content ./secrets/messaging_db_password.txt -Raw
 docker run --rm -it `

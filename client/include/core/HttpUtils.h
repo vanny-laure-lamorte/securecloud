@@ -18,10 +18,15 @@ inline const char* classOf(int code)
 
 inline bool looksLikeJson(const std::string& body)
 {
-    for (char c : body)
+    for (char firstNonWhitespace : body)
     {
-        if (c == ' ' || c == '\n' || c == '\r' || c == '\t') continue;
-        return c == '{' || c == '[';
+        if (firstNonWhitespace == ' ' ||
+            firstNonWhitespace == '\n' ||
+            firstNonWhitespace == '\r' ||
+            firstNonWhitespace == '\t')
+            continue;
+
+        return firstNonWhitespace == '{' || firstNonWhitespace == '[';
     }
     return false;
 }

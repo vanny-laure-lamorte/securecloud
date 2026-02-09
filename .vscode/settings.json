@@ -107,5 +107,5 @@
     "CMAKE_TOOLCHAIN_FILE": "C:/vcpkg/scripts/buildsystems/vcpkg.cmake",
     "VCPKG_TARGET_TRIPLET": "x64-windows"
   },
-  "gitstash.explorer.display.fileSorting": "name"
+  "gitstash.explorer.display.fileSorting": "tree"
 }

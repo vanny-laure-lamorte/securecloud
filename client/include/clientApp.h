@@ -83,9 +83,9 @@ private:
      */
     void handleMessagingAllMessages();
 
-    AuthClient &auth_; //HTTP conn
-    AuditClient &audit_; //HTTP conn
-    MessagingApiClient &messaging_; //HTTP conn
-    WsGatewayClient *wsClient_; //WS conn
+    AuthClient &auth_;
+    AuditClient &audit_;
+    MessagingApiClient &messaging_;
+    WsGatewayClient *wsClient_;
     bool running_ = true;
 };
