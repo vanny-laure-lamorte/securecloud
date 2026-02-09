@@ -13,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent)
     if (file.open(QFile::ReadOnly | QFile::Text)) {
         QString style = file.readAll();
         this->setStyleSheet(style);
+        qWarning("Style OK");
     } else {
         qWarning("Can't reach secure-cloud-style.qss");
     };
@@ -24,13 +25,4 @@ MainWindow::MainWindow(QWidget *parent)
 
     QVBoxLayout* layout = new QVBoxLayout(this);
     layout->addWidget(layoutContainer);
-
-    // TO DO: Switch body
-    QPushButton* switchButton = new QPushButton("K.REPLACE", this);
-    switchButton->setObjectName("primaryButton");
-    layout->addWidget(switchButton);
-    connect(switchButton, &QPushButton::clicked, [=]() {
-        QWidget* newBody = new QLabel("Body replaced !");
-        layoutContainer->setBody(newBody);
-    });
 }

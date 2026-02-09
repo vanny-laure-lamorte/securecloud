@@ -8,16 +8,19 @@ NotConnectedLayout::NotConnectedLayout(QWidget *parent)
     mainLayout = new QVBoxLayout(this);
 
     // Header
-    header = new Header(this);
-    mainLayout->addWidget(header);
+    // header = new Header(this);
+    // mainLayout->addWidget(header);
 
     // Body
-    body = new Login(this);
+    // body = new Login(this);
+    // mainLayout->addWidget(body);
+
+    body = new Home(this);
     mainLayout->addWidget(body);
 
     // Footer
-    footer = new Footer(this);
-    mainLayout->addWidget(footer);
+    // footer = new Footer(this);
+    // mainLayout->addWidget(footer);
 }
 
 void NotConnectedLayout::setBody(QWidget *newBody)

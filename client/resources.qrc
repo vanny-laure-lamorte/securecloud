@@ -1,15 +1,31 @@
 <RCC>
     <qresource prefix="/">
-        <file>assets/icons/logo.png</file>
+        <file>assets/icons/calendar.png</file>
+        <file>assets/icons/camera.png</file>
+        <file>assets/icons/chat.png</file>
         <file>assets/icons/check.png</file>
+        <file>assets/icons/contacts.png</file>
+        <file>assets/icons/danger.png</file>
         <file>assets/icons/envelope.png</file>
-        <file>assets/icons/lock.png</file>
+        <file>assets/icons/filter.png</file>
+        <file>assets/icons/green-circle.png</file>
+        <file>assets/icons/group.png</file>
+        <file>assets/icons/logo.png</file>
+        <file>assets/icons/new-chat.png</file>
+        <file>assets/icons/no-notification.png</file>
+        <file>assets/icons/notification.png</file>
+        <file>assets/icons/red-circle.png</file>
+        <file>assets/icons/user-profil.png</file>
+        <file>assets/icons/search.png</file>
+        <file>assets/icons/settings.png</file>
+        <file>assets/icons/yellow-circle.png</file>
         <file>assets/flags/fr.png</file>
         <file>assets/flags/fr.png</file>
         <file>assets/flags/es.png</file>
         <file>assets/flags/de.png</file>
         <file>assets/flags/it.png</file>
         <file>assets/flags/en.png</file>
+        <file>assets/logo/securecloud-logo.png</file>
         <file>styles/secure-cloud-style.qss</file>
     </qresource>
 </RCC>
