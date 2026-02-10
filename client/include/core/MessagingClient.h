@@ -51,7 +51,7 @@ public:
      * @brief Sends a test message over the WebSocket connection.
      * @param msg The message to send.
      */
-    void sendTestMessage(const QString &msg)
+    void sendMessage(const QString &msg)
     {
         if (ws_.state() == QAbstractSocket::ConnectedState)
         {
@@ -83,7 +83,6 @@ private slots:
 
         QJsonDocument doc(identify);
         ws_.sendTextMessage(QString::fromUtf8(doc.toJson(QJsonDocument::Compact)));
-        ws_.sendTextMessage("Hello from Qt client via gateway!");
     }
 
     /**

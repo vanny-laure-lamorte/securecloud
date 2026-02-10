@@ -45,6 +45,7 @@ void AuthServiceRoutes::registerRoutes()
             {
                 respJson["message"] = "Login successful";
                 respJson["access_token"] = "temp-jwt-for-" + email; // TODO : Generate a real JWT token here
+                respJson["userId"] = userService_.getuserId(email);
                 // TODO : Add more user info / Create a model for user info
                 // TODO : Set last login timestamp in DB
                 // TODO : Add jwt in db to validate token later

@@ -12,4 +12,5 @@ struct ClientState
     std::string userName;
     std::string email;
     std::string jwt;
+    int userId;
 };

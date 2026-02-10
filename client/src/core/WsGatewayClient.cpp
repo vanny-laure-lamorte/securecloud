@@ -29,20 +29,33 @@ bool WsGatewayClient::connectWithJwt(const std::string &jwt)
     return true;
 }
 
-void WsGatewayClient::send(const std::string &msg)
+void WsGatewayClient::sendJson(const QString &jsonText)
 {
-    if (!impl_)
-    {
-        qWarning("WsGatewayClient: MessagingClient is null");
-        return;
-    }
+    if (!impl_) return;
 
-    QString qmsg = QString::fromStdString(msg);
-    QMetaObject::invokeMethod(
-        impl_,
-        [impl = impl_, qmsg]() {
-            impl->sendTestMessage(qmsg);
-        },
-        Qt::QueuedConnection
-    );
+    QMetaObject::invokeMethod(impl_, [impl = impl_, jsonText]() {
+        impl->sendMessage(jsonText);
+    }, Qt::QueuedConnection);
+}
+
+void WsGatewayClient::sendPersonal(int userId, int toUserId, const std::string &content)
+{
+    QJsonObject o;
+    o["type"] = "msg.personal";
+    o["userId"] = userId;
+    o["toUserId"] = toUserId;
+    o["content"] = QString::fromStdString(content);
+
+    sendJson(QString::fromUtf8(QJsonDocument(o).toJson(QJsonDocument::Compact)));
+}
+
+void WsGatewayClient::sendGroup(int userId, int groupId, const std::string &content)
+{
+    QJsonObject o;
+    o["type"] = "msg.group";
+    o["userId"] = userId;
+    o["groupId"] = groupId;
+    o["content"] = QString::fromStdString(content);
+
+    sendJson(QString::fromUtf8(QJsonDocument(o).toJson(QJsonDocument::Compact)));
 }

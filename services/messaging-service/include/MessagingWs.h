@@ -1,19 +1,29 @@
 #pragma once
 #include <drogon/WebSocketController.h>
-#include <unordered_set>
-#include <mutex>
 #include <iostream>
+#include <memory>
+#include <mutex>
+#include <unordered_map>
+#include <unordered_set>
+#include "repository/MessageRepository.h"
+#include "repository/GroupRepository.h"
+#include "common/db/DbConnection.h"
 
 /**
  * Session data for a connected user.
  */
 struct UserSession {
     drogon::WebSocketConnectionPtr conn;
-    std::string userId;
+    int userId = -1;
 };
 
 class MessagingWs : public drogon::WebSocketController<MessagingWs> {
 public:
+
+    ~MessagingWs() override
+    {
+        std::cout << "[Messaging] MessagingWs destroyed\n";
+    }
 
     /**
      * Handles a new WebSocket connection from a client.
@@ -46,9 +56,21 @@ public:
         WS_PATH_ADD("/ws/messaging", drogon::Get);
     WS_PATH_LIST_END
 
+    static void init(DbConnection &db);
+
+protected:
+    static std::shared_ptr<MessageRepository> msgRepo();
+
+    static std::shared_ptr<GroupRepository> grpRepo();
+
 private:
-    std::unordered_map<drogon::WebSocketConnection*, UserSession> sessions_;
-    std::mutex sessionsMutex_;
-    std::unordered_set<drogon::WebSocketConnectionPtr> conns_;
-    std::mutex connsMutex_;
+    inline static std::shared_ptr<MessageRepository> messageRepo_{};
+    inline static std::shared_ptr<GroupRepository> groupRepo_{};
+    inline static std::mutex reposMutex_{};
+
+    inline static std::unordered_map<drogon::WebSocketConnection*, UserSession> sessions_{};
+    inline static std::mutex sessionsMutex_{};
+
+    inline static std::unordered_map<int, drogon::WebSocketConnectionPtr> users_{};
+    inline static std::mutex usersMutex_{};
 };

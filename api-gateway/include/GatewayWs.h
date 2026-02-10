@@ -2,18 +2,21 @@
 #include <drogon/WebSocketController.h>
 #include <drogon/WebSocketClient.h>
 #include <memory>
+#include <atomic>
 
 /**
  * Session data for a WebSocket connection
  * between a frontend client and backend messaging service.
  */
-struct WsSession
-{
+struct WsSession {
     drogon::WebSocketConnectionPtr frontConn;
-    drogon::WebSocketClientPtr     backendClient;
+    drogon::WebSocketClientPtr backendClient;
     bool backendReady = false;
     std::vector<std::string> pendingMessages;
-};
+    std::mutex pendingMutex;
+    std::string token;
+    std::atomic_bool closing{false};
+    std::atomic_bool connecting{false};};
 
 class GatewayWs : public drogon::WebSocketController<GatewayWs> {
 public:

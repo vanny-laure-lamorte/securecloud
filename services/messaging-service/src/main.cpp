@@ -5,6 +5,7 @@
 #include "common/Env/EnvLoader.h"
 #include "repository/MessageRepository.h"
 #include "repository/GroupRepository.h"
+#include "MessagingWs.h"
 
 int main()
 {
@@ -15,6 +16,7 @@ int main()
 
     MessageRepository messageRepo(db);
     GroupRepository groupRepo(db);
+    MessagingWs::init(db);
 
     app().addListener("0.0.0.0", 8082);
 

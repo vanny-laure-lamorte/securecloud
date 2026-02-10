@@ -41,6 +41,10 @@ public:
      */
     std::string getJwt() const;
 
+    int getUserId() const {
+        return state_->userId;
+    }
+
     /**
      * Registers a new user with the provided details.
      * @param email User's email.
