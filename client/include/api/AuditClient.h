@@ -1,7 +1,7 @@
 #pragma once
 
-#include "core/HttpGatewayClient.h"
 #include "core/ClientState.h"
+#include "core/HttpGatewayClient.h"
 #include <string>
 
 class AuditClient

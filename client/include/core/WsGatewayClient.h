@@ -1,9 +1,9 @@
 #pragma once
 
 #include <string>
-#include <QString>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QString>
 
 class MessagingClient;
 

@@ -89,6 +89,8 @@ Login::Login(QWidget *parent)
 
     QPushButton *loginButton = new QPushButton(tr("LOGIN.PAGE_TITLE"));
     loginButton->setObjectName("primaryButton");
+    loginButton->setCursor(Qt::PointingHandCursor);
+
 
     QString signupText = tr("LOGIN.NO_ACCOUNT") + " " + QString("<a href='#'>%1</a>").arg(tr("LOGIN.SIGN_UP"));
 
@@ -96,6 +98,7 @@ Login::Login(QWidget *parent)
     signupLabel->setTextFormat(Qt::RichText);
     signupLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
     signupLabel->setAlignment(Qt::AlignCenter);
+    containerLayout->addWidget(signupLabel);
 
     // Layout login
     loginLayout->addWidget(emailLabel);
@@ -236,9 +239,21 @@ Login::Login(QWidget *parent)
         title->setText(tr("LOGIN.PAGE_TITLE"));
     });
 
-    connect(loginButton, &QPushButton::clicked, this, [=]() {
-        QString email = emailEdit->text();
-        QString password = passwordEdit->text();
+    connect(loginButton, &QPushButton::clicked, this, [=]()
+    {
+        emit loginRequested(emailEdit->text(), passwordEdit->text());
+        // TO DO: guest also language
+    });
+
+    connect(createAccount, &QPushButton::clicked, this, [=]()
+    {
+        if (regPasswordEdit->text() != regConfirmPasswordEdit->text())
+        {
+            qDebug() << "Passwords do not match!";
+            //TODO show error message to user
+            return;
+        }
+        emit registerRequested(regEmailEdit->text(), regPasswordEdit->text(), regFirstNameEdit->text(), regLastNameEdit->text(), dobEdit->text());
     });
 
     // Main layout

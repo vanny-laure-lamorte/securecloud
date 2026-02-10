@@ -5,8 +5,8 @@
 #include <QLabel>
 #include <QFile>
 
-MainWindow::MainWindow(QWidget *parent)
-    : QWidget(parent)
+MainWindow::MainWindow(ClientService* service, QWidget *parent)
+    : QWidget(parent), service_(service)
 {
     // Get style file
     QFile file(":/styles/secure-cloud-style.qss");
@@ -21,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent)
     setWindowTitle("SecureCloud");
     resize(1280, 720);
 
-    layoutContainer = new NotConnectedLayout(this);
+    layoutContainer = new NotConnectedLayout(service_, this);
 
     QVBoxLayout* layout = new QVBoxLayout(this);
     layout->addWidget(layoutContainer);

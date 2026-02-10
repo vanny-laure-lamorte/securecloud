@@ -1,25 +1,16 @@
-#include "ClientApp.h"
-#include "api/AuthClient.h"
-#include "api/AuditClient.h"
-#include "api/MessagingApiClient.h"
-#include "core/WsGatewayClient.h"
+#include "ClientConsoleApp.h"
+#include "core/ClientService.h"
 
 #include <iostream>
 #include <limits>
 #include <string>
 
-ClientApp::ClientApp(AuthClient &auth,
-                     AuditClient &audit,
-                     MessagingApiClient &messaging,
-                     WsGatewayClient *wsClient)
-    : auth_(auth),
-      audit_(audit),
-      messaging_(messaging),
-      wsClient_(wsClient)
+ClientConsoleApp::ClientConsoleApp(ClientService& service)
+    : service_(service)
 {
 }
 
-void ClientApp::printMenu()
+void ClientConsoleApp::printMenu()
 {
     std::cout << "Menu:\n"
                  "  1) Login via API Gateway (/auth/login)\n"
@@ -36,7 +27,7 @@ void ClientApp::printMenu()
                  "  0) Quit\n> ";
 }
 
-void ClientApp::handleLogin()
+void ClientConsoleApp::handleLogin()
 {
     std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
 
@@ -48,39 +39,32 @@ void ClientApp::handleLogin()
 
     std::cout << "Password: ";
     std::getline(std::cin, password);
-    if (auth_.login(email, password))
-    {
+
+    if (service_.login(email, password))
         std::cout << "[Client] Login OK.\n";
-        if (wsClient_)
-            wsClient_->connectWithJwt(auth_.getJwt());
-    }
     else
-    {
         std::cout << "[Client] Login FAILED.\n";
-    }
 }
 
-//TODO : Fix crash on logout (Probably due to wsClient_ using invalid jwt after logout)
-void ClientApp::handleLogout(){
-    if(auth_.state_->authenticated){
-        if(auth_.logout(auth_.state_->email)){
-            std::cout << "[Client] Logout OK.\n";
-            // running_ = false;
-        } else {
-            std::cout << "[Client] Logout FAILED.\n";
-        }
+void ClientConsoleApp::handleLogout()
+{
+    if (!service_.isAuthenticated())
+    {
+        std::cout << "[Client] Not logged in.\n";
+        return;
     }
+
+    if (service_.logout())
+        std::cout << "[Client] Logout OK.\n";
+    else
+        std::cout << "[Client] Logout FAILED.\n";
 }
 
-void ClientApp::handleRegister()
+void ClientConsoleApp::handleRegister()
 {
     std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
 
-    std::string email;
-    std::string password;
-    std::string username;
-    std::string firstName;
-    std::string lastName;
+    std::string email, password, username, firstName, lastName;
 
     std::cout << "Email: ";
     std::getline(std::cin, email);
@@ -97,59 +81,57 @@ void ClientApp::handleRegister()
     std::cout << "Last Name: ";
     std::getline(std::cin, lastName);
 
-    if (auth_.registerUser(email, password, username, firstName, lastName))
+    std::string dob = "1990-01-01";
+
+    if (service_.registerUser(email, password, username, firstName, lastName, dob))
         std::cout << "[Client] Registration OK.\n";
     else
         std::cout << "[Client] Registration FAILED.\n";
 }
 
-void ClientApp::handleAuthPing()
+void ClientConsoleApp::handleAuthPing()
 {
-    auth_.ping();
+    service_.pingAuth();
 }
 
-void ClientApp::handleAuditAll()
+void ClientConsoleApp::handleAuditAll()
 {
-    audit_.getAllServicesStatus();
+    service_.getServicesStatus();
 }
 
-void ClientApp::handleAuditRefresh()
+void ClientConsoleApp::handleAuditRefresh()
 {
-    audit_.refreshServices();
+    service_.refreshServices();
 }
 
-void ClientApp::handleAuditPingAuth()
+void ClientConsoleApp::handleAuditPingAuth()
 {
-    audit_.pingService("auth");
+    service_.pingService("auth");
 }
 
-void ClientApp::handleAuditPingMessaging()
+void ClientConsoleApp::handleAuditPingMessaging()
 {
-    audit_.pingService("messaging");
+    service_.pingService("messaging");
 }
 
-void ClientApp::handleWsSend()
+void ClientConsoleApp::handleWsSend()
 {
-    if (!wsClient_)
-    {
-        std::cout << "[Client] WebSocket not available.\n";
-        return;
-    }
-
     std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
 
     std::cout << "Send to (u for user, g for group): ";
     char choice;
     std::cin >> choice;
+
     if (choice != 'u' && choice != 'g')
     {
         std::cout << "[Client] Invalid choice.\n";
         return;
     }
-    std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
+
     std::cout << "Enter user ID or group ID: ";
     int targetId;
     std::cin >> targetId;
+
     std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
     std::cout << "Enter WS message: ";
     std::string msg;
@@ -162,27 +144,28 @@ void ClientApp::handleWsSend()
     }
 
     if (choice == 'u')
-        wsClient_->sendPersonal(auth_.state_->userId, targetId, msg);
+        service_.sendPersonal(targetId, msg);
     else
-        wsClient_->sendGroup(auth_.state_->userId, targetId, msg);
+        service_.sendGroup(targetId, msg);
 }
 
-void ClientApp::handleMessagingGroups()
+void ClientConsoleApp::handleMessagingGroups()
 {
-    messaging_.getGroups();
+    service_.getGroups();
 }
 
-void ClientApp::handleMessagingAllMessages()
+void ClientConsoleApp::handleMessagingAllMessages()
 {
-    messaging_.getAllMessages();
+    service_.getAllMessages();
 }
 
-void ClientApp::run()
+void ClientConsoleApp::run()
 {
     while (running_)
     {
         printMenu();
         int choice = -1;
+
         if (!(std::cin >> choice))
         {
             std::cout << "[Client] Bye.\n";
@@ -195,6 +178,7 @@ void ClientApp::run()
             handleLogout();
             std::cout << "[Client] Bye.\n";
             return;
+
         case 1:
             handleLogin();
             break;
