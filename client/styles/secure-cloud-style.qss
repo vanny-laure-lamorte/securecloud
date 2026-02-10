@@ -24,6 +24,29 @@ QPushButton#NoBackgroundBtn:hover{
     background-color: #017f6a;
 }
 
+/* --- DateEdit ---*/
+
+QDateEdit#dobEdit {
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 6px 30px 6px 10px;
+    background: white;
+    color: #1A1A1A;
+}
+
+QDateEdit#dobEdit::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: right;
+    width: 25px;
+    border-left: 1px solid #ccc;
+}
+
+QDateEdit#dobEdit::down-arrow {
+    image: url(:/assets/icons/calendar.png);
+    width: 14px;
+    height: 14px;
+}
+
 /* --- QLabel --- */
 
 QLabel#separator {
