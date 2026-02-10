@@ -1,3 +1,4 @@
+// api-gateway/src/GatewayWs.cpp
 #include "GatewayWs.h"
 
 #include <drogon/drogon.h>
@@ -59,10 +60,12 @@ void GatewayWs::handleNewConnection(const HttpRequestPtr &req,
             if (type != WebSocketMessageType::Text)
                 return;
 
+            // forward backend -> front
             if (session->frontConn && session->frontConn->connected())
                 session->frontConn->send(message);
         });
 
+    // Handler backend closed
     session->backendClient->setConnectionClosedHandler(
         [session](const WebSocketClientPtr &)
         {
