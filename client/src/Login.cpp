@@ -89,6 +89,8 @@ Login::Login(QWidget *parent)
 
     QPushButton *loginButton = new QPushButton(tr("LOGIN.PAGE_TITLE"));
     loginButton->setObjectName("primaryButton");
+    loginButton->setCursor(Qt::PointingHandCursor);
+
 
     QString signupText = tr("LOGIN.NO_ACCOUNT") + " " + QString("<a href='#'>%1</a>").arg(tr("LOGIN.SIGN_UP"));
 
@@ -96,6 +98,7 @@ Login::Login(QWidget *parent)
     signupLabel->setTextFormat(Qt::RichText);
     signupLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
     signupLabel->setAlignment(Qt::AlignCenter);
+    containerLayout->addWidget(signupLabel);
 
     // Layout login
     loginLayout->addWidget(emailLabel);
@@ -236,7 +239,8 @@ Login::Login(QWidget *parent)
         title->setText(tr("LOGIN.PAGE_TITLE"));
     });
 
-    connect(loginButton, &QPushButton::clicked, this, [=]() {
+    connect(loginButton, &QPushButton::clicked, this, [=]()
+    {
         QString email = emailEdit->text();
         QString password = passwordEdit->text();
         emit loginRequested(emailEdit->text(), passwordEdit->text());
