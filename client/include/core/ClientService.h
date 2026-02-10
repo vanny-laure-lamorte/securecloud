@@ -88,12 +88,6 @@ public:
     void pingService(const std::string& serviceName);
 
     /**
-     * Retrieves the list of messaging groups the authenticated user is part of.
-     * This can be used to display the user's groups in the UI.
-     */
-    void getGroups();
-
-    /**
      * Retrieves all messages for the authenticated user, including personal and group messages.
      * This can be used to populate the user's message history in the UI.
      */
@@ -138,7 +132,7 @@ public:
      * @param userID The ID of the user whose groups are to be retrieved.
      * @return A vector of maps, where each map represents a group with its details (e.g., group ID, group name).
      */
-    QVector<QMap<int, QString>> getGroups(int userID);
+    QVector<QMap <int, QString>> getGroups();
 
 private:
     /**
