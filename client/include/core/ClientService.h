@@ -133,6 +133,13 @@ public:
      */
     std::string email() const;
 
+    /**
+     * Retrieves the groups of authenticated user.
+     * @param userID The ID of the user whose groups are to be retrieved.
+     * @return A vector of maps, where each map represents a group with its details (e.g., group ID, group name).
+     */
+    QVector<QMap<int, QString>> getGroups(int userID);
+
 private:
     /**
      * Establishes a WebSocket connection using the provided JWT for authentication.

@@ -1,17 +1,6 @@
 #include "Home.h"
 
-#include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QPushButton>
-#include <QFrame>
-#include <QLabel>
-#include <QIcon>
-#include <QScrollArea>
-#include <QLineEdit>
-#include <QStackedWidget>
-#include <QHBoxLayout>
-
-Home::Home(QWidget *parent)
+Home::Home(ClientService* service, QWidget *parent)
     : QWidget(parent)
 {
     // --- Layout principal horizontal ---
@@ -144,8 +133,10 @@ Home::Home(QWidget *parent)
     leftLayout->addWidget(settingsBtn, 0, Qt::AlignHCenter);
     leftLayout->addWidget(settingsBtn, 0, Qt::AlignHCenter);
 
-    connect(settingsBtn, &QPushButton::clicked, [stackedContent]()
-        { stackedContent->setCurrentIndex(7);
+    connect(settingsBtn, &QPushButton::clicked, [this, stackedContent]()
+        {
+            emit logoutRequested(); // TODO: place on real logout action
+            stackedContent->setCurrentIndex(7);
     });
 
     // --- Separator between left and right sidebar ---
@@ -270,7 +261,16 @@ Home::Home(QWidget *parent)
     channelTitle->setStyleSheet("color:#B9BBBE;font-weight:bold;");
     channelLayout->addWidget(channelTitle);
 
-    QVector<QString> channels = {"#general", "#chat1", "#chat2", "#groupe1", "#groupe2", "#random", "#development", "#design", "#marketing", "#sales", "#support", "#hr"};
+    QVector<QString> channels;
+    QVector<QMap <int, QString>> groups = service->getGroups(service->userId());
+    for (const QMap<int, QString> &group : groups) {
+        for (auto it = group.constBegin(); it != group.constEnd(); ++it) {
+            channels.append(it.value());
+        }
+    }
+    if (channels.isEmpty()) {
+        channels = {"#general", "#chat1", "#chat2", "#groupe1", "#groupe2", "#random", "#development", "#design", "#marketing", "#sales", "#support", "#hr"};
+    }
 
     for (const QString &ch : channels)
     {

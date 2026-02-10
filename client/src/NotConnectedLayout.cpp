@@ -8,8 +8,8 @@ NotConnectedLayout::NotConnectedLayout(ClientService* service, QWidget *parent)
     mainLayout = new QVBoxLayout(this);
 
     // Header
-    // header = new Header(this);
-    // mainLayout->addWidget(header);
+    header = new Header(this);
+    mainLayout->addWidget(header);
 
     // Body
     body = new Login(this);
@@ -19,8 +19,8 @@ NotConnectedLayout::NotConnectedLayout(ClientService* service, QWidget *parent)
     // mainLayout->addWidget(body);
 
     // Footer
-    // footer = new Footer(this);
-    // mainLayout->addWidget(footer);
+    footer = new Footer(this);
+    mainLayout->addWidget(footer);
     wireBody(body);
 }
 
@@ -28,9 +28,17 @@ void NotConnectedLayout::setBody(QWidget *newBody)
 {
     if (!newBody) return;
     mainLayout->removeWidget(body);
+    if (auto loginPage = qobject_cast<Login*>(newBody)){
+        header->show();
+        footer->show();
+    } else {
+        header->hide();
+        footer->hide();
+    }
     body->deleteLater();
     body = newBody;
     mainLayout->insertWidget(1, body);
+    wireBody(body);
 }
 
 void NotConnectedLayout::wireBody(QWidget* bodyWidget)
@@ -45,7 +53,7 @@ void NotConnectedLayout::wireBody(QWidget* bodyWidget)
             if (ok){
                 emit loginSucceeded();
                 qDebug() << "Login successful for user:" << email;
-                setBody(new Home(this));
+                setBody(new Home(service_, this));
             } else {
                 emit loginFailed(tr("LOGIN.LOGIN_FAILED"));
                 qDebug() << "Login failed for user:" << email;
@@ -61,10 +69,25 @@ void NotConnectedLayout::wireBody(QWidget* bodyWidget)
             if (ok){
                 emit registerSucceeded();
                 qDebug() << "Register successful for user:" << email;
-                setBody(new Home(this));
+                setBody(new Home(service_, this));
             } else {
                 emit registerFailed(tr("LOGIN.LOGIN_FAILED"));
                 qDebug() << "Register failed for user:" << email;
+            }
+        });
+    }
+    else if (auto homePage = qobject_cast<Home*>(bodyWidget)){
+        connect(homePage, &Home::logoutRequested, this,
+                [this]()
+        {
+            qDebug() << "Logout requested from Home page.";
+            if (!service_) return;
+            bool ok = service_->logout();
+            if (ok){
+                qDebug() << "Logout successful";
+                setBody(new Login(this));
+            } else {
+                qDebug() << "Logout failed";
             }
         });
     }

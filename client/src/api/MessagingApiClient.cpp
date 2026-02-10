@@ -67,3 +67,47 @@ bool MessagingApiClient::getAllMessages()
     printResponseRaw(body);
     return HttpUtils::isSuccess(code);
 }
+
+std::vector<std::map<int, std::string>> MessagingApiClient::getGroupsNameForUser(int userId)
+{
+    auto req = HttpRequest::newHttpRequest();
+    req->setMethod(Get);
+    // req->setPath("/messaging/groups/names?userId=" + std::to_string(userId));
+    // TODO : add userId as query parameter when the endpoint is implemented in the service
+    req->setPath("/messaging/groups");
+
+    auto [code, body] = http_.send(req);
+    HttpUtils::logServiceCall("Messaging", "groupsNameForUser", code, body);
+
+    printResponseRaw(body);
+    if (!HttpUtils::isSuccess(code))
+        return {};
+
+    std::vector<std::map<int, std::string>> groups;
+    try
+    {
+        Json::Value jsonResponse;
+        Json::CharReaderBuilder readerBuilder;
+        std::string errs;
+        std::istringstream s(body);
+        if (Json::parseFromStream(readerBuilder, s, &jsonResponse, &errs))
+        {
+            for (const auto &group : jsonResponse)
+            {
+                int groupId = group["group_id"].asInt();
+                std::string groupName = group["name"].asString();
+                groups.push_back({{groupId, groupName}});
+            }
+        }
+        else
+        {
+            std::cerr << "Failed to parse JSON: " << errs << "\n";
+        }
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << "Exception while parsing JSON: " << e.what() << "\n";
+    }
+
+    return groups;
+}
