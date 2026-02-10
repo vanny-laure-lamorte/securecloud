@@ -99,6 +99,13 @@ public:
      */
     bool getUserExists(const std::string &email);
 
+    /**
+     * @brief Get the user ID by email.
+     * @param email The email of the user.
+     * @return The user ID if found, std::nullopt otherwise.
+     */
+    int getUserIdByEmail(const std::string &email);
+
 private:
     DbConnection &db_;
 };

@@ -50,6 +50,10 @@ public:
      * @return A vector of strings containing user information.
      */
     std::vector<std::string> getuserInformations(const std::string &email);
+
+    int getuserId(const std::string &email){
+        return userRepository_.getUserIdByEmail(email);
+    }
 private:
     UserRepository userRepository_;
 };

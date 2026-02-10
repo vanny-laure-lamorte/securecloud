@@ -138,6 +138,19 @@ void ClientApp::handleWsSend()
 
     std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
 
+    std::cout << "Send to (u for user, g for group): ";
+    char choice;
+    std::cin >> choice;
+    if (choice != 'u' && choice != 'g')
+    {
+        std::cout << "[Client] Invalid choice.\n";
+        return;
+    }
+    std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
+    std::cout << "Enter user ID or group ID: ";
+    int targetId;
+    std::cin >> targetId;
+    std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
     std::cout << "Enter WS message: ";
     std::string msg;
     std::getline(std::cin, msg);
@@ -148,7 +161,10 @@ void ClientApp::handleWsSend()
         return;
     }
 
-    wsClient_->send(msg);
+    if (choice == 'u')
+        wsClient_->sendPersonal(auth_.state_->userId, targetId, msg);
+    else
+        wsClient_->sendGroup(auth_.state_->userId, targetId, msg);
 }
 
 void ClientApp::handleMessagingGroups()

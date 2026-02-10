@@ -36,6 +36,22 @@ public:
      */
     std::vector<MessageModel> getInboxForUser(int userId) const;
 
+    /**
+     * @brief Insert a new personal message into the database.
+     * @param senderId The ID of the sender.
+     * @param receiverUserId The ID of the recipient user.
+     * @param content The content of the message.
+     */
+    void insertPersonalMessage(int senderId, int receiverUserId, const std::string &content);
+
+    /**
+     * @brief Insert a new group message into the database.
+     * @param senderId The ID of the sender.
+     * @param receiverGroupId The ID of the recipient group.
+     * @param content The content of the message.
+     */
+    void insertGroupMessage(int senderId, int receiverGroupId, const std::string &content);
+
 private:
     DbConnection &db_;
 };

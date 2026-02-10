@@ -79,6 +79,20 @@ int UserRepository::getUserIdByUsername(
     return res[0]["user_id"].as<int>();
 }
 
+int UserRepository::getUserIdByEmail(const std::string &email)
+{
+    auto client = db_.client();
+    drogon::orm::Result res = client->execSqlSync(
+        "SELECT user_id FROM connexion WHERE email = $1", email);
+
+    if (res.empty())
+    {
+        throw std::runtime_error("UserID not found for email: " + email);
+    }
+
+    return res[0]["user_id"].as<int>();
+}
+
 bool UserRepository::checkCredentials(
     const std::string &email,
     const std::string &hashedPassword)
