@@ -1,4 +1,3 @@
-// api-gateway/src/GatewayWs.cpp
 #include "GatewayWs.h"
 
 #include <drogon/drogon.h>
@@ -6,7 +5,6 @@
 
 using namespace drogon;
 
-// ---- Helpers ---------------------------------------------------------------
 
 static void sendJson(const WebSocketConnectionPtr &c, const std::string &json)
 {
@@ -16,7 +14,6 @@ static void sendJson(const WebSocketConnectionPtr &c, const std::string &json)
 
 static void connectBackend(const std::shared_ptr<WsSession> &session);
 
-// ---- GatewayWs ------------------------------------------------------------
 
 std::shared_ptr<WsSession> GatewayWs::getSession(const WebSocketConnectionPtr &wsConn)
 {
@@ -42,11 +39,9 @@ void GatewayWs::handleNewConnection(const HttpRequestPtr &req,
     session->closing.store(false);
     session->connecting.store(false);
 
-    // récupère le token côté front (si besoin)
     if (req)
         session->token = req->getParameter("token");
 
-    // ✅ stocker la session AVANT de lancer le backend (évite courses)
     {
         std::lock_guard<std::mutex> lock(sessionsMutex_);
         sessions_[frontConn.get()] = session;
@@ -54,10 +49,8 @@ void GatewayWs::handleNewConnection(const HttpRequestPtr &req,
 
     std::cout << "[GatewayWs] new front WS connection\n";
 
-    // Crée le backend client (base URL SANS path)
     session->backendClient = WebSocketClient::newWebSocketClient("ws://messaging-service-api:8082");
 
-    // Handler messages backend -> front
     session->backendClient->setMessageHandler(
         [session](const std::string &message,
                   const WebSocketClientPtr &,
@@ -66,31 +59,24 @@ void GatewayWs::handleNewConnection(const HttpRequestPtr &req,
             if (type != WebSocketMessageType::Text)
                 return;
 
-            // forward backend -> front
             if (session->frontConn && session->frontConn->connected())
                 session->frontConn->send(message);
         });
 
-    // Handler backend closed
     session->backendClient->setConnectionClosedHandler(
         [session](const WebSocketClientPtr &)
         {
             std::cout << "[GatewayWs] backend WS closed\n";
             session->backendReady = false;
 
-            // Si le front est déjà en fermeture, ne rien faire
             if (session->closing.load())
                 return;
 
-            // ✅ Ne PAS shutdown le front : on garde la connexion front
-            // et on tente de reconnecter le backend.
             sendJson(session->frontConn, R"({"type":"ws.backend.down"})");
 
-            // Tentative de reconnexion (asynchrone)
             connectBackend(session);
         });
 
-    // Connect backend maintenant
     connectBackend(session);
 }
 
@@ -107,7 +93,6 @@ void GatewayWs::handleConnectionClosed(const WebSocketConnectionPtr &frontConn)
 
     session->closing.store(true);
 
-    // Fermer backend proprement
     if (session->backendClient)
     {
         auto backConn = session->backendClient->getConnection();
@@ -144,26 +129,21 @@ void GatewayWs::handleNewMessage(const WebSocketConnectionPtr &frontConn,
     }
     else
     {
-        // backend pas prêt -> bufferise
         {
             std::lock_guard<std::mutex> lock(session->pendingMutex);
             session->pendingMessages.push_back(std::move(message));
         }
         sendJson(frontConn, R"({"type":"ws.buffered"})");
 
-        // tente de reconnect si pas déjà en cours
         connectBackend(session);
     }
 }
-
-// ---- Backend connect logic -------------------------------------------------
 
 static void connectBackend(const std::shared_ptr<WsSession> &session)
 {
     if (!session || session->closing.load())
         return;
 
-    // éviter de lancer plusieurs connect en parallèle
     bool expected = false;
     if (!session->connecting.compare_exchange_strong(expected, true))
         return;
@@ -171,7 +151,6 @@ static void connectBackend(const std::shared_ptr<WsSession> &session)
     auto reqBackend = HttpRequest::newHttpRequest();
     reqBackend->setMethod(Get);
 
-    // Forward token (optionnel)
     if (!session->token.empty())
         reqBackend->setPath("/ws/messaging?token=" + session->token);
     else
@@ -207,7 +186,6 @@ static void connectBackend(const std::shared_ptr<WsSession> &session)
             if (!backConn || !backConn->connected())
                 return;
 
-            // Flush pending messages
             std::vector<std::string> pending;
             {
                 std::lock_guard<std::mutex> lock(session->pendingMutex);

@@ -83,7 +83,6 @@ private slots:
 
         QJsonDocument doc(identify);
         ws_.sendTextMessage(QString::fromUtf8(doc.toJson(QJsonDocument::Compact)));
-        // ws_.sendTextMessage("Hello from Qt client via gateway!");
     }
 
     /**
