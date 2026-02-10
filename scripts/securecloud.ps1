@@ -9,12 +9,11 @@ function Write-Color {
     param(
         [int]$Type,
         [string]$Text1,
-        [string]$Text2="" # Description
+        [string]$Text2=""
     )
 
     switch ($Type) {
         1 {
-            # Titre bleu
             Write-Host $Text1 -ForegroundColor Cyan
         }
         2 {
