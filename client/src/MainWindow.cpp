@@ -13,7 +13,6 @@ MainWindow::MainWindow(ClientService* service, QWidget *parent)
     if (file.open(QFile::ReadOnly | QFile::Text)) {
         QString style = file.readAll();
         this->setStyleSheet(style);
-        qWarning("Style OK");
     } else {
         qWarning("Can't reach secure-cloud-style.qss");
     };
