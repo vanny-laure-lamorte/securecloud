@@ -27,6 +27,7 @@ public:
     /**
      * Logs out the user with the given email.
      * @param email User's email.
+     * @return true if logout is successful, false otherwise.
      */
     bool logout(const std::string &email);
 

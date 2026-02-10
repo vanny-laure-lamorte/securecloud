@@ -36,6 +36,7 @@ signals:
         const QString &firstName,
         const QString &lastName,
         const QString &dob);
+
 };
 
 #endif // LOGIN_H
