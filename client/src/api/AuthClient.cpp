@@ -38,9 +38,16 @@ bool AuthClient::login(const std::string &email, const std::string &password)
         return false;
     }
 
+    const int userid = json.get("userId", -1).asInt();
+    if (userid == -1)    {
+        std::cout << "[Auth] No userId in response\n";
+        return false;
+    }
+
     state_->authenticated = true;
     state_->email = email;
     state_->jwt = token;
+    state_->userId = userid;
 
     std::cout << "[Auth] Logged in, JWT stored\n";
     return true;

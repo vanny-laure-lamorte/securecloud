@@ -75,3 +75,21 @@ std::vector<MessageModel> MessageRepository::getInboxForUser(int userId) const
 {
     return getPersonalMessagesForUser(userId);
 }
+
+void MessageRepository::insertPersonalMessage(int senderId, int receiverUserId, const std::string &content)
+{
+    auto client = db_.client();
+    client->execSqlSync(
+        "INSERT INTO messages (sender_id, receiver_user_id, content) VALUES ($1, $2, $3)",
+        senderId, receiverUserId, content
+    );
+}
+
+void MessageRepository::insertGroupMessage(int senderId, int receiverGroupId, const std::string &content)
+{
+    auto client = db_.client();
+    client->execSqlSync(
+        "INSERT INTO messages (sender_id, receiver_group_id, content) VALUES ($1, $2, $3)",
+        senderId, receiverGroupId, content
+    );
+}

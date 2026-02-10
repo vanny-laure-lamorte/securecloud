@@ -36,8 +36,7 @@ int runQtWindow(int argc, char *argv[])
 
     std::cout << QObject::tr("K.Hello").toStdString() << std::endl;
 
-    MessagingClient wsClient(QStringLiteral("TEMP_USER"));
-    g_wsClient = &wsClient;
+    g_wsClient = new MessagingClient(QStringLiteral("TEMP_USER"), qApp);
 
     g_qtReadyProm.set_value();
 
@@ -69,22 +68,11 @@ void startBackend()
     AuthClient authClient(httpGateway, clientState);
     AuditClient auditClient(httpGateway);
     MessagingApiClient messagingApi(httpGateway);
+
     WsGatewayClient wsGateway{ g_wsClient };
     ClientApp consoleApp(authClient, auditClient, messagingApi, &wsGateway);
-    consoleApp.run();
 
-    const std::string jwtStd = clientState->jwt;
-    const QString jwt = QString::fromStdString(jwtStd);
-    QMetaObject::invokeMethod(
-        g_wsClient,
-        [jwt, clientState]()
-        {
-            if (!g_wsClient) return;
-            g_wsClient->setUserId(QString::fromStdString(clientState->userName));
-            g_wsClient->maybeConnect(jwt);
-        },
-        Qt::QueuedConnection
-    );
+    consoleApp.run();
 
     QMetaObject::invokeMethod(qApp, "quit", Qt::QueuedConnection);
 

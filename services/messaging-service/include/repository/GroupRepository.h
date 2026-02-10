@@ -29,6 +29,12 @@ public:
      */
     std::vector<GroupModel> getGroupsForUser(int userId) const;
 
+    /**
+     * @brief Create a new group with the given name.
+     * @param name The name of the new group.
+     */
+    void insertGroup(const std::string &name);
+
 private:
     DbConnection &db_;
 };

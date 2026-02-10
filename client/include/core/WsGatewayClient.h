@@ -2,6 +2,8 @@
 
 #include <string>
 #include <QString>
+#include <QJsonDocument>
+#include <QJsonObject>
 
 class MessagingClient;
 
@@ -23,11 +25,24 @@ public:
     bool connectWithJwt(const std::string &jwt);
 
     /**
-     * Sends a message via the WebSocket connection.
-     * @param msg The message to send.
+     * Sends a personnal message via the WebSocket connection.
+     * @param toUserId The recipient user ID.
+     * @param content The message to send.
      */
-    void send(const std::string &msg);
+    void sendPersonal(int userId, int toUserId, const std::string &content);
+
+    /**
+     * Sends a group message via the WebSocket connection.
+     * @param groupId The recipient group ID.
+     * @param content The message to send.
+     */
+    void sendGroup(int userId, int groupId, const std::string &content);
 
 private:
+    /**
+     * Sends a raw JSON message via the WebSocket connection.
+     * @param jsonText The JSON text to send.
+     */
+    void sendJson(const QString &jsonText);
     MessagingClient *impl_;
 };
