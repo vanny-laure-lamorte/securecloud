@@ -51,5 +51,21 @@ void NotConnectedLayout::wireBody(QWidget* bodyWidget)
                 qDebug() << "Login failed for user:" << email;
             }
         });
+
+        connect(loginPage, &Login::registerRequested, this,
+                [this](const QString& email, const QString& password, const QString& firstName, const QString& lastName, const QString& dob)
+        {
+            if (!service_) return;
+            std::string username = firstName.toStdString() + "." + lastName.toStdString();
+            bool ok = service_->registerUser(email.toStdString(), password.toStdString(), username, firstName.toStdString(), lastName.toStdString(), dob.toStdString());
+            if (ok){
+                emit registerSucceeded();
+                qDebug() << "Register successful for user:" << email;
+                setBody(new Home(this));
+            } else {
+                emit registerFailed(tr("LOGIN.LOGIN_FAILED"));
+                qDebug() << "Register failed for user:" << email;
+            }
+        });
     }
 }

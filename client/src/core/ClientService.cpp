@@ -1,13 +1,5 @@
 #include "core/ClientService.h"
 
-#include "api/AuthClient.h"
-#include "api/AuditClient.h"
-#include "api/MessagingApiClient.h"
-#include "core/WsGatewayClient.h"
-#include "core/ClientState.h"
-
-#include <QMetaObject>
-
 ClientService::ClientService(AuthClient& auth,
                              AuditClient& audit,
                              MessagingApiClient& messaging,
@@ -42,9 +34,10 @@ bool ClientService::registerUser(const std::string& email,
                                  const std::string& password,
                                  const std::string& username,
                                  const std::string& firstName,
-                                 const std::string& lastName)
+                                 const std::string& lastName,
+                                 const std::string& dob)
 {
-    return auth_.registerUser(email, password, username, firstName, lastName);
+    return auth_.registerUser(email, password, username, firstName, lastName, dob);
 }
 
 void ClientService::pingAuth()

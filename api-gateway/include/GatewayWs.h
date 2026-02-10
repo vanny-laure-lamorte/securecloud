@@ -1,8 +1,8 @@
 #pragma once
+#include <atomic>
+#include <memory>
 #include <drogon/WebSocketController.h>
 #include <drogon/WebSocketClient.h>
-#include <memory>
-#include <atomic>
 
 /**
  * Session data for a WebSocket connection

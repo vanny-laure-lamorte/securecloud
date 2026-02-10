@@ -99,7 +99,8 @@ bool AuthClient::registerUser(const std::string &email,
                               const std::string &password,
                               const std::string &username,
                               const std::string &firstName,
-                              const std::string &lastName)
+                              const std::string &lastName,
+                              const std::string &dob)
 {
     Json::Value payload;
     payload["email"] = email;
@@ -107,6 +108,7 @@ bool AuthClient::registerUser(const std::string &email,
     payload["username"] = username;
     payload["first_name"] = firstName;
     payload["last_name"] = lastName;
+    payload["dob"] = dob;
 
     auto req = HttpRequest::newHttpJsonRequest(payload);
     req->setMethod(Post);

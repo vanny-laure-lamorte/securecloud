@@ -241,10 +241,19 @@ Login::Login(QWidget *parent)
 
     connect(loginButton, &QPushButton::clicked, this, [=]()
     {
-        QString email = emailEdit->text();
-        QString password = passwordEdit->text();
         emit loginRequested(emailEdit->text(), passwordEdit->text());
         // TO DO: guest also language
+    });
+
+    connect(createAccount, &QPushButton::clicked, this, [=]()
+    {
+        if (regPasswordEdit->text() != regConfirmPasswordEdit->text())
+        {
+            qDebug() << "Passwords do not match!";
+            //TODO show error message to user
+            return;
+        }
+        emit registerRequested(regEmailEdit->text(), regPasswordEdit->text(), regFirstNameEdit->text(), regLastNameEdit->text(), dobEdit->text());
     });
 
     // Main layout

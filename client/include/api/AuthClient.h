@@ -1,8 +1,8 @@
 #pragma once
-#include <string>
-#include <json/json.h>
-#include "core/HttpGatewayClient.h"
 #include "core/ClientState.h"
+#include "core/HttpGatewayClient.h"
+#include <json/json.h>
+#include <string>
 
 class AuthClient
 {
@@ -52,13 +52,15 @@ public:
      * @param username Desired username.
      * @param firstName User's first name.
      * @param lastName User's last name.
+     * @param dob User's date of birth.
      * @return true if registration is successful, false otherwise.
      */
     bool registerUser(const std::string &email,
                       const std::string &password,
                       const std::string &username,
                       const std::string &firstName,
-                      const std::string &lastName);
+                      const std::string &lastName,
+                      const std::string &dob);
 
     /**
      * Shared client state (authentication, JWT, etc.)

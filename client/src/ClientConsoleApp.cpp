@@ -81,7 +81,9 @@ void ClientConsoleApp::handleRegister()
     std::cout << "Last Name: ";
     std::getline(std::cin, lastName);
 
-    if (service_.registerUser(email, password, username, firstName, lastName))
+    std::string dob = "1990-01-01";
+
+    if (service_.registerUser(email, password, username, firstName, lastName, dob))
         std::cout << "[Client] Registration OK.\n";
     else
         std::cout << "[Client] Registration FAILED.\n";
