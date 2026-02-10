@@ -239,6 +239,8 @@ Login::Login(QWidget *parent)
     connect(loginButton, &QPushButton::clicked, this, [=]() {
         QString email = emailEdit->text();
         QString password = passwordEdit->text();
+        emit loginRequested(emailEdit->text(), passwordEdit->text());
+        // TO DO: guest also language
     });
 
     // Main layout
