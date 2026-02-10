@@ -112,7 +112,7 @@ Login::Login(QWidget *parent)
     QPushButton *loginButton = new QPushButton(tr("LOGIN.PAGE_TITLE"), this);
     loginButton->setObjectName("primaryButton");
     loginButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    containerLayout->addWidget(loginButton, 0, Qt::AlignCenter);
+    loginButton->setCursor(Qt::PointingHandCursor);
     containerLayout->addWidget(loginButton);
 
     // No account and subcribe link
@@ -127,8 +127,10 @@ Login::Login(QWidget *parent)
     // TO DO: link subscribe button
     connect(loginButton, &QPushButton::clicked, this, [=]()
     {
+        qDebug() << "Login button clicked with email:" << emailEdit->text() << "and password:" << passwordEdit->text();
         QString email = emailEdit->text();
         QString password = passwordEdit->text();
+        emit loginRequested(emailEdit->text(), passwordEdit->text());
         // TO DO: guest also language
     });
 

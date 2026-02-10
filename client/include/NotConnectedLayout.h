@@ -8,18 +8,24 @@
 #include "Header.h"
 #include "Login.h"
 #include "Home.h"
+#include "core/ClientService.h"
 
 class NotConnectedLayout : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit NotConnectedLayout(QWidget *parent = nullptr);
+    explicit NotConnectedLayout(ClientService* service, QWidget *parent = nullptr);
 
     void setBody(QWidget* newBody);
 
-private:
+signals:
+    void loginSucceeded();
+    void loginFailed(const QString& reason);
 
+private:
+    void wireBody(QWidget* bodyWidget);
+    ClientService* service_;
     QWidget* header;
     QWidget* body;
     QWidget* footer;
