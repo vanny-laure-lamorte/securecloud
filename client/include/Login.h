@@ -4,6 +4,7 @@
 #include <QWidget>
 
 #include "LanguageSelector.h"
+#include "ChatPage.h"
 
 class Login : public QWidget
 {

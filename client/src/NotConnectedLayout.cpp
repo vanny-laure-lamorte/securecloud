@@ -12,11 +12,11 @@ NotConnectedLayout::NotConnectedLayout(QWidget *parent)
     // mainLayout->addWidget(header);
 
     // Body
-    // body = new Login(this);
-    // mainLayout->addWidget(body);
-
-    body = new Home(this);
+    body = new Login(this);
     mainLayout->addWidget(body);
+
+    // body = new Home(this);
+    // mainLayout->addWidget(body);
 
     // Footer
     // footer = new Footer(this);
