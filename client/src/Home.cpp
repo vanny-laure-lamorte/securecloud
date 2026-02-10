@@ -262,7 +262,7 @@ Home::Home(ClientService* service, QWidget *parent)
     channelLayout->addWidget(channelTitle);
 
     QVector<QString> channels;
-    QVector<QMap <int, QString>> groups = service->getGroups(service->userId());
+    QVector<QMap <int, QString>> groups = service->getGroups();
     for (const QMap<int, QString> &group : groups) {
         for (auto it = group.constBegin(); it != group.constEnd(); ++it) {
             channels.append(it.value());
