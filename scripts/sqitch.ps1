@@ -5,12 +5,9 @@ param(
 )
 
 $RootDir = Split-Path $PSScriptRoot -Parent
-$MigrationsDir = Join-Path $RootDir "services\auth-service\migrations"
-$SecretsFile = Join-Path $RootDir "secrets\auth_db_password.txt"
 
 $SqitchImage = "sqitch/sqitch:latest"
 $Network = "securecloud_default"
-$DbUrl = "db:pg://postgres@auth-db:5432/auth_service"
 
 # TODO: init sqitch, generate migration folder if not exists, etc.
 # Write-Host "  sqitch:revert                  Revert migrations"
@@ -28,7 +25,7 @@ switch ($Command) {
         docker run --rm -it $SqitchImage --version
     }
 
-    "sqitch:generate:audit" {
+    "sqitch:generate-audit" {
         Write-Host "[ Generating audit DB migration file... ]"
         docker run --rm -it `
         -v "${PWD}\services\audit-service/migrations:/repo" `
@@ -36,7 +33,7 @@ switch ($Command) {
         sqitch/sqitch:latest add "$(date +%Y%m%d%H%M%S)_version_migrations" -n "Create table x"
     }
 
-    "sqitch:generate:auth" {
+    "sqitch:generate-auth" {
         Write-Host "[ Generating auth DB migration file... ]"
         docker run --rm -it `
         -v "${PWD}\services\auth-service/migrations:/repo" `
@@ -61,7 +58,7 @@ switch ($Command) {
         --network securecloud_default `
         -e PGPASSWORD="$pw" `
         sqitch/sqitch:latest `
-        deploy db:pg://postgres@auth-db:5432/audit_service --chdir /repo/
+        deploy db:pg://postgres@audit-db:5432/audit_service --chdir /repo/
     }
 
     "sqitch:deploy:auth" {
@@ -83,7 +80,7 @@ switch ($Command) {
         --network securecloud_default `
         -e PGPASSWORD="$pw" `
         sqitch/sqitch:latest `
-        deploy db:pg://postgres@auth-db:5432/messaging_service --chdir /repo/
+        deploy db:pg://postgres@messaging-db:5432/messaging_service --chdir /repo/
     }
 
     default {

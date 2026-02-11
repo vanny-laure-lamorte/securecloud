@@ -4,7 +4,6 @@ param(
 
 $ScriptDir = $PSScriptRoot
 
-# Write-Color simplifiée avec alignement
 function Write-Color {
     param(
         [int]$Type,
@@ -77,7 +76,6 @@ function Show-Help {
     Write-Host ""
 }
 
-# No argument → show help
 if (-not $Command) {
     Show-Help
     exit 0
