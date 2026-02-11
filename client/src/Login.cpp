@@ -240,10 +240,7 @@ Login::Login(QWidget *parent)
 
     connect(loginButton, &QPushButton::clicked, this, [=]()
     {
-        QString emailEdit1 = "v@gmail.com";
-        QString passwordEdit1 = "v";
-        emit loginRequested(emailEdit1, passwordEdit1);
-        // emit loginRequested(emailEdit->text(), passwordEdit->text());
+        emit loginRequested(emailEdit->text(), passwordEdit->text());
         // TO DO: guest also language
     });
 
@@ -263,4 +260,50 @@ Login::Login(QWidget *parent)
     mainLayout->addStretch();
     mainLayout->addWidget(container, 0, Qt::AlignHCenter);
     mainLayout->addStretch();
+
+    // --- DevMode Section ---
+    QFrame *devModeFrame = new QFrame(loginPage);
+    devModeFrame->setObjectName("devModeFrame");
+    devModeFrame->setStyleSheet("QFrame#devModeFrame { border-top: 1px solid #cccccc; }");
+
+    QVBoxLayout *devLayout = new QVBoxLayout(devModeFrame);
+    devLayout->setContentsMargins(0, 10, 0, 0);
+    devLayout->setSpacing(5);
+
+    // Label DevMode
+    QLabel *devLabel = new QLabel("Dev Mode");
+    devLabel->setAlignment(Qt::AlignCenter);
+    devLabel->setStyleSheet("color:#555555; font-size:12px;");
+    devLayout->addWidget(devLabel);
+
+    struct DevUser {
+        QString name;
+        QString email;
+        QString password;
+    };
+
+    QVector<DevUser> devUsers = {
+        {"Admin", "vanny@gmail.com", "vannypass"},
+        {"User", "lucas@gmail.com", "lucaspass"}
+    };
+
+    for (const DevUser &user : devUsers)
+    {
+        QPushButton *btn = new QPushButton(user.name);
+        btn->setCursor(Qt::PointingHandCursor);
+        btn->setStyleSheet(
+            "QPushButton { background-color: #00473c; color: white; border-radius: 5px; padding: 3px; }"
+            "QPushButton:hover { background-color: #017f6a; }"
+        );
+        devLayout->addWidget(btn);
+
+        connect(btn, &QPushButton::clicked, this, [=]()
+        {
+            emailEdit->setText(user.email);
+            passwordEdit->setText(user.password);
+            emit loginRequested(user.email, user.password);
+            qDebug() << "DevMode login: " << user.name << " - " << user.email;
+        });
+    }
+    loginLayout->addWidget(devModeFrame);
 }

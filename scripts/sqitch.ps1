@@ -41,7 +41,7 @@ switch ($Command) {
         sqitch/sqitch:latest add "$(date +%Y%m%d%H%M%S)_version_migrations" -n "Create table x"
     }
 
-    "sqitch:generate:messaging" {
+    "sqitch:generate-messaging" {
         Write-Host "[ Generating messaging DB migration file... ]"
         docker run --rm -it `
         docker run --rm -it `
@@ -50,7 +50,7 @@ switch ($Command) {
         sqitch/sqitch:latest add "$(date +%Y%m%d%H%M%S)_version_migrations" -n "Create table x"
     }
 
-    "sqitch:deploy:audit" {
+    "sqitch:deploy-audit" {
         Write-Host "[ Deploying audit DB migrations... ]"
         $pw = Get-Content ./secrets/audit_db_password.txt -Raw
         docker run --rm -it `
@@ -61,7 +61,7 @@ switch ($Command) {
         deploy db:pg://postgres@audit-db:5432/audit_service --chdir /repo/
     }
 
-    "sqitch:deploy:auth" {
+    "sqitch:deploy-auth" {
         Write-Host "[ Deploying auth DB migrations... ]"
         $pw = Get-Content ./secrets/auth_db_password.txt -Raw
         docker run --rm -it `
@@ -72,7 +72,7 @@ switch ($Command) {
         deploy db:pg://postgres@auth-db:5432/auth_service --chdir /repo/
     }
 
-    "sqitch:deploy:messaging" {
+    "sqitch:deploy-messaging" {
         Write-Host "[ Deploying messaging DB migrations... ]"
         $pw = Get-Content ./secrets/messaging_db_password.txt -Raw
         docker run --rm -it `
