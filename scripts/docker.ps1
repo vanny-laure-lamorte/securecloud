@@ -7,6 +7,8 @@ Set-Location $RootDir
 
 switch ($Command) {
 
+    # Docker Stack
+
     "docker:up" {
         Write-Host "[ Build and start all containers... ]"
         docker compose up --build -d

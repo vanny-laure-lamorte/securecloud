@@ -58,6 +58,7 @@ Home::Home(QWidget *parent)
 
     QStackedWidget *stackedContent = new QStackedWidget();
     stackedContent->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    stackedContent->setStyleSheet("background-color: #f6f8fc");
 
     // Stacked widget pages
     ChatPage *chatPage = new ChatPage();
