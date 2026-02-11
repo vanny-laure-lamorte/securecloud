@@ -1,3 +1,8 @@
+# General
+build/
+*.env
+secrets/*
+
 # Prerequisites
 *.d
 
@@ -39,3 +44,6 @@
 
 # debug information files
 *.dwo
+
+.vs
+.vscode

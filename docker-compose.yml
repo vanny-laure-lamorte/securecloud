@@ -1,0 +1,131 @@
+services:
+  # === AUTH DB ===
+  auth-db:
+    image: postgres:15
+    container_name: auth-db
+    environment:
+      POSTGRES_DB: auth_service
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD_FILE: /run/secrets/auth_db_password
+    secrets:
+      - auth_db_password
+    volumes:
+      - auth-db-data:/var/lib/postgresql/data
+    ports:
+      - "5434:5432"
+    restart: unless-stopped
+
+  # === AUTH API ===
+  auth-service-api:
+    build:
+      context: .
+      dockerfile: services/auth-service/Dockerfile
+    container_name: auth-container
+    depends_on:
+      - auth-db
+    ports:
+      - "8081:8081"
+    environment:
+      AUTH_DB_HOST: auth-db
+      AUTH_DB_PORT: "5432"
+      AUTH_DB_NAME: auth_service
+      AUTH_DB_USER: postgres
+      AUTH_DB_PASSWORD_FILE: /run/secrets/auth_db_password
+    secrets:
+      - auth_db_password
+    restart: unless-stopped
+
+  # === MESSAGING DB ===
+  messaging-db:
+    image: postgres:15
+    container_name: messaging-db
+    environment:
+      POSTGRES_DB: messaging_service
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD_FILE: /run/secrets/messaging_db_password
+    secrets:
+      - messaging_db_password
+    volumes:
+      - messaging-db-data:/var/lib/postgresql/data
+    ports:
+      - "5435:5432"
+    restart: unless-stopped
+
+  # === MESSAGING API ===
+  messaging-service-api:
+    build:
+      context: .
+      dockerfile: services/messaging-service/Dockerfile
+    container_name: messaging-container
+    depends_on:
+      - messaging-db
+    ports:
+      - "8082:8082"
+    environment:
+      MESSAGING_DB_HOST: messaging-db
+      MESSAGING_DB_PORT: "5432"
+      MESSAGING_DB_NAME: messaging_service
+      MESSAGING_DB_USER: postgres
+      MESSAGING_DB_PASSWORD_FILE: /run/secrets/messaging_db_password
+    secrets:
+      - messaging_db_password
+    restart: unless-stopped
+
+  # === AUDIT DB ===
+  audit-db:
+    image: postgres:15
+    container_name: audit-db
+    environment:
+      POSTGRES_DB: audit_service
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD_FILE: /run/secrets/audit_db_password
+    secrets:
+      - audit_db_password
+    volumes:
+      - audit-db-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+  # === AUDIT API ===
+  audit-service:
+    build:
+      context: .
+      dockerfile: services/audit-service/Dockerfile
+    container_name: audit-service
+    environment:
+      AUDIT_DB_HOST: audit-db
+      AUDIT_DB_PORT: "5432"
+      AUDIT_DB_NAME: audit_service
+      AUDIT_DB_USER: postgres
+      AUDIT_DB_PASSWORD_FILE: /run/secrets/audit_db_password
+    secrets:
+      - audit_db_password
+    ports:
+      - "8083:8083"
+    depends_on:
+      - audit-db
+    restart: unless-stopped
+
+  # === API GATEWAY ===
+  api-gateway:
+    build:
+      context: .
+      dockerfile: api-gateway/Dockerfile
+    container_name: api-gateway-container
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+
+volumes:
+  audit-db-data:
+  auth-db-data:
+  messaging-db-data:
+
+secrets:
+  auth_db_password:
+    file: ./secrets/auth_db_password.txt
+  audit_db_password:
+    file: ./secrets/audit_db_password.txt
+  messaging_db_password:
+    file: ./secrets/messaging_db_password.txt

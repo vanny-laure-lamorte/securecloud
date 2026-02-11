@@ -1,0 +1,5 @@
+%syntax-version=1.0.0
+%project=messaging
+
+20260108112940_create_groups_and_messages 2026-01-08T10:29:41Z sqitch <sqitch@4b8ac4fadced> # Create groups + messages tables (user/group receiver nullable)
+20260108113056_insert_test_messages 2026-01-08T10:30:57Z sqitch <sqitch@1f16dc3c0573> # Insert test messages (2 users, 2 groups, 6 messages)
