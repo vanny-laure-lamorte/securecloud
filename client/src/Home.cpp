@@ -17,7 +17,7 @@ Home::Home(ClientService* service, QWidget *parent)
 
     QVBoxLayout *leftLayout = new QVBoxLayout(leftSidebar);
     leftLayout->setContentsMargins(0, 10, 0, 10);
-    leftLayout->setSpacing(10);
+    leftLayout->setSpacing(8);
 
     // Avatar + status dot
     QFrame *avatarContainer = new QFrame(leftSidebar);
@@ -130,14 +130,23 @@ Home::Home(ClientService* service, QWidget *parent)
     settingsBtn->setFixedSize(50, 50);
     settingsBtn->setToolTip(tr("MAIN_PAGE.SETTINGS"));
     settingsBtn->setObjectName("NoBackgroundBtn");
-
-    leftLayout->addWidget(settingsBtn, 0, Qt::AlignHCenter);
     leftLayout->addWidget(settingsBtn, 0, Qt::AlignHCenter);
 
-    connect(settingsBtn, &QPushButton::clicked, [this, stackedContent]()
-        {
-            emit logoutRequested(); // TODO: place on real logout action
+    connect(settingsBtn, &QPushButton::clicked, [this, stackedContent]() {
             stackedContent->setCurrentIndex(7);
+    });
+
+    // Button Logout
+    QPushButton *logoutBtn = new QPushButton(leftSidebar);
+    logoutBtn->setIcon(QIcon(":/assets/icons/logout.png"));
+    logoutBtn->setIconSize(QSize(24, 24));
+    logoutBtn->setFixedSize(50, 50);
+    logoutBtn->setToolTip(tr("MAIN_PAGE.LOGOUT"));
+    logoutBtn->setObjectName("NoBackgroundBtn");
+    leftLayout->addWidget(logoutBtn, 0, Qt::AlignHCenter);
+
+    connect(logoutBtn, &QPushButton::clicked, [this, stackedContent](){
+            emit logoutRequested();
     });
 
     // --- Separator between left and right sidebar ---
