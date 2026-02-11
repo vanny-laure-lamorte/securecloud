@@ -13,9 +13,10 @@ LanguageSelector::LanguageSelector(QWidget* parent)
     QString osLang;
     if (m_tm) {
         osLang = m_tm->getOsLanguage();
+        qDebug() << "Detected OS language:" << osLang;
     } else {
-        osLang = "en_US";
-        qWarning() << "m_tm is null!";
+        osLang = "fr_FR";
+        qWarning() << "No language available, defaulting to English (en_US)";
     }
 
     struct Language {
@@ -65,8 +66,10 @@ LanguageSelector::LanguageSelector(QWidget* parent)
 
     // Connect signal for language change
     connect(combo, &QComboBox::currentIndexChanged, this, [this](int index){
+
         QString langCode = combo->itemData(index).toString();
-        changeLanguageWithFlag(langCode);
+        if (m_tm)
+            m_tm->loadLanguage(langCode);
     });
 }
 void LanguageSelector::onUserSelectedLanguage(int index)

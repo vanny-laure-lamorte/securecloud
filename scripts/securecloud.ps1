@@ -59,7 +59,7 @@ function Show-Help {
     Write-Color 2 "Translation"
     Write-Color 3 "translate:scan"       "Scan translation keys"
     Write-Color 3 "translate:update"     "Compile translation files"
-    Write-Color 3 "translate:migrate"    "Build client with translations"
+    Write-Color 3 "translate:compile"    "Build client with translations"
     Write-Host ""
     Write-Color 2 "Migrations Management"
     Write-Color 3 "sqitch:version"              "Check Sqitch version"
