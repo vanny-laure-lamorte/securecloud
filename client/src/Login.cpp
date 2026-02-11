@@ -91,7 +91,6 @@ Login::Login(QWidget *parent)
     loginButton->setObjectName("primaryButton");
     loginButton->setCursor(Qt::PointingHandCursor);
 
-
     QString signupText = tr("LOGIN.NO_ACCOUNT") + " " + QString("<a href='#'>%1</a>").arg(tr("LOGIN.SIGN_UP"));
 
     QLabel *signupLabel = new QLabel(signupText);
@@ -241,7 +240,10 @@ Login::Login(QWidget *parent)
 
     connect(loginButton, &QPushButton::clicked, this, [=]()
     {
-        emit loginRequested(emailEdit->text(), passwordEdit->text());
+        QString emailEdit1 = "v@gmail.com";
+        QString passwordEdit1 = "v";
+        emit loginRequested(emailEdit1, passwordEdit1);
+        // emit loginRequested(emailEdit->text(), passwordEdit->text());
         // TO DO: guest also language
     });
 

@@ -10,6 +10,7 @@ switch ($Command) {
     "cmake:configure" {
         Write-Host "[ Build the client target in Release mode... ]"
         cmake --build build --config Release -t client
+        .\deploy\bin\client.exe
     }
 
     "cmake:clear" {
