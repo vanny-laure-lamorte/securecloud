@@ -5,7 +5,7 @@ param(
 $RootDir = Split-Path $PSScriptRoot -Parent
 
 # Paths
-$ClientSrc = Join-Path $RootDir "client\src\main.cpp"
+$ClientSrc = Join-Path $RootDir "client\src"
 $I18nPath  = Join-Path $RootDir "common\i18n"
 $BuildDir = Join-Path $RootDir "build"
 

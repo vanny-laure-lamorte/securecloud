@@ -81,7 +81,7 @@ Login::Login(QWidget *parent)
     QCheckBox *rememberCheck = new QCheckBox(tr("LOGIN.REMEMBER_ME"));
     rememberCheck->setObjectName("checkbox");
 
-    QString lostPasswordHtml = QString("<a href='#'>%1</a>").arg(tr("LOGIN.LOST_PASSWORD"));
+    QString lostPasswordHtml = QString("<a href='#' style='color:#99a1af; font-weight:bold;'>%1</a>").arg(tr("LOGIN.LOST_PASSWORD"));
 
     QLabel *forgotLabel = new QLabel(lostPasswordHtml);
     forgotLabel->setTextFormat(Qt::RichText);
@@ -91,12 +91,12 @@ Login::Login(QWidget *parent)
     loginButton->setObjectName("primaryButton");
     loginButton->setCursor(Qt::PointingHandCursor);
 
-    QString signupText = tr("LOGIN.NO_ACCOUNT") + " " + QString("<a href='#'>%1</a>").arg(tr("LOGIN.SIGN_UP"));
-
+    QString signupText = tr("LOGIN.NO_ACCOUNT") + " " + QString("<a href='#' style='color:#99a1af; font-weight:bold;'>%1</a>").arg(tr("LOGIN.SIGN_UP"));
     QLabel *signupLabel = new QLabel(signupText);
     signupLabel->setTextFormat(Qt::RichText);
     signupLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
     signupLabel->setAlignment(Qt::AlignCenter);
+    signupLabel->setObjectName("signupLabel");
     containerLayout->addWidget(signupLabel);
 
     // Layout login
@@ -193,7 +193,7 @@ Login::Login(QWidget *parent)
     regConfirmPasswordLabel->setObjectName("label");
 
     QLineEdit *regConfirmPasswordEdit = new QLineEdit();
-    regConfirmPasswordEdit->setPlaceholderText( tr("REGISTER.ENTER_YOUR_CONFIRM_PASSWORD"));
+    regConfirmPasswordEdit->setPlaceholderText(tr("REGISTER.ENTER_YOUR_CONFIRM_PASSWORD"));
     regConfirmPasswordEdit->setEchoMode(QLineEdit::Password);
     regConfirmPasswordEdit->setObjectName("input");
     regConfirmPasswordEdit->addAction(QIcon(":/assets/icons/lock.png"), QLineEdit::LeadingPosition);
@@ -209,7 +209,8 @@ Login::Login(QWidget *parent)
     createAccount->setObjectName("primaryButton");
 
     // Back to login link
-    QLabel *backLogin = new QLabel("<a href='#'>Back to login</a>");
+    QLabel *backLogin = new QLabel(
+    QString("<a href='#' style='color:#99a1af; font-weight:bold;'>%1</a>").arg(tr("LOGIN.BACK_TO_LOGIN")) );
     backLogin->setTextFormat(Qt::RichText);
     backLogin->setTextInteractionFlags(Qt::TextBrowserInteraction);
     backLogin->setAlignment(Qt::AlignCenter);
@@ -283,18 +284,15 @@ Login::Login(QWidget *parent)
     };
 
     QVector<DevUser> devUsers = {
-        {"Admin", "vanny@gmail.com", "vannypass"},
-        {"User", "lucas@gmail.com", "lucaspass"}
+        {tr("LOGIN.ADMIN"), "vanny@gmail.com", "vannypass"},
+        {tr("LOGIN.USER"), "lucas@gmail.com", "lucaspass"}
     };
 
     for (const DevUser &user : devUsers)
     {
         QPushButton *btn = new QPushButton(user.name);
         btn->setCursor(Qt::PointingHandCursor);
-        btn->setStyleSheet(
-            "QPushButton { background-color: #00473c; color: white; border-radius: 5px; padding: 3px; }"
-            "QPushButton:hover { background-color: #017f6a; }"
-        );
+        btn->setObjectName("primaryButton");
         devLayout->addWidget(btn);
 
         connect(btn, &QPushButton::clicked, this, [=]()
