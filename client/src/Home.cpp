@@ -279,7 +279,7 @@ Home::Home(ClientService* service, QWidget *parent)
         }
     }
     if (channels.isEmpty()) {
-        channels = {"#general", "#chat1", "#chat2", "#groupe1", "#groupe2", "#random", "#development", "#design", "#marketing", "#sales", "#support", "#hr"};
+        channels = {tr("MAIN_PAGE.NO_CHANNELS")};
     }
 
     for (const QString &ch : channels)

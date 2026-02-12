@@ -72,9 +72,9 @@ std::vector<std::map<int, std::string>> MessagingApiClient::getGroupsNameForUser
 {
     auto req = HttpRequest::newHttpRequest();
     req->setMethod(Get);
-    // req->setPath("/messaging/groups/names?userId=" + std::to_string(userId));
+    req->setPath("/messaging/users/" + std::to_string(userId) + "/groups");
     // TODO : add userId as query parameter when the endpoint is implemented in the service
-    req->setPath("/messaging/groups");
+    // req->setPath("/messaging/groups");
 
     auto [code, body] = http_.send(req);
     HttpUtils::logServiceCall("Messaging", "groupsNameForUser", code, body);
