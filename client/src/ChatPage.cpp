@@ -69,22 +69,6 @@ ChatPage::ChatPage(ClientService* service, QWidget *parent)
 
         mainLayout->addWidget(chatView, 1);
     }
-    // channelLayout->addStretch();
-    // --- Chat view ---
-    // chatView = new QTextEdit(this);
-    // chatView->setReadOnly(true);
-    // chatView->setStyleSheet(R"(
-    //     background-color:#ffffff;
-    //     border:none;
-    //     padding:10px;
-    //     font-size:14px;
-    // )");
-    // chatView->setText(
-    //     "<b>Jean :</b> Salut !<br>"
-    //     "<b>Vous :</b> Bonjour, comment ça va ?<br>"
-    // );
-
-    // mainLayout->addWidget(chatView, 1);
 
     // --- Input zone ---
     QFrame* inputFrame = new QFrame(this);
