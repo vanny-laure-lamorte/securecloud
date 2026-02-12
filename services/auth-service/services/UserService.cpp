@@ -80,3 +80,14 @@ bool UserService::logoutUser(const int userId) {
         return false;
     }
 }
+
+std::map<std::string, std::string> UserService::getContactInformation(const int userId)
+{
+    UserProfile profile = userRepository_.getContactInformation(userId);
+    std::map<std::string, std::string> contactInfo;
+    contactInfo["username"] = profile.username;
+    contactInfo["firstName"] = profile.firstName;
+    contactInfo["lastName"] = profile.lastName;
+    contactInfo["lastSeen"] = std::to_string(profile.lastSeen);
+    return contactInfo;
+}

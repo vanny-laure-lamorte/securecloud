@@ -119,7 +119,7 @@ int main()
             cb(resp);
             }
             else if(typeFromPath == "personal") {
-                auto  messages = messageRepo.getPersonalMessagesForUser(userIdFromPath);
+                auto  messages = messageRepo.getPersonalMessagesForUser(userIdFromPath, targetFromPath);
                                 Json::Value arr(Json::arrayValue);
                 for (const auto &m : messages)
                 { Json::Value j;
@@ -161,6 +161,27 @@ int main()
             cb(resp);
         },
         {Get});
+
+        app().registerHandler(
+            "/messaging/get-contacts/{1}",
+            [&messageRepo](const drogon::HttpRequestPtr &,
+                std::function<void(const drogon::HttpResponsePtr &)> &&cb,
+                int userIdFromPath)
+                {
+                    std::cout << "[Messaging] Fetching contacts for userId: " << userIdFromPath << "\n";
+                    auto contacts = messageRepo.getContactsForUser(userIdFromPath);
+                    Json::Value arr(Json::arrayValue);
+                    for (const auto &contactId : contacts) {
+                        Json::Value j;
+                        j["user_id"] = contactId;
+                        arr.append(j);
+                    }
+                    auto resp = drogon::HttpResponse::newHttpJsonResponse(arr);
+                    resp->setStatusCode(drogon::k200OK);
+                    cb(resp);
+                },
+            {Get});
+
 
     app().run();
     return 0;

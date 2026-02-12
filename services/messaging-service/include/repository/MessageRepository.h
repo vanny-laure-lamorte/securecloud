@@ -20,7 +20,7 @@ public:
      * @param userId The ID of the user.
      * @return A vector of MessageModel representing personal messages.
      */
-    std::vector<MessageModel> getPersonalMessagesForUser(int userId) const;
+    std::vector<MessageModel> getPersonalMessagesForUser(int userId, int targetId) const;
 
     /**
      * @brief Retrieve group messages for a specific group.
@@ -44,6 +44,13 @@ public:
      * @param content The content of the message.
      */
     void insertGroupMessage(int senderId, int receiverGroupId, const std::string &content);
+
+    /**
+     * @brief Retrieve the contact information for a user by user ID.
+     * @param userId The ID of the user.
+     * @return A list of integers representing the contact information (e.g., user IDs of contacts).
+     */
+    std::list<int> getContactsForUser(int userId) const;
 
 private:
     DbConnection &db_;
