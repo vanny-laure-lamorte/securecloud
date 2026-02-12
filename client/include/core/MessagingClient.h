@@ -27,6 +27,7 @@ public:
     /**
      * @brief Attempts to connect to the messaging WebSocket server using the provided JWT.
      * @param jwt The JSON Web Token for authentication.
+     * @param userId The user ID to identify the client upon connection.
      * @return true if the connection attempt was initiated, false if the JWT is empty.
      */
     bool maybeConnect(const QString &jwt, int userId)
