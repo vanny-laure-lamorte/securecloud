@@ -2,6 +2,7 @@
 #define CHATPAGE_H
 
 #include <QWidget>
+#include "core/ClientService.h"
 
 class QTextEdit;
 class QLineEdit;
@@ -10,7 +11,7 @@ class ChatPage : public QWidget
 {
     Q_OBJECT
 public:
-    explicit ChatPage(QWidget *parent = nullptr);
+    explicit ChatPage(ClientService *service, QWidget *parent = nullptr);
 
 private:
     QTextEdit* chatView;

@@ -60,22 +60,29 @@ void ClientService::pingService(const std::string& serviceName)
     audit_.pingService(serviceName);
 }
 
-QVector<QMap<int, QString>> ClientService::getGroups()
+QVector<QPair<int, QString>> ClientService::getGroups()
 {
-    QVector<QMap<int, QString>> groupsOut;
+    QVector<QPair<int, QString>> groupsOut;
 
     const auto groups = messaging_.getGroupsNameForUser(userId());
-    for (const auto& group : groups)
+    for (const auto& [groupId, groupName] : groups)
     {
-        QMap<int, QString> oneGroup;
-        for (const auto& [groupId, groupName] : group)
-        {
-            oneGroup.insert(groupId, QString::fromStdString(groupName));
-        }
-        groupsOut.append(oneGroup);
+        groupsOut.append(QPair<int, QString>(groupId, QString::fromStdString(groupName)));
     }
 
     return groupsOut;
+}
+
+QVector<QPair<int, QString>> ClientService::getMessages(int id, const std::string& type)
+{
+    QVector<QPair<int, QString>> messagesOut;
+    const auto messages = messaging_.getMessagesForGroupOrUser(id, type, userId());
+    for (const auto& [senderId, content] : messages)
+    {
+        messagesOut.append(QPair<int, QString>(senderId, QString::fromStdString(content)));
+    }
+
+    return messagesOut;
 }
 
 void ClientService::getAllMessages()

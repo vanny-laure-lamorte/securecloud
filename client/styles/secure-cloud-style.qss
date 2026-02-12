@@ -7,6 +7,10 @@ QPushButton#primaryButton {
     padding: 8px 16px;
 }
 
+QPushButton#primaryButton:hover {
+    background-color: #017f6a;
+}
+
 QPushButton#emergencyBtn {
     border-radius: 25px;
     background-color: #8b3722;
@@ -253,4 +257,13 @@ QComboBox#language::down-arrow {
 }
 
 
+QPushButton#backLogin {
+    color: #004d42 ;
+    font-weight: bold;
+    background: transparent;
+    border: none;
+}
 
+QPushButton#backLogin:hover {
+    color: #004d42;
+}

@@ -18,6 +18,7 @@ TranslationManager::TranslationManager(QApplication* app, QObject* parent)
 
 bool TranslationManager::loadLanguage(const QString& langCode)
 {
+    // TODO: Get user's language preference from settings and load that instead of OS language
     QString qmFile = QCoreApplication::applicationDirPath() + "/i18n/" + langCode + ".qm";
 
     m_app->removeTranslator(&m_translator);
@@ -27,6 +28,7 @@ bool TranslationManager::loadLanguage(const QString& langCode)
         m_app->installTranslator(&m_translator);
         m_currentLang = langCode;
         qDebug() << "File loaded for traduction :" << qmFile;
+        emit languageChanged(langCode);
         return true;
     }
     else

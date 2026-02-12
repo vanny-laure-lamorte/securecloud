@@ -30,13 +30,6 @@ public:
     std::vector<MessageModel> getGroupMessages(int groupId) const;
 
     /**
-     * @brief Retrieve inbox messages for a specific user (both personal and group messages).
-     * @param userId The ID of the user.
-     * @return A vector of MessageModel representing inbox messages.
-     */
-    std::vector<MessageModel> getInboxForUser(int userId) const;
-
-    /**
      * @brief Insert a new personal message into the database.
      * @param senderId The ID of the sender.
      * @param receiverUserId The ID of the recipient user.

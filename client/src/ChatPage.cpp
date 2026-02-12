@@ -9,7 +9,7 @@
 #include <QFrame>
 #include <QToolButton>
 
-ChatPage::ChatPage(QWidget *parent)
+ChatPage::ChatPage(ClientService* service, QWidget *parent)
     : QWidget(parent)
 {
     this->setStyleSheet("background-color:#ffffff; color:#017f6a;");
@@ -51,21 +51,24 @@ ChatPage::ChatPage(QWidget *parent)
 
     mainLayout->addWidget(tabs);
 
-    // --- Chat view ---
-    chatView = new QTextEdit(this);
-    chatView->setReadOnly(true);
-    chatView->setStyleSheet(R"(
-        background-color:#ffffff;
-        border:none;
-        padding:10px;
-        font-size:14px;
-    )");
-    chatView->setText(
-        "<b>Jean :</b> Salut !<br>"
-        "<b>Vous :</b> Bonjour, comment ça va ?<br>"
-    );
+    QVector<QString> messages;
+    QVector<QPair <int, QString>> personalMessages = service->getMessages(2, "personal");
+    for (const auto& [senderId, content] : personalMessages) {
+        chatView = new QTextEdit(this);
+        chatView->setReadOnly(true);
+        chatView->setStyleSheet(R"(
+            background-color:#ffffff;
+            border:none;
+            padding:10px;
+            font-size:14px;
+        )");
+        if (senderId == service->userId())
+            chatView->append("<b>Vous :</b> " + content);
+        else
+            chatView->append("<b>Other :</b> " + content);
 
-    mainLayout->addWidget(chatView, 1);
+        mainLayout->addWidget(chatView, 1);
+    }
 
     // --- Input zone ---
     QFrame* inputFrame = new QFrame(this);
