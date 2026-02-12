@@ -51,9 +51,18 @@ public:
      */
     std::vector<std::string> getuserInformations(const std::string &email);
 
-    int getuserId(const std::string &email){
+    int getuserId(const std::string &email)
+    {
         return userRepository_.getUserIdByEmail(email);
     }
-private:
+
+    /**
+     * @brief Get the contact information for a user by user ID.
+     * @param userId The ID of the user.
+     * @return A map containing contact information (e.g., username, first name, last name, last seen).
+     */
+    std::map<std::string, std::string> getContactInformation(const int userId);
+
+    private:
     UserRepository userRepository_;
 };

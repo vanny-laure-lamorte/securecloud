@@ -149,3 +149,10 @@ std::vector<std::pair<int, std::string>> MessagingApiClient::getMessagesForGroup
     }
     return messages;
 }
+
+std::list<int> MessagingApiClient::getContactIdsForUser(int userId){
+auto req = HttpRequest::newHttpRequest();
+req->setMethod(Get); req->setPath("/messaging/users/" + std::to_string(userId) + "/contacts"); 
+auto [code, body] = http_.send(req); 
+HttpUtils::logServiceCall("Messaging", "contactIdsForUser", code, body); printResponseRaw(body); if (!HttpUtils::isSuccess(code)) return {}; std::list<int> contactIds; try { Json::Value jsonResponse; Json::CharReaderBuilder readerBuilder; std::string errs; std::istringstream s(body); if (Json::parseFromStream(readerBuilder, s, &jsonResponse, &errs)) { for (const auto &contactId : jsonResponse) { contactIds.push_back(contactId.asInt()); } } else { std::cerr << "Failed to parse JSON: " << errs << "\n"; } } catch (const std::exception &e) { std::cerr << "Exception while parsing JSON: " << e.what() << "\n"; } return contactIds;
+}

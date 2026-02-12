@@ -152,7 +152,8 @@ UserProfile UserRepository::userInfo(const std::string &email)
     return profile;
 }
 
-void UserRepository::setLastSeen(int userId){
+void UserRepository::setLastSeen(int userId)
+{
     auto client = db_.client();
     try
     {
@@ -167,7 +168,8 @@ void UserRepository::setLastSeen(int userId){
     }
 }
 
-bool UserRepository::getUserExists(std::string const &email){
+bool UserRepository::getUserExists(std::string const &email)
+{
     auto client = db_.client();
     drogon::orm::Result res = client->execSqlSync(
         "SELECT COUNT(*) AS count FROM connexion WHERE email = $1",
@@ -180,4 +182,26 @@ bool UserRepository::getUserExists(std::string const &email){
 
     int count = res[0]["count"].as<int>();
     return count > 0;
+}
+
+UserProfile UserRepository::getContactInformation(const int userId)
+{
+    auto client = db_.client();
+    drogon::orm::Result res = client->execSqlSync(
+        "SELECT u.username, u.first_name, u.last_name, c.logout_time"
+        "FROM users u "
+        "JOIN connexion c ON u.user_id = c.user_id "
+        "WHERE u.user_id = $1",
+        userId);
+    if (res.empty())
+    {
+        throw std::runtime_error("User not found for user ID: " + std::to_string(userId));
+    }
+
+    UserProfile profile;
+    profile.username = res[0]["username"].as<std::string>();
+    profile.firstName = res[0]["first_name"].as<std::string>();
+    profile.lastName = res[0]["last_name"].as<std::string>();
+    profile.lastSeen = res[0]["logout_time"].as<time_t>();
+    return profile;
 }

@@ -76,7 +76,7 @@ QVector<QPair<int, QString>> ClientService::getGroups()
 QVector<QPair<int, QString>> ClientService::getMessages(int id, const std::string& type)
 {
     QVector<QPair<int, QString>> messagesOut;
-    const auto messages = messaging_.getMessagesForGroupOrUser(id, type, userId());
+    const auto messages = messaging_.getMessagesForGroupOrUser(userId(), type, id);
     for (const auto& [senderId, content] : messages)
     {
         messagesOut.append(QPair<int, QString>(senderId, QString::fromStdString(content)));

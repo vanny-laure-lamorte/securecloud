@@ -154,6 +154,35 @@ void AuthServiceRoutes::registerRoutes()
             cb(resp);
         },
         {Post});
+
+    app().registerHandler(
+        "/auth/get-contacts",
+        [this](const HttpRequestPtr &req,
+               std::function<void(const HttpResponsePtr &)> &&cb)
+        {
+            auto json = req->getJsonObject();
+            if (!json || !json->isMember("userId"))
+            {
+                Json::Value respJson;
+                respJson["error"] = "Missing userId";
+
+                auto resp = HttpResponse::newHttpJsonResponse(respJson);
+                resp->setStatusCode(k400BadRequest);
+                cb(resp);
+                return;
+            }
+
+            int userId = (*json)["userId"].asInt();
+            std::map<std::string, std::string> userInfo = userService_.getContactInformation(userId);
+            Json::Value respJson;
+            for (const auto &pair : userInfo) {
+                respJson[pair.first] = pair.second;
+            }
+            auto resp = HttpResponse::newHttpJsonResponse(respJson);
+            resp->setStatusCode(k200OK);
+            cb(resp);
+        },
+        {Get});
 }
 
 // TODO : Implement logout route --> Update last active timestamp in DB

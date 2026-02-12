@@ -5,14 +5,14 @@ static MessageModel rowToMessage(const drogon::orm::Row &row)
 {
     MessageModel m;
     m.messageId = row["message_id"].as<int>();
-    m.senderId  = row["sender_id"].as<int>();
+    m.senderId = row["sender_id"].as<int>();
 
     if (!row["receiver_user_id"].isNull())
         m.receiverUserId = row["receiver_user_id"].as<int>();
     if (!row["receiver_group_id"].isNull())
         m.receiverGroupId = row["receiver_group_id"].as<int>();
 
-    m.content   = row["content"].as<std::string>();
+    m.content = row["content"].as<std::string>();
     m.createdAt = row["created_at"].as<std::string>();
     m.updatedAt = row["updated_at"].as<std::string>();
     return m;
@@ -24,8 +24,7 @@ std::vector<MessageModel> MessageRepository::getAllMessages() const
     auto res = client->execSqlSync(
         "SELECT message_id, sender_id, receiver_user_id, receiver_group_id, content, created_at, updated_at "
         "FROM messages "
-        "ORDER BY created_at ASC"
-    );
+        "ORDER BY created_at ASC");
 
     std::vector<MessageModel> out;
     out.reserve(res.size());
@@ -34,7 +33,7 @@ std::vector<MessageModel> MessageRepository::getAllMessages() const
     return out;
 }
 
-std::vector<MessageModel> MessageRepository::getPersonalMessagesForUser(int userId) const
+std::vector<MessageModel> MessageRepository::getPersonalMessagesForUser(int userId, int targetId) const
 {
     auto client = db_.client();
     auto res = client->execSqlSync(
@@ -42,9 +41,9 @@ std::vector<MessageModel> MessageRepository::getPersonalMessagesForUser(int user
         "FROM messages "
         "WHERE receiver_group_id IS NULL "
         "AND (sender_id = $1 OR receiver_user_id = $1) "
+        "AND (sender_id = $2 OR receiver_user_id = $2) "
         "ORDER BY created_at ASC",
-        userId
-    );
+        userId);
 
     std::vector<MessageModel> out;
     out.reserve(res.size());
@@ -61,8 +60,7 @@ std::vector<MessageModel> MessageRepository::getGroupMessages(int groupId) const
         "FROM messages "
         "WHERE receiver_group_id = $1 "
         "ORDER BY created_at ASC",
-        groupId
-    );
+        groupId);
 
     std::vector<MessageModel> out;
     out.reserve(res.size());
@@ -76,8 +74,7 @@ void MessageRepository::insertPersonalMessage(int senderId, int receiverUserId, 
     auto client = db_.client();
     client->execSqlSync(
         "INSERT INTO messages (sender_id, receiver_user_id, content) VALUES ($1, $2, $3)",
-        senderId, receiverUserId, content
-    );
+        senderId, receiverUserId, content);
 }
 
 void MessageRepository::insertGroupMessage(int senderId, int receiverGroupId, const std::string &content)
@@ -85,6 +82,22 @@ void MessageRepository::insertGroupMessage(int senderId, int receiverGroupId, co
     auto client = db_.client();
     client->execSqlSync(
         "INSERT INTO messages (sender_id, receiver_group_id, content) VALUES ($1, $2, $3)",
-        senderId, receiverGroupId, content
-    );
+        senderId, receiverGroupId, content);
+}
+
+std::list<int> MessageRepository::getContactsForUser(int userId) const
+{
+    auto client = db_.client();
+    auto res = client->execSqlSync("SELECT u.user_id "
+                                   "FROM users u "
+                                   "JOIN messages m ON (u.user_id = m.sender_id OR u.user_id = m.receiver_user_id) "
+                                   "WHERE (m.sender_id = $1 OR m.receiver_user_id = $1) AND u.user_id != $1",
+                                   userId);
+    std::list<int> contacts;
+    for (const auto &row : res)
+    {
+        int contactId = row["user_id"].as<int>();
+        contacts.emplace_back(contactId);
+    }
+    return contacts;
 }

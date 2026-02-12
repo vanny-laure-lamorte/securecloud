@@ -6,12 +6,13 @@ void UserService::registerUser(const std::string &email,
                                const std::string &firstName,
                                const std::string &lastName)
 {
-    if (userRepository_.getUserExists(email)){
+    if (userRepository_.getUserExists(email))
+    {
         std::cout << "User already exists with email: " << email << std::endl;
         throw std::runtime_error("USER_ALREADY_EXISTS");
     }
-        std::string salt = HashUtils::generateSalt(10);
-        std::string hashedPassword = HashUtils::hashPassword(password, salt);
+    std::string salt = HashUtils::generateSalt(10);
+    std::string hashedPassword = HashUtils::hashPassword(password, salt);
 
     try
     {
@@ -47,7 +48,7 @@ bool UserService::loginUser(const std::string &email,
     }
 }
 
-std::vector<std::string> UserService::getuserInformations (const std::string &email)
+std::vector<std::string> UserService::getuserInformations(const std::string &email)
 {
     std::vector<std::string> userInfo;
     try
@@ -63,7 +64,8 @@ std::vector<std::string> UserService::getuserInformations (const std::string &em
     return userInfo;
 }
 
-bool UserService::logoutUser(const int userId){
+bool UserService::logoutUser(const int userId)
+{
     try
     {
         userRepository_.setLastSeen(userId);
@@ -74,4 +76,15 @@ bool UserService::logoutUser(const int userId){
         std::cerr << "[UserService] Logout failed: " << e.what() << std::endl;
         return false;
     }
+}
+
+std::map<std::string, std::string> UserService::getContactInformation(const int userId)
+{
+    UserProfile profile = userRepository_.getContactInformation(userId);
+    std::map<std::string, std::string> contactInfo;
+    contactInfo["username"] = profile.username;
+    contactInfo["firstName"] = profile.firstName;
+    contactInfo["lastName"] = profile.lastName;
+    contactInfo["lastSeen"] = std::to_string(profile.lastSeen);
+    return contactInfo;
 }

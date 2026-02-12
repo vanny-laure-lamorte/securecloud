@@ -56,6 +56,13 @@ public:
      */
     std::vector<std::pair<int, std::string>> getMessagesForGroupOrUser(int userId, std::string type, int id);
 
+    /**
+     * @brief Retrieve contact IDs for a specific user.
+     * @param userId The ID of the user for whom to retrieve contact IDs.
+     * @return A list of contact IDs associated with the user.
+     */
+    std::list<int> getContactIdsForUser(int userId);
+
 private:
     HttpGatewayClient &http_;
 };
