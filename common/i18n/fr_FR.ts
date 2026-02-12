@@ -68,6 +68,11 @@
         <source>MAIN_PAGE.NEW_CHAT</source>
         <translation type="unfinished">Nouvelle Conversation</translation>
     </message>
+    <message>
+        <location filename="../../client/src/Home.cpp" line="282"/>
+        <source>MAIN_PAGE.NO_CHANNELS</source>
+        <translation type="unfinished">Pas de groupe wesh ta pa dami</translation>
+    </message>
 </context>
 <context>
     <name>Login</name>

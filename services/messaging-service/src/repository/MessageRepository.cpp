@@ -57,7 +57,7 @@ std::vector<MessageModel> MessageRepository::getGroupMessages(int groupId) const
 {
     auto client = db_.client();
     auto res = client->execSqlSync(
-        "SELECT message_id, sender_id, receiver_user_id, receiver_group_id, content, created_at, updated_at "
+        "SELECT message_id, sender_id, receiver_group_id, content, created_at, updated_at "
         "FROM messages "
         "WHERE receiver_group_id = $1 "
         "ORDER BY created_at ASC",
@@ -69,11 +69,6 @@ std::vector<MessageModel> MessageRepository::getGroupMessages(int groupId) const
     for (const auto &row : res)
         out.push_back(rowToMessage(row));
     return out;
-}
-
-std::vector<MessageModel> MessageRepository::getInboxForUser(int userId) const
-{
-    return getPersonalMessagesForUser(userId);
 }
 
 void MessageRepository::insertPersonalMessage(int senderId, int receiverUserId, const std::string &content)

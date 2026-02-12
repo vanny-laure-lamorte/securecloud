@@ -50,7 +50,7 @@ Home::Home(ClientService* service, QWidget *parent)
     stackedContent->setStyleSheet("background-color: #f6f8fc");
 
     // Stacked widget pages
-    ChatPage *chatPage = new ChatPage();
+    ChatPage *chatPage = new ChatPage(service);
     GroupPage *groupPage = new GroupPage();
     ContactPage *contactPage = new ContactPage();
     CalendarPage *calendarPage = new CalendarPage();
@@ -272,12 +272,12 @@ Home::Home(ClientService* service, QWidget *parent)
     channelLayout->addWidget(channelTitle);
 
     QVector<QString> channels;
-    QVector<QMap <int, QString>> groups = service->getGroups();
-    for (const QMap<int, QString> &group : groups) {
-        for (auto it = group.constBegin(); it != group.constEnd(); ++it) {
-            channels.append(it.value());
-        }
+    QVector<QPair <int, QString>> groups = service->getGroups();
+    for (const auto& group : groups)
+    {
+        channels.append(group.second);
     }
+
     if (channels.isEmpty()) {
         channels = {tr("MAIN_PAGE.NO_CHANNELS")};
     }

@@ -131,7 +131,14 @@ public:
      * Retrieves the groups of authenticated user.
      * @return A vector of maps, where each map represents a group with its details (e.g., group ID, group name).
      */
-    QVector<QMap <int, QString>> getGroups();
+    QVector<QPair <int, QString>> getGroups();
+
+    /**
+     * Retrieves the messages for a specific group or personal conversation.
+     * @param id The ID of the group or user to retrieve messages for.
+     * @return A vector of maps, where each map represents a message with its details (e.g., message ID, content, sender ID).
+     */
+    QVector<QPair <int, QString>> getMessages(int id, const std::string& type);
 
 private:
     /**
