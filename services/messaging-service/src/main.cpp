@@ -90,6 +90,31 @@ int main()
         },
         {Get});
 
+    app().registerHandler(
+        "/messaging/users/{1}/groups",
+        [&groupRepo](const drogon::HttpRequestPtr &,
+                    std::function<void(const drogon::HttpResponsePtr &)> &&cb,
+                    int userIdFromPath)
+        {
+            std::cout << "[Messaging] Fetching groups for userId: " << userIdFromPath << "\n";
+
+            auto groups = groupRepo.getGroupsForUser(userIdFromPath);
+
+            Json::Value arr(Json::arrayValue);
+            for (const auto &g : groups)
+            {
+                Json::Value j;
+                j["group_id"] = g.groupId;
+                j["name"]     = g.name;
+                arr.append(j);
+            }
+
+            auto resp = drogon::HttpResponse::newHttpJsonResponse(arr);
+            resp->setStatusCode(drogon::k200OK);
+            cb(resp);
+        },
+        {Get});
+
     app().run();
     return 0;
 }

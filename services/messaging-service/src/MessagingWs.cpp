@@ -233,3 +233,10 @@ void MessagingWs::handleNewMessage(const WebSocketConnectionPtr &wsConn,
 
     wsConn->send(R"({"error":"unknown_type"})");
 }
+
+int MessagingWs::getUserId(const drogon::WebSocketConnectionPtr &wsConn)
+{
+    std::lock_guard<std::mutex> lock(sessionsMutex_);
+    auto it = sessions_.find(wsConn.get());
+    return (it != sessions_.end()) ? it->second.userId : -1;
+}

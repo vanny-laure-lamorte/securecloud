@@ -29,8 +29,12 @@ public:
      * @param jwt The JSON Web Token for authentication.
      * @return true if the connection attempt was initiated, false if the JWT is empty.
      */
-    bool maybeConnect(const QString &jwt)
+    bool maybeConnect(const QString &jwt, int userId)
     {
+        QString userIdToString = QString::number(userId);
+        if(userIdToString != userId_)
+            userId_ = userIdToString;
+
         if (jwt.isEmpty())
         {
             qDebug() << "Empty JWT, no WS connection.";
@@ -41,7 +45,6 @@ public:
         QUrlQuery query;
         query.addQueryItem("token", jwt);
         url.setQuery(query);
-
         qDebug() << "Connecting to" << url << "as user" << userId_;
         ws_.open(url);
         return true;

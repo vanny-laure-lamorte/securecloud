@@ -21,8 +21,9 @@ public:
     /**
      * Connects to the WebSocket gateway using the provided JWT.
      * @param jwt The JWT token for authentication.
+     * @param userId The user ID for identification (optional, can be included in the JWT).
      */
-    bool connectWithJwt(const std::string &jwt);
+    bool connectWithJwt(const std::string &jwt, int userId);
 
     /**
      * Sends a personnal message via the WebSocket connection.

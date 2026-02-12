@@ -122,7 +122,7 @@ void ClientService::wsConnectWithJwtOnQtThread(const std::string& jwt)
 
     QMetaObject::invokeMethod(qtContext_, [this, jwt]()
     {
-        wsClient_->connectWithJwt(jwt);
+        wsClient_->connectWithJwt(jwt, userId());
     }, Qt::QueuedConnection);
 }
 

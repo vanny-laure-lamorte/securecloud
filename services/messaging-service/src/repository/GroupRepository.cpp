@@ -40,3 +40,27 @@ GroupModel GroupRepository::getGroupById(int groupId) const
     group.updatedAt = res[0]["updated_at"].as<std::string>();
     return group;
 }
+
+std::vector <GroupModel> GroupRepository::getGroupsForUser(int userId) const
+{
+        auto client = db_.client();
+
+    drogon::orm::Result res = client->execSqlSync(
+        "SELECT g.group_id, g.name, g.created_at, g.updated_at "
+        "FROM groups g "
+        "JOIN group_members gm ON g.group_id = gm.group_id "
+        "WHERE gm.user_id = $1",
+        userId);
+
+    std::vector<GroupModel> groups;
+    for (const auto &row : res)
+    {
+        GroupModel group;
+        group.groupId   = row["group_id"].as<int>();
+        group.name      = row["name"].as<std::string>();
+        group.createdAt = row["created_at"].as<std::string>();
+        group.updatedAt = row["updated_at"].as<std::string>();
+        groups.push_back(std::move(group));
+    }
+    return groups;
+}

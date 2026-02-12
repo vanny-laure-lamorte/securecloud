@@ -58,6 +58,8 @@ public:
 
     static void init(DbConnection &db);
 
+    static int getUserId(const drogon::WebSocketConnectionPtr &wsConn);
+
 protected:
     static std::shared_ptr<MessageRepository> msgRepo();
 

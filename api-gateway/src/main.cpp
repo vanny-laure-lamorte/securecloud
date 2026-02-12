@@ -114,9 +114,6 @@ app().registerHandler(
             std::cout << " for email=" << email;
         std::cout << std::endl;
 
-        // TODO: get userId from JWT token or session
-        // int userId = getUserIdFromToken(req->getHeader("Authorization"));
-
         Json::Value respJson;
         respJson["message"] = "Logout successful";
 
@@ -138,19 +135,25 @@ app().registerHandler(
         {drogon::Get, drogon::Post});
 
     // ===== MESSAGING SERVICE =====
-    app().registerHandler(
-        "/messaging/{_path}",
+    app().registerPreRoutingAdvice(
         [msgClient](const HttpRequestPtr &req,
-                    std::function<void(const HttpResponsePtr &)> &&cb)
+                    AdviceCallback &&acb,
+                    AdviceChainCallback &&accb)
         {
-            std::cout << "[Gateway] Client " << req->peerAddr().toIpPort()
-                      << " -> " << req->path() << std::endl;
-            forwardToBackend(req, msgClient, req->path(), std::move(cb));
-        },
-        {drogon::Get, drogon::Post});
+            const std::string path = req->path();
+
+            if (path.rfind("/messaging/", 0) == 0 || path == "/messaging")
+            {
+                std::cout << "[Gateway] Client " << req->peerAddr().toIpPort()
+                        << " -> " << req->path() << std::endl;
+
+                forwardToBackend(req, msgClient, path, std::move(acb));
+                return;
+            }
+            accb();
+        });
 
     // ===== AUDIT SERVICE =====
-
     app().registerHandler(
         "/audit/{_path}",
         [auditClient](const HttpRequestPtr &req,

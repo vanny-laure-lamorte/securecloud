@@ -10,7 +10,7 @@ WsGatewayClient::WsGatewayClient(MessagingClient *impl)
 {
 }
 
-bool WsGatewayClient::connectWithJwt(const std::string &jwt)
+bool WsGatewayClient::connectWithJwt(const std::string &jwt, int userId)
 {
     if (!impl_)
     {
@@ -21,8 +21,8 @@ bool WsGatewayClient::connectWithJwt(const std::string &jwt)
     QString qjwt = QString::fromStdString(jwt);
     QMetaObject::invokeMethod(
         impl_,
-        [impl = impl_, qjwt]() {
-            impl->maybeConnect(qjwt);
+        [impl = impl_, qjwt, userId]() {
+            impl->maybeConnect(qjwt, userId);
         },
         Qt::QueuedConnection
     );
