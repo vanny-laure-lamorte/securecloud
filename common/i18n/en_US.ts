@@ -68,11 +68,6 @@
         <source>MAIN_PAGE.NEW_CHAT</source>
         <translation>New Chat</translation>
     </message>
-    <message>
-        <location filename="../../client/src/Home.cpp" line="282"/>
-        <source>MAIN_PAGE.NO_CHANNELS</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>Login</name>
