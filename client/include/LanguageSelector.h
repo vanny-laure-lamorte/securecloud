@@ -8,27 +8,15 @@ class LanguageSelector : public QWidget
 {
     Q_OBJECT
 public:
-    explicit LanguageSelector(QWidget* parent = nullptr);
+    explicit LanguageSelector(QWidget* parent = nullptr, TranslationManager* tm = nullptr);
 
-signals:
+// signals:
 
-    /* Signal emitted when the language is changed
-    */
-    void languageChanged(const QString& lang);
-
-private slots:
-
-    /* Change application language and update flag icon
-    * @param langCode (e.g., "en_US", "fr_FR" etc .)
-    */
-    void changeLanguageWithFlag(const QString &langCode);
-
-    /* Slot called when user selects a language from the combo box */
-    void onUserSelectedLanguage(int index);
+//     void languageChanged(const QString& lang);
 
 private:
 
-    TranslationManager* m_tm;
+    TranslationManager* translationManager_;
     QComboBox* combo;
     QTranslator translator;
 };

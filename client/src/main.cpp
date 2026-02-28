@@ -35,17 +35,13 @@ int runQtWindow(int argc, char* argv[])
     const QString osLang = translationManager.getOsLanguage();
     translationManager.loadLanguage(osLang);
 
-    std::cout << QObject::tr("K.Hello").toStdString() << std::endl;
-
     g_qtWsClient = new MessagingClient(QStringLiteral("TEMP_USER"), qApp);
 
     g_qtReadyProm.set_value();
-
     g_serviceReadyFut.wait();
 
-    MainWindow mainWindow(g_service);
+    MainWindow mainWindow(g_service, nullptr, &translationManager);
     mainWindow.show();
-
     return app.exec();
 }
 

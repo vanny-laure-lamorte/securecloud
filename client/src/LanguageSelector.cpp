@@ -1,22 +1,20 @@
 #include "LanguageSelector.h"
+
 #include <QHBoxLayout>
 #include <QComboBox>
 #include <QApplication>
-
-// TO DO: Delete when cout is not needed
-using namespace std;
 #include <iostream>
 
-LanguageSelector::LanguageSelector(QWidget* parent)
-    : QWidget(parent)
+using namespace std;
+
+LanguageSelector::LanguageSelector(QWidget* parent, TranslationManager* tm)
+    : QWidget(parent), translationManager_(tm)
 {
-    QString osLang;
-    if (m_tm) {
-        osLang = m_tm->getOsLanguage();
-        qDebug() << "Detected OS language:" << osLang;
-    } else {
-        osLang = "fr_FR";
-        qWarning() << "No language available, defaulting to English (en_US)";
+
+    QString currentLanguage = translationManager_->currentLanguage();
+
+    if(currentLanguage.isEmpty()) {
+        currentLanguage = "fr_FR";
     }
 
     struct Language {
@@ -31,8 +29,8 @@ LanguageSelector::LanguageSelector(QWidget* parent)
         {"English", "EN", "en_US", ":/translations/en_US.qm", ":/assets/flags/en.png"},
         {"Français", "FR", "fr_FR", ":/translations/fr_FR.qm", ":/assets/flags/fr.png"},
         {"Español", "ES", "es_ES", ":/translations/es_ES.qm", ":/assets/flags/es.png"},
-        {"Deutsch", "DE", "de_DE", ":/translations/de_DE.qm", ":/assets/flags/de.png"},
-        {"Italiano", "IT", "it_IT", ":/translations/it_IT.qm", ":/assets/flags/it.png"}
+        {"Deutsch", "DE", "de_DE", ":/translations/en_US.qm", ":/assets/flags/de.png"},
+        {"Italiano", "IT", "it_IT", ":/translations/en_US.qm", ":/assets/flags/it.png"}
     };
 
     combo = new QComboBox(this);
@@ -49,7 +47,7 @@ LanguageSelector::LanguageSelector(QWidget* parent)
         }
         combo->addItem(QIcon(lang.iconPath), lang.shortCode, lang.langCode);
 
-        if (osLang.startsWith(lang.langCode.left(2))) {
+        if (currentLanguage.startsWith(lang.langCode.left(2))) {
             indexToSelect = i;
         }
     }
@@ -66,23 +64,7 @@ LanguageSelector::LanguageSelector(QWidget* parent)
 
     // Connect signal for language change
     connect(combo, &QComboBox::currentIndexChanged, this, [this](int index){
-
         QString langCode = combo->itemData(index).toString();
-        if (m_tm)
-            m_tm->loadLanguage(langCode);
+        translationManager_->loadLanguage(langCode);
     });
-}
-void LanguageSelector::onUserSelectedLanguage(int index)
-{
-    QString langCode = combo->itemData(index).toString();
-    if (m_tm)
-        m_tm->loadLanguage(langCode);
-}
-
-void LanguageSelector::changeLanguageWithFlag(const QString &langCode)
-{
-    int idx = combo->findData(langCode);
-
-    if (idx >= 0 && combo->currentIndex() != idx)
-        combo->setCurrentIndex(idx);
 }
