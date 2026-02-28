@@ -9,13 +9,24 @@
 #include "Header.h"
 #include "Home.h"
 #include "Login.h"
+#include "TranslationManager.h"
 
 class NotConnectedLayout : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit NotConnectedLayout(ClientService* service, QWidget *parent = nullptr);
+    explicit NotConnectedLayout(ClientService* service, QWidget *parent = nullptr, TranslationManager* tm = nullptr);
+
+    /**
+     * Create header, body and footer
+     */
+    void setPrincipalPage();
+
+    /**
+     * Remove header, body and footer
+     */
+    void clearPrincipalPage();
 
     /**
      * Sets the body widget of the layout, replacing the existing one.
@@ -55,6 +66,7 @@ private:
     void wireBody(QWidget* bodyWidget);
 
     ClientService* service_;
+    TranslationManager* translationManager_;
     QWidget* header;
     QWidget* body;
     QWidget* footer;
