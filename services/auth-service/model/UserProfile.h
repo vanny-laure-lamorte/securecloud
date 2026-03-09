@@ -14,6 +14,7 @@ struct UserProfile {
     std::string roleName;
     std::string roleDescription;
     std::string jwt;
+    std::time_t lastSeen;
 };
 
 struct UserSession {

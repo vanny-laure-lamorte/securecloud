@@ -107,6 +107,20 @@ public:
      */
     int getUserIdByEmail(const std::string &email);
 
+    /**
+     * @brief Get the contact information for a user by user ID.
+     * @param userId The ID of the user.
+     * @return An integer representing the contact information (e.g., phone number, email).
+     */
+    UserProfile getContactInformation(const int userId);
+
+    /**
+    * @brief Retrieve all user information by user ID.
+    * @param userId The ID of the user.
+    * @return UserProfile struct containing all user information.
+    */
+    UserProfile getUserAllInfo(int &userId);
+
 private:
     DbConnection &db_;
 };
