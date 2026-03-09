@@ -121,10 +121,11 @@ ChatPage::ChatPage(ClientService* service, QWidget *parent)
     sendBtn->setStyleSheet("border:none; padding:4px;");
     editLayout->addWidget(sendBtn);
 
-    connect(sendBtn, &QToolButton::clicked, this, [this](){
+    connect(sendBtn, &QToolButton::clicked, this, [this, service](){
         QString text = messageInput->text();
         if(!text.isEmpty()) {
             chatView->append("<b>Vous :</b> " + text);
+            service->sendPersonal(2, text.toStdString());
             messageInput->clear();
         }
     });
