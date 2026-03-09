@@ -110,7 +110,7 @@ std::vector<std::pair<int, std::string>> MessagingApiClient::getGroupsNameForUse
     return groups;
 }
 
-std::vector<std::pair<int, std::string>> MessagingApiClient::getMessagesForGroupOrUser(int userId, std::string type, int id)
+std::vector<RawMessageDto> MessagingApiClient::getMessagesForGroupOrUser(int userId, const std::string& type, int id)
 {
     auto req = HttpRequest::newHttpRequest();
     req->setMethod(Get);
@@ -119,11 +119,11 @@ std::vector<std::pair<int, std::string>> MessagingApiClient::getMessagesForGroup
     auto [code, body] = http_.send(req);
     HttpUtils::logServiceCall("Messaging", "messagesForGroupOrUser", code, body);
 
-    printResponseRaw(body);
     if (!HttpUtils::isSuccess(code))
         return {};
 
-    std::vector<std::pair<int, std::string>> messages;
+    std::vector<RawMessageDto> messages;
+
     try
     {
         Json::Value jsonResponse;
@@ -133,26 +133,65 @@ std::vector<std::pair<int, std::string>> MessagingApiClient::getMessagesForGroup
 
         if (Json::parseFromStream(readerBuilder, s, &jsonResponse, &errs))
         {
-            for (const auto &message : jsonResponse)
+            for (const auto& message : jsonResponse)
             {
-                int senderId = message["sender_id"].asInt();
-                std::string content = message["content"].asString();
-                messages.emplace_back(std::make_pair(senderId, content));
+                RawMessageDto dto;
+                dto.senderId = message["sender_id"].asInt();
+                dto.content = message["content"].asString();
+                messages.push_back(dto);
             }
-        } else
+        }
+        else
         {
             std::cerr << "Failed to parse JSON: " << errs << "\n";
         }
-    } catch (const std::exception &e)
+    }
+    catch (const std::exception& e)
     {
         std::cerr << "Exception while parsing JSON: " << e.what() << "\n";
     }
+
     return messages;
 }
 
-std::list<int> MessagingApiClient::getContactIdsForUser(int userId){
-auto req = HttpRequest::newHttpRequest();
-req->setMethod(Get); req->setPath("/messaging/users/" + std::to_string(userId) + "/contacts"); 
-auto [code, body] = http_.send(req); 
-HttpUtils::logServiceCall("Messaging", "contactIdsForUser", code, body); printResponseRaw(body); if (!HttpUtils::isSuccess(code)) return {}; std::list<int> contactIds; try { Json::Value jsonResponse; Json::CharReaderBuilder readerBuilder; std::string errs; std::istringstream s(body); if (Json::parseFromStream(readerBuilder, s, &jsonResponse, &errs)) { for (const auto &contactId : jsonResponse) { contactIds.push_back(contactId.asInt()); } } else { std::cerr << "Failed to parse JSON: " << errs << "\n"; } } catch (const std::exception &e) { std::cerr << "Exception while parsing JSON: " << e.what() << "\n"; } return contactIds;
+std::list<int> MessagingApiClient::getContactIdsForUser(int userId)
+{
+    auto req = HttpRequest::newHttpRequest();
+    req->setMethod(Get);
+    req->setPath("/messaging/users/" + std::to_string(userId) + "/contacts");
+
+    auto [code, body] = http_.send(req);
+    HttpUtils::logServiceCall("Messaging", "contactIdsForUser", code, body);
+    printResponseRaw(body);
+
+    if (!HttpUtils::isSuccess(code))
+        return {};
+
+    std::list<int> contactIds;
+
+    try
+    {
+        Json::Value jsonResponse;
+        Json::CharReaderBuilder readerBuilder;
+        std::string errs;
+        std::istringstream s(body);
+
+        if (Json::parseFromStream(readerBuilder, s, &jsonResponse, &errs))
+        {
+            for (const auto &contact : jsonResponse)
+            {
+                contactIds.push_back(contact["user_id"].asInt());
+            }
+        }
+        else
+        {
+            std::cerr << "Failed to parse JSON: " << errs << "\n";
+        }
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << "Exception while parsing JSON: " << e.what() << "\n";
+    }
+
+    return contactIds;
 }

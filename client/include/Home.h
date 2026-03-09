@@ -28,6 +28,10 @@ class Home : public QWidget
     Q_OBJECT
 public:
     explicit Home(ClientService* service, QWidget *parent = nullptr);
+    ~Home();
+
+private:
+    QVBoxLayout *channelLayout;
 
 signals:
     void logoutRequested();

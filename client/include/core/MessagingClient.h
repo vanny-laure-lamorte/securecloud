@@ -94,6 +94,7 @@ private slots:
      */
     void onDisconnected()
     {
+        ws_.close();
         qDebug() << "[Qt] WS disconnected";
     }
 

@@ -90,52 +90,75 @@ int main()
         },
         {Get});
 
-    app().registerHandler(
-        "/messaging/users/{1}/type/{2}/messages/{3}",
-        [&groupRepo, messageRepo](const drogon::HttpRequestPtr &,
-                    std::function<void(const drogon::HttpResponsePtr &)> &&cb,
-                    int userIdFromPath,
-                    std::string typeFromPath,
-                    int targetFromPath)
-        {
-            std::cout << "[Messaging] Fetching message for userId: " << userIdFromPath << "\n";
-            std::cout << "[Messaging] Fetching message for type: " << typeFromPath << "\n";
-            std::cout << "[Messaging] Fetching message for userId: " << targetFromPath << "\n";
+        app().registerHandler(
+            "/messaging/users/{1}/type/{2}/messages/{3}",
+            [&groupRepo, &messageRepo](const drogon::HttpRequestPtr &,
+                        std::function<void(const drogon::HttpResponsePtr &)> &&cb,
+                        int userIdFromPath,
+                        std::string typeFromPath,
+                        int targetFromPath)
+            {
+                try
+                {
+                    std::cout << "[Messaging] Fetching message for userId: " << userIdFromPath << "\n";
+                    std::cout << "[Messaging] Fetching message for type: " << typeFromPath << "\n";
+                    std::cout << "[Messaging] Fetching message for target: " << targetFromPath << "\n";
 
-            if(typeFromPath == "group") {
-                auto messages = messageRepo.getGroupMessages(targetFromPath);
-                                Json::Value arr(Json::arrayValue);
-                for (const auto &m : messages)
-                { Json::Value j;
-                    j["message_id"] = m.messageId;
-                    j["sender_id"] = m.senderId;
-                    j["content"] = m.content;
-                    j["created_at"] = m.createdAt;
-                    j["updated_at"] = m.updatedAt;
-                    arr.append(j);
+                    if (typeFromPath == "group") {
+                        auto messages = messageRepo.getGroupMessages(targetFromPath);
+                        Json::Value arr(Json::arrayValue);
+
+                        for (const auto &m : messages) {
+                            Json::Value j;
+                            j["message_id"] = m.messageId;
+                            j["sender_id"] = m.senderId;
+                            j["content"] = m.content;
+                            j["created_at"] = m.createdAt;
+                            j["updated_at"] = m.updatedAt;
+                            arr.append(j);
+                        }
+
+                        auto resp = drogon::HttpResponse::newHttpJsonResponse(arr);
+                        resp->setStatusCode(drogon::k200OK);
+                        cb(resp);
+                    }
+                    else if (typeFromPath == "personal") {
+                        auto messages = messageRepo.getPersonalMessagesForUser(userIdFromPath, targetFromPath);
+                        Json::Value arr(Json::arrayValue);
+
+                        for (const auto &m : messages) {
+                            Json::Value j;
+                            j["message_id"] = m.messageId;
+                            j["sender_id"] = m.senderId;
+                            j["content"] = m.content;
+                            j["created_at"] = m.createdAt;
+                            j["updated_at"] = m.updatedAt;
+                            arr.append(j);
+                        }
+
+                        auto resp = drogon::HttpResponse::newHttpJsonResponse(arr);
+                        resp->setStatusCode(drogon::k200OK);
+                        cb(resp);
+                    }
+                    else {
+                        Json::Value err;
+                        err["error"] = "Invalid type";
+                        auto resp = drogon::HttpResponse::newHttpJsonResponse(err);
+                        resp->setStatusCode(drogon::k400BadRequest);
+                        cb(resp);
+                    }
                 }
-                auto resp = drogon::HttpResponse::newHttpJsonResponse(arr);
-                resp->setStatusCode(drogon::k200OK);
-            cb(resp);
-            }
-            else if(typeFromPath == "personal") {
-                auto  messages = messageRepo.getPersonalMessagesForUser(userIdFromPath, targetFromPath);
-                                Json::Value arr(Json::arrayValue);
-                for (const auto &m : messages)
-                { Json::Value j;
-                    j["message_id"] = m.messageId;
-                    j["sender_id"] = m.senderId;
-                    j["content"] = m.content;
-                    j["created_at"] = m.createdAt;
-                    j["updated_at"] = m.updatedAt;
-                    arr.append(j);
+                catch (const std::exception& e)
+                {
+                    std::cerr << "[Messaging] Exception in /messages handler: " << e.what() << "\n";
+                    Json::Value err;
+                    err["error"] = e.what();
+                    auto resp = drogon::HttpResponse::newHttpJsonResponse(err);
+                    resp->setStatusCode(drogon::k500InternalServerError);
+                    cb(resp);
                 }
-                auto resp = drogon::HttpResponse::newHttpJsonResponse(arr);
-                resp->setStatusCode(drogon::k200OK);
-                cb(resp);
-            }
-        },
-        {Get});
+            },
+            {Get});
 
         app().registerHandler(
         "/messaging/users/{1}/groups",
@@ -163,7 +186,7 @@ int main()
         {Get});
 
         app().registerHandler(
-            "/messaging/get-contacts/{1}",
+            "/messaging/users/{1}/contacts",
             [&messageRepo](const drogon::HttpRequestPtr &,
                 std::function<void(const drogon::HttpResponsePtr &)> &&cb,
                 int userIdFromPath)

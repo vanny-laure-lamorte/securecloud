@@ -5,6 +5,7 @@
 #include "api/MessagingApiClient.h"
 #include "core/WsGatewayClient.h"
 #include "core/ClientState.h"
+#include "core/ChatMessage.h"
 #include <string>
 #include <QMetaObject>
 
@@ -134,11 +135,17 @@ public:
     QVector<QPair <int, QString>> getGroups();
 
     /**
+     * Retrieves the contacts of authenticated user.
+     * @return A vector of maps, where each map represents a contact with its details (e.g., user ID, username).
+     */
+    QVector<QPair<int, QString>> getContacts();
+
+    /**
      * Retrieves the messages for a specific group or personal conversation.
      * @param id The ID of the group or user to retrieve messages for.
      * @return A vector of maps, where each map represents a message with its details (e.g., message ID, content, sender ID).
      */
-    QVector<QPair <int, QString>> getMessages(int id, const std::string& type);
+    QVector<ChatMessage> getMessages(int id, const std::string& type);
 
 private:
     /**

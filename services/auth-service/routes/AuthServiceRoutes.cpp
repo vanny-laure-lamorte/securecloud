@@ -209,6 +209,37 @@ void AuthServiceRoutes::registerRoutes()
             cb(resp);
         },
         {Get});
+
+    app().registerHandler(
+        "/auth/users/{1}",
+        [this](const HttpRequestPtr&,
+            std::function<void(const HttpResponsePtr&)>&& cb,
+            int userId)
+        {
+            try
+            {
+                std::string username = userService_.getUsernameByUserId(userId);
+
+                Json::Value respJson;
+                respJson["id"] = userId;
+                respJson["username"] = username;
+
+                auto resp = HttpResponse::newHttpJsonResponse(respJson);
+                resp->setStatusCode(k200OK);
+                cb(resp);
+            }
+            catch (const std::exception& e)
+            {
+                Json::Value respJson;
+                respJson["error"] = e.what();
+
+                auto resp = HttpResponse::newHttpJsonResponse(respJson);
+                resp->setStatusCode(k404NotFound);
+                cb(resp);
+            }
+        },
+        {Get});
 }
+
 
 // TODO : Implement logout route --> Update last active timestamp in DB

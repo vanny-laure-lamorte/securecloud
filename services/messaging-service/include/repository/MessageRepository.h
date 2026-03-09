@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <optional>
+#include <list>
 #include "common/db/DbConnection.h"
 #include "models/MessageModel.h"
 

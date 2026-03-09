@@ -91,3 +91,15 @@ std::map<std::string, std::string> UserService::getContactInformation(const int 
     contactInfo["lastSeen"] = std::to_string(profile.lastSeen);
     return contactInfo;
 }
+
+std::string UserService::getUsernameByUserId(int userId){
+    try
+    {
+        return userRepository_.getUsernameByUserId(userId);
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << "[UserService] Get username by userId failed: " << e.what() << std::endl;
+        throw;
+    }
+}

@@ -63,6 +63,13 @@ public:
      */
     std::map<std::string, std::string> getContactInformation(const int userId);
 
+    /**
+     * @brief Get the username by user ID.
+     * @param userId The ID of the user.
+     * @return The username if found, std::nullopt otherwise.
+     */
+    std::string getUsernameByUserId(int userId);
+
     private:
     UserRepository userRepository_;
 };

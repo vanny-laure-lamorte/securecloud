@@ -1,6 +1,7 @@
 #pragma once
 #include "core/HttpGatewayClient.h"
 #include "core/HttpUtils.h"
+#include "core/RawMessageDto.h"
 #include <json/json.h>
 #include <string>
 #include <vector>
@@ -52,10 +53,9 @@ public:
      * @param userId The ID of the user for whom to retrieve messages.
      * @param type The type of conversation ("group" or "personal").
      * @param id The ID of the group or user to retrieve messages for.
-     * @return A vector of maps, where each map represents a message with its details (e.g.content, sender ID).
+     * @return A vector of raw Messages, where each map represents a message with its details (e.g.content, sender ID).
      */
-    std::vector<std::pair<int, std::string>> getMessagesForGroupOrUser(int userId, std::string type, int id);
-
+    std::vector<RawMessageDto> getMessagesForGroupOrUser(int userId, const std::string& type, int id);
     /**
      * @brief Retrieve contact IDs for a specific user.
      * @param userId The ID of the user for whom to retrieve contact IDs.
