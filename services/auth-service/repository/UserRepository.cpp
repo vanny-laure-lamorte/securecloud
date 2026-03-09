@@ -129,25 +129,30 @@ std::string UserRepository::getSaltByEmail(const std::string &email)
     return res[0]["salt"].as<std::string>();
 }
 
-UserProfile UserRepository::userInfo(const std::string &email)
+UserProfile UserRepository::getUserAllInfo(int &userId)
 {
     auto client = db_.client();
     drogon::orm::Result res = client->execSqlSync(
-        "SELECT u.username, u.first_name, u.last_name, c.email "
+        "SELECT u.username, u.first_name, u.last_name, u.created_at, u.updated_at, r.role_name, r.role_description, c.email "
         "FROM users u "
         "JOIN connexion c ON u.user_id = c.user_id "
+        "JOIN roles r ON u.role_id = r.id "
         "WHERE c.email = $1",
-        email);
+        userId);
 
     if (res.empty())
     {
-        throw std::runtime_error("User not found for email: " + email);
+        throw std::runtime_error("User not found for email: " + userId);
     }
 
     UserProfile profile;
     profile.username = res[0]["username"].as<std::string>();
     profile.firstName = res[0]["first_name"].as<std::string>();
     profile.lastName = res[0]["last_name"].as<std::string>();
+    profile.createdAt = res[0]["created_at"].as<std::time_t>();
+    profile.updatedAt = res[0]["updated_at"].as<std::time_t>();
+    profile.roleName = res[0]["role_name"].as<std::string>();
+    profile.roleDescription = res[0]["role_description"].as<std::string>();
     profile.email = res[0]["email"].as<std::string>();
     return profile;
 }

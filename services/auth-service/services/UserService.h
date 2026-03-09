@@ -45,11 +45,11 @@ public:
      */
     bool logoutUser(const int userId);
     /**
-     * @brief Retrieve user information by email.
-     * @param email The email of the user.
+     * @brief Retrieve user information by userId.
+     * @param userId The id of the user
      * @return A vector of strings containing user information.
      */
-    std::vector<std::string> getuserInformations(const std::string &email);
+    std::vector<std::map<std::string, std::string>> getuserInformations(int &userId);
 
     int getuserId(const std::string &email)
     {

@@ -113,6 +113,13 @@ public:
      */
     UserProfile getContactInformation(const int userId);
 
+    /**
+    * @brief Retrieve all user information by user ID.
+    * @param userId The ID of the user.
+    * @return UserProfile struct containing all user information.
+    */
+    UserProfile getUserAllInfo(int &userId);
+
 private:
     DbConnection &db_;
 };

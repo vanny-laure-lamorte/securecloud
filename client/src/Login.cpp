@@ -13,12 +13,11 @@
 #include <QStackedWidget>
 #include <QVBoxLayout>
 
-Login::Login(QWidget *parent)
-    : QWidget(parent)
+Login::Login(QWidget *parent, TranslationManager* tm)
+    : QWidget(parent), translationManager_(tm)
 {
     // Flag language selector
-    LanguageSelector *langSelector = new LanguageSelector(this);
-    connect(langSelector, &LanguageSelector::languageChanged, this, [=](const QString &lang) {});
+    LanguageSelector *langSelector = new LanguageSelector(this, translationManager_);
 
     // Main frame
     QFrame *container = new QFrame(this);
@@ -242,7 +241,6 @@ Login::Login(QWidget *parent)
     connect(loginButton, &QPushButton::clicked, this, [=]()
     {
         emit loginRequested(emailEdit->text(), passwordEdit->text());
-        // TO DO: guest also language
     });
 
     connect(createAccount, &QPushButton::clicked, this, [=]()

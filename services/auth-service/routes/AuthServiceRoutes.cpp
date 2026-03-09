@@ -19,6 +19,32 @@ void AuthServiceRoutes::registerRoutes()
             cb(resp);
         },
         {Get});
+    app().registerHandler(
+        "/auth/user-info",
+        [this](const HttpRequestPtr &req,
+           std::function<void(const HttpResponsePtr &)> &&cb)
+        {
+            auto json = req->getJsonObject();
+            if(!json->isMember("userId"))
+            {
+                Json::Value respJson; respJson["error"] = "Missing userId";
+                auto resp = HttpResponse::newHttpJsonResponse(respJson);
+                resp->setStatusCode(k400BadRequest);
+                cb(resp);
+                return;
+            }
+            int userId = (*json)["userId"].asInt();
+            auto userInfo = userService_.getuserInformations(userId);
+            Json::Value respJson;
+            for (const auto &info : userInfo) {
+                for (const auto &[key, value] : info) {
+                    respJson[key] = value;
+                }
+            }
+            auto resp = HttpResponse::newHttpJsonResponse(respJson);
+            resp->setStatusCode(k200OK);
+            cb(resp);
+        }, {Post});
 
     app().registerHandler(
         "/auth/login",
