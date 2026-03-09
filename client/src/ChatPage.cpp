@@ -139,7 +139,7 @@ ChatPage::ChatPage(ClientService* service, QWidget *parent)
             else if (conversationType == "group")
                 service->sendGroup(activeChatId, text.toStdString());
 
-            addMessage(service->userId(), "Vous", text);
+            addMessage(service->userId(), tr("CHAT_PAGE.YOU"), text);
 
             messageInput->clear();
 
@@ -173,7 +173,7 @@ void ChatPage::addMessage(int senderId, const QString& senderName, const QString
     messageLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
 
     if (senderId == service->userId()) {
-        messageLabel->setText("<b>Vous :</b> " + content);
+        messageLabel->setText("<b>" + tr("CHAT_PAGE.YOU") + " :</b> " + content);
         messageLabel->setStyleSheet(R"(
             background-color:#e8fff7;
             color:black;
