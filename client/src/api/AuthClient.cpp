@@ -75,6 +75,7 @@ bool AuthClient::logout(const std::string &email)
     state_->userName = "";
     state_->email = "";
     state_->jwt = "";
+    state_->userId = -1;
 
     std::cout << "[Auth] Logout successful.\n";
     return true;
@@ -119,4 +120,43 @@ bool AuthClient::registerUser(const std::string &email,
     HttpUtils::logServiceCall("Auth", "register", code, body);
 
     return HttpUtils::isSuccess(code);
+}
+
+UserDto AuthClient::getUserById(int id)
+{
+    auto req = HttpRequest::newHttpRequest();
+    req->setMethod(Get);
+    req->setPath("/auth/users/" + std::to_string(id));
+
+    auto [code, body] = http_.send(req);
+    HttpUtils::logServiceCall("Auth", "getUserById", code, body);
+
+    if (!HttpUtils::isSuccess(code))
+        return {-1, ""};
+
+    UserDto user{-1, ""};
+
+    try
+    {
+        Json::Value jsonResponse;
+        Json::CharReaderBuilder readerBuilder;
+        std::string errs;
+        std::istringstream s(body);
+
+        if (Json::parseFromStream(readerBuilder, s, &jsonResponse, &errs))
+        {
+            user.id = jsonResponse["id"].asInt();
+            user.username = jsonResponse["username"].asString();
+        }
+        else
+        {
+            std::cerr << "Failed to parse JSON: " << errs << "\n";
+        }
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << "Exception while parsing JSON: " << e.what() << "\n";
+    }
+
+    return user;
 }

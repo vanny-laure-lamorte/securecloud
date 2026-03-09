@@ -46,19 +46,16 @@ void UserRepository::insertConnexion(
     }
 }
 
-std::string UserRepository::getUsernameByEmail(const std::string &email)
+std::string UserRepository::getUsernameByUserId(int userId)
 {
     auto client = db_.client();
     drogon::orm::Result res = client->execSqlSync(
-        "SELECT u.username "
-        "FROM connexion c "
-        "JOIN users u ON u.user_id = c.user_id "
-        "WHERE c.email = $1",
-        email);
+        "SELECT username FROM users WHERE user_id = $1",
+        userId);
 
     if (res.empty())
     {
-        throw std::runtime_error("User not found for email: " + email);
+        throw std::runtime_error("User not found for userId: " + userId);
     }
 
     return res[0]["username"].as<std::string>();

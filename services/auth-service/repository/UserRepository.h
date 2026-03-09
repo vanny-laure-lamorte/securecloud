@@ -45,10 +45,10 @@ public:
 
     /**
      * @brief Get the username by email.
-     * @param email The email of the user.
+     * @param userId The userId of the user.
      * @return The username if found, std::nullopt otherwise.
      */
-    std::string getUsernameByEmail(const std::string &email);
+    std::string getUsernameByUserId(int userId);
 
     /**
      * @brief Check if the provided credentials are valid.
@@ -113,13 +113,6 @@ public:
      * @return An integer representing the contact information (e.g., phone number, email).
      */
     UserProfile getContactInformation(const int userId);
-
-    /**
-    * @brief Retrieve all user information by user ID.
-    * @param userId The ID of the user.
-    * @return UserProfile struct containing all user information.
-    */
-    UserProfile getUserAllInfo(int &userId);
 
 private:
     DbConnection &db_;

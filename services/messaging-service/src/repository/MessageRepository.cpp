@@ -43,7 +43,8 @@ std::vector<MessageModel> MessageRepository::getPersonalMessagesForUser(int user
         "AND (sender_id = $1 OR receiver_user_id = $1) "
         "AND (sender_id = $2 OR receiver_user_id = $2) "
         "ORDER BY created_at ASC",
-        userId);
+        userId,
+        targetId);
 
     std::vector<MessageModel> out;
     out.reserve(res.size());
@@ -56,7 +57,7 @@ std::vector<MessageModel> MessageRepository::getGroupMessages(int groupId) const
 {
     auto client = db_.client();
     auto res = client->execSqlSync(
-        "SELECT message_id, sender_id, receiver_group_id, content, created_at, updated_at "
+        "SELECT message_id, sender_id, receiver_user_id, receiver_group_id, content, created_at, updated_at "
         "FROM messages "
         "WHERE receiver_group_id = $1 "
         "ORDER BY created_at ASC",
@@ -88,16 +89,27 @@ void MessageRepository::insertGroupMessage(int senderId, int receiverGroupId, co
 std::list<int> MessageRepository::getContactsForUser(int userId) const
 {
     auto client = db_.client();
-    auto res = client->execSqlSync("SELECT u.user_id "
-                                   "FROM users u "
-                                   "JOIN messages m ON (u.user_id = m.sender_id OR u.user_id = m.receiver_user_id) "
-                                   "WHERE (m.sender_id = $1 OR m.receiver_user_id = $1) AND u.user_id != $1",
-                                   userId);
+
+    auto res = client->execSqlSync(
+        "SELECT DISTINCT "
+        "CASE "
+        "    WHEN sender_id = $1 THEN receiver_user_id "
+        "    ELSE sender_id "
+        "END AS user_id "
+        "FROM messages "
+        "WHERE receiver_group_id IS NULL "
+        "  AND (sender_id = $1 OR receiver_user_id = $1) "
+        "  AND receiver_user_id IS NOT NULL",
+        userId);
+
     std::list<int> contacts;
     for (const auto &row : res)
     {
-        int contactId = row["user_id"].as<int>();
-        contacts.emplace_back(contactId);
+        if (!row["user_id"].isNull())
+        {
+            contacts.emplace_back(row["user_id"].as<int>());
+        }
     }
+
     return contacts;
 }

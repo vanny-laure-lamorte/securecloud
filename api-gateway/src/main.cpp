@@ -134,6 +134,18 @@ app().registerHandler(
         },
         {drogon::Get, drogon::Post});
 
+    app().registerHandler(
+    "/auth/users/{1}",
+    [authClient](const HttpRequestPtr &req,
+                 std::function<void(const HttpResponsePtr &)> &&cb,
+                 int userId)
+    {
+        std::cout << "[Gateway] Client " << req->peerAddr().toIpPort()
+                  << " -> " << req->path() << std::endl;
+        forwardToBackend(req, authClient, req->path(), std::move(cb));
+    },
+    {drogon::Get});
+
     // ===== MESSAGING SERVICE =====
     app().registerPreRoutingAdvice(
         [msgClient](const HttpRequestPtr &req,

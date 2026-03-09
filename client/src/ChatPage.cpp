@@ -3,14 +3,17 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
-#include <QTextEdit>
 #include <QLineEdit>
 #include <QTabBar>
 #include <QFrame>
 #include <QToolButton>
+#include <QScrollArea>
+#include <QScrollBar>
+#include <QLayoutItem>
+#include <QIcon>
 
 ChatPage::ChatPage(ClientService* service, QWidget *parent)
-    : QWidget(parent)
+    : QWidget(parent), service(service)
 {
     this->setStyleSheet("background-color:#ffffff; color:#017f6a;");
 
@@ -24,9 +27,10 @@ ChatPage::ChatPage(ClientService* service, QWidget *parent)
     header->setFixedHeight(60);
 
     QHBoxLayout* headerLayout = new QHBoxLayout(header);
-    QLabel* userName = new QLabel("Jean Dupont", header);
-    userName->setStyleSheet("font-size:18px;font-weight:bold; color:black;");
-    headerLayout->addWidget(userName);
+
+    userNameLabel = new QLabel("Jean Dupont", header);
+    userNameLabel->setStyleSheet("font-size:18px; font-weight:bold; color:black;");
+    headerLayout->addWidget(userNameLabel);
     headerLayout->addStretch();
 
     mainLayout->addWidget(header);
@@ -37,12 +41,15 @@ ChatPage::ChatPage(ClientService* service, QWidget *parent)
     tabs->addTab("Fichiers");
     tabs->addTab("Photos");
     tabs->setStyleSheet(R"(
-        QTabBar { background:#1e1e1e; }
+        QTabBar {
+            background:#1e1e1e;
+        }
         QTabBar::tab {
             background:#e8fff7;
             padding:10px;
-            border: 2px solid #ffffff;
+            border:2px solid #ffffff;
             font-weight:bold;
+            color:#017f6a;
         }
         QTabBar::tab:selected {
             border-bottom:2px solid #017f6a;
@@ -51,24 +58,23 @@ ChatPage::ChatPage(ClientService* service, QWidget *parent)
 
     mainLayout->addWidget(tabs);
 
-    QVector<QString> messages;
-    QVector<QPair <int, QString>> personalMessages = service->getMessages(2, "personal");
-    for (const auto& [senderId, content] : personalMessages) {
-        chatView = new QTextEdit(this);
-        chatView->setReadOnly(true);
-        chatView->setStyleSheet(R"(
-            background-color:#ffffff;
-            border:none;
-            padding:10px;
-            font-size:14px;
-        )");
-        if (senderId == service->userId())
-            chatView->append("<b>Vous :</b> " + content);
-        else
-            chatView->append("<b>Other :</b> " + content);
+    // --- Messages zone with scroll ---
+    messagesScrollArea = new QScrollArea(this);
+    messagesScrollArea->setWidgetResizable(true);
+    messagesScrollArea->setFrameShape(QFrame::NoFrame);
+    messagesScrollArea->setStyleSheet("background-color:#ffffff; border:none;");
 
-        mainLayout->addWidget(chatView, 1);
-    }
+    messagesContainer = new QWidget();
+    messagesContainer->setStyleSheet("background-color:#ffffff;");
+
+    messagesLayout = new QVBoxLayout(messagesContainer);
+    messagesLayout->setContentsMargins(10,10,10,10);
+    messagesLayout->setSpacing(8);
+    messagesLayout->setAlignment(Qt::AlignTop);
+    messagesLayout->addStretch();
+
+    messagesScrollArea->setWidget(messagesContainer);
+    mainLayout->addWidget(messagesScrollArea, 1);
 
     // --- Input zone ---
     QFrame* inputFrame = new QFrame(this);
@@ -82,6 +88,7 @@ ChatPage::ChatPage(ClientService* service, QWidget *parent)
     // Container for input and icons
     QFrame* editContainer = new QFrame(this);
     editContainer->setStyleSheet("background:#e8fff7; border-radius:6px;");
+
     QHBoxLayout* editLayout = new QHBoxLayout(editContainer);
     editLayout->setContentsMargins(10,0,10,0);
     editLayout->setSpacing(5);
@@ -89,20 +96,22 @@ ChatPage::ChatPage(ClientService* service, QWidget *parent)
     // Input message
     messageInput = new QLineEdit(this);
     messageInput->setPlaceholderText("Write a message...");
-    messageInput->setStyleSheet("background:transparent; border:none; font-size:14px;");
+    messageInput->setStyleSheet("background:transparent; border:none; font-size:14px; color:black;");
     editLayout->addWidget(messageInput, 1);
 
-    // Icon paperclip, emoji and  image
+    // Icon paperclip
     QToolButton* paperclipBtn = new QToolButton(this);
     paperclipBtn->setIcon(QIcon(":/assets/icons/paperclip.png"));
     paperclipBtn->setStyleSheet("border:none; padding:4px;");
     editLayout->addWidget(paperclipBtn);
 
+    // Icon emoji
     QToolButton* emojiBtn = new QToolButton(this);
     emojiBtn->setIcon(QIcon(":/assets/icons/smiley.png"));
     emojiBtn->setStyleSheet("border:none; padding:4px;");
     editLayout->addWidget(emojiBtn);
 
+    // Icon image
     QToolButton* imageBtn = new QToolButton(this);
     imageBtn->setIcon(QIcon(":/assets/icons/image.png"));
     imageBtn->setStyleSheet("border:none; padding:4px;");
@@ -115,21 +124,109 @@ ChatPage::ChatPage(ClientService* service, QWidget *parent)
     separator->setStyleSheet("background-color:#bdbdbd; margin:0; padding:0;");
     editLayout->addWidget(separator);
 
-    // Button sent
+    // Button send
     QToolButton* sendBtn = new QToolButton(this);
     sendBtn->setIcon(QIcon(":/assets/icons/sent.png"));
     sendBtn->setStyleSheet("border:none; padding:4px;");
     editLayout->addWidget(sendBtn);
 
-    connect(sendBtn, &QToolButton::clicked, this, [this, service](){
-        QString text = messageInput->text();
-        if(!text.isEmpty()) {
-            chatView->append("<b>Vous :</b> " + text);
-            service->sendPersonal(2, text.toStdString());
+    connect(sendBtn, &QToolButton::clicked, this, [this, service]() {
+        QString text = messageInput->text().trimmed();
+
+        if (!text.isEmpty() && activeChatId != -1) {
+            if (conversationType == "personal")
+                service->sendPersonal(activeChatId, text.toStdString());
+            else if (conversationType == "group")
+                service->sendGroup(activeChatId, text.toStdString());
+
+            addMessage(service->userId(), tr("CHAT_PAGE.YOU"), text);
+
             messageInput->clear();
+
+            QScrollBar* scrollBar = messagesScrollArea->verticalScrollBar();
+            scrollBar->setValue(scrollBar->maximum());
         }
     });
 
     inputLayout->addWidget(editContainer, 1);
     mainLayout->addWidget(inputFrame);
+}
+
+void ChatPage::clearMessages()
+{
+    QLayoutItem* item;
+    while ((item = messagesLayout->takeAt(0)) != nullptr) {
+        if (item->widget()) {
+            item->widget()->deleteLater();
+        }
+        delete item;
+    }
+    messagesLayout->addStretch();
+}
+
+void ChatPage::addMessage(int senderId, const QString& senderName, const QString& content)
+{
+    QLabel* messageLabel = new QLabel(messagesContainer);
+    messageLabel->setWordWrap(true);
+    messageLabel->setTextFormat(Qt::RichText);
+    messageLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
+    messageLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+    if (senderId == service->userId()) {
+        messageLabel->setText("<b>" + tr("CHAT_PAGE.YOU") + " :</b> " + content);
+        messageLabel->setStyleSheet(R"(
+            background-color:#e8fff7;
+            color:black;
+            border:none;
+            border-radius:8px;
+            padding:10px;
+            font-size:14px;
+        )");
+    } else {
+        messageLabel->setText("<b>" + senderName + " :</b> " + content);
+        messageLabel->setStyleSheet(R"(
+            background-color:#f5f5f5;
+            color:black;
+            border:none;
+            border-radius:8px;
+            padding:10px;
+            font-size:14px;
+        )");
+    }
+
+    int insertIndex = messagesLayout->count() - 1;
+    messagesLayout->insertWidget(insertIndex, messageLabel);
+}
+
+void ChatPage::loadConversation(int chatId, const QString& conversationName, const QString& type)
+{
+    activeChatId = chatId;
+    conversationType = type.toStdString();
+    userNameLabel->setText(conversationName);
+
+    clearMessages();
+
+    QVector<ChatMessage> personalMessages = service->getMessages(chatId, type.toStdString());
+
+    if (personalMessages.isEmpty()) {
+        QLabel* emptyLabel = new QLabel(tr("CHAT_PAGE.NO_MESSAGES"), messagesContainer);
+        emptyLabel->setStyleSheet(R"(
+            background-color:#ffffff;
+            color:#808080;
+            border:none;
+            padding:10px;
+            font-size:14px;
+        )");
+        emptyLabel->setAlignment(Qt::AlignTop | Qt::AlignLeft);
+
+        int insertIndex = messagesLayout->count() - 1;
+        messagesLayout->insertWidget(insertIndex, emptyLabel);
+    } else {
+        for (const auto& msg : personalMessages) {
+            addMessage(msg.senderId, msg.senderName, msg.content);
+        }
+    }
+
+    QScrollBar* scrollBar = messagesScrollArea->verticalScrollBar();
+    scrollBar->setValue(scrollBar->maximum());
 }

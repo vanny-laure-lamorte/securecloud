@@ -272,21 +272,49 @@ Home::Home(ClientService* service, QWidget *parent)
     channelLayout->addWidget(channelTitle);
 
     QVector<QString> channels;
-    QVector<QPair <int, QString>> groups = service->getGroups();
-    for (const auto& group : groups)
-    {
-        channels.append(group.second);
-    }
+    QVector<QPair<int, QString>> groups = service->getGroups();
 
-    if (channels.isEmpty()) {
-        channels = {tr("MAIN_PAGE.NO_CHANNELS")};
-    }
-
-    for (const QString &ch : channels)
-    {
-        QLabel *lbl = new QLabel(ch, channelSidebar);
+    if (groups.isEmpty()) {
+        QLabel *lbl = new QLabel(tr("MAIN_PAGE.NO_CHANNELS"), channelSidebar);
         lbl->setObjectName("lbl");
         channelLayout->addWidget(lbl);
+    } else {
+        for (const auto& group : groups)
+        {
+            QPushButton* channelBtn = new QPushButton(group.second, channelSidebar);
+            channelBtn->setObjectName("lbl");
+            channelBtn->setCursor(Qt::PointingHandCursor);
+            channelBtn->setFlat(true);
+
+            connect(channelBtn, &QPushButton::clicked, this, [this, group, chatPage]() {
+                chatPage->loadConversation(group.first, group.second, "group");
+            });
+
+            channelLayout->addWidget(channelBtn);
+        }
+    }
+
+    // Contacts section
+    QVector<QPair<int, QString>> contacts = service->getContacts();
+
+    if (contacts.isEmpty()) {
+        QLabel* lbl = new QLabel(tr("MAIN_PAGE.NO_CONTACTS"), channelSidebar);
+        lbl->setObjectName("lbl");
+        channelLayout->addWidget(lbl);
+    } else {
+        for (const auto& contact : contacts)
+        {
+            QPushButton* contactBtn = new QPushButton(contact.second, channelSidebar);
+            contactBtn->setObjectName("lbl");
+            contactBtn->setCursor(Qt::PointingHandCursor);
+            contactBtn->setFlat(true);
+
+            connect(contactBtn, &QPushButton::clicked, this, [this, contact, chatPage]() {
+                chatPage->loadConversation(contact.first, contact.second, "personal");
+            });
+
+            channelLayout->addWidget(contactBtn);
+        }
     }
     channelLayout->addStretch();
 
@@ -298,6 +326,10 @@ Home::Home(ClientService* service, QWidget *parent)
     scrollArea->setFixedWidth(260);
     scrollArea->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
     contentLayout->addWidget(scrollArea);
+
+    if (!groups.isEmpty()) {
+        chatPage->loadConversation(groups[0].first, groups[0].second, "group");
+    }
 
     // --- Main section dynamic ---
     QFrame *mainContent = new QFrame(contentArea);
@@ -318,4 +350,9 @@ Home::Home(ClientService* service, QWidget *parent)
     mainLayout->addWidget(leftSidebar);
     mainLayout->addWidget(separator);
     mainLayout->addWidget(rightArea);
+}
+
+Home::~Home()
+{
+    qDebug() << "Home destroyed";
 }

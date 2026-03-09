@@ -2,6 +2,20 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="es_ES">
 <context>
+    <name>ChatPage</name>
+    <message>
+        <location filename="../../client/src/ChatPage.cpp" line="142"/>
+        <location filename="../../client/src/ChatPage.cpp" line="176"/>
+        <source>CHAT_PAGE.YOU</source>
+        <translation type="finished">TÚ</translation>
+    </message>
+    <message>
+        <location filename="../../client/src/ChatPage.cpp" line="212"/>
+        <source>CHAT_PAGE.NO_MESSAGES</source>
+        <translation type="finished">Sin mensajes</translation>
+    </message>
+</context>
+<context>
     <name>Home</name>
     <message>
         <location filename="../../client/src/Home.cpp" line="88"/>
@@ -68,130 +82,140 @@
         <source>MAIN_PAGE.NEW_CHAT</source>
         <translation>Nuevo chat</translation>
     </message>
+    <message>
+        <location filename="../../client/src/Home.cpp" line="278"/>
+        <source>MAIN_PAGE.NO_CHANNELS</source>
+        <translation type="unfinished">No hay grupos disponibles</translation>
+    </message>
+    <message>
+        <location filename="../../client/src/Home.cpp" line="301"/>
+        <source>MAIN_PAGE.NO_CONTACTS</source>
+        <translation type="unfinished">No hay contacto disponible</translation>
+    </message>
 </context>
 <context>
     <name>Login</name>
     <message>
-        <location filename="../../client/src/Login.cpp" line="42"/>
-        <location filename="../../client/src/Login.cpp" line="90"/>
-        <location filename="../../client/src/Login.cpp" line="239"/>
+        <location filename="../../client/src/Login.cpp" line="41"/>
+        <location filename="../../client/src/Login.cpp" line="89"/>
+        <location filename="../../client/src/Login.cpp" line="238"/>
         <source>LOGIN.PAGE_TITLE</source>
         <translation>Iniciar sesión</translation>
     </message>
     <message>
-        <location filename="../../client/src/Login.cpp" line="65"/>
+        <location filename="../../client/src/Login.cpp" line="64"/>
         <source>LOGIN.EMAIL</source>
         <translation>Correo electrónico</translation>
     </message>
     <message>
-        <location filename="../../client/src/Login.cpp" line="69"/>
+        <location filename="../../client/src/Login.cpp" line="68"/>
         <source>LOGIN.ENTER_YOUR_EMAIL</source>
         <translation>Ingrese su correo electrónico</translation>
     </message>
     <message>
-        <location filename="../../client/src/Login.cpp" line="73"/>
+        <location filename="../../client/src/Login.cpp" line="72"/>
         <source>LOGIN.PASSWORD</source>
         <translation>Contraseña</translation>
     </message>
     <message>
-        <location filename="../../client/src/Login.cpp" line="76"/>
+        <location filename="../../client/src/Login.cpp" line="75"/>
         <source>LOGIN.ENTER_YOUR_PASSWORD</source>
         <translation>Ingrese su contraseña</translation>
     </message>
     <message>
-        <location filename="../../client/src/Login.cpp" line="81"/>
+        <location filename="../../client/src/Login.cpp" line="80"/>
         <source>LOGIN.REMEMBER_ME</source>
         <translation>Recordarme</translation>
     </message>
     <message>
-        <location filename="../../client/src/Login.cpp" line="84"/>
+        <location filename="../../client/src/Login.cpp" line="83"/>
         <source>LOGIN.LOST_PASSWORD</source>
         <translation>¿Olvidó su contraseña?</translation>
     </message>
     <message>
-        <location filename="../../client/src/Login.cpp" line="94"/>
+        <location filename="../../client/src/Login.cpp" line="93"/>
         <source>LOGIN.NO_ACCOUNT</source>
         <translation>¿Aún no tiene cuenta?</translation>
     </message>
     <message>
-        <location filename="../../client/src/Login.cpp" line="94"/>
-        <location filename="../../client/src/Login.cpp" line="208"/>
-        <location filename="../../client/src/Login.cpp" line="234"/>
+        <location filename="../../client/src/Login.cpp" line="93"/>
+        <location filename="../../client/src/Login.cpp" line="207"/>
+        <location filename="../../client/src/Login.cpp" line="233"/>
         <source>LOGIN.SIGN_UP</source>
         <translation>Registrarse</translation>
     </message>
     <message>
-        <location filename="../../client/src/Login.cpp" line="123"/>
+        <location filename="../../client/src/Login.cpp" line="122"/>
         <source>REGISTER.FIRST_NAME_LABEL</source>
         <translation>Nombre</translation>
     </message>
     <message>
-        <location filename="../../client/src/Login.cpp" line="127"/>
+        <location filename="../../client/src/Login.cpp" line="126"/>
         <source>REGISTER.ENTER_YOUR_FIRST_NAME</source>
         <translation>Juan</translation>
     </message>
     <message>
-        <location filename="../../client/src/Login.cpp" line="135"/>
+        <location filename="../../client/src/Login.cpp" line="134"/>
         <source>REGISTER.LAST_NAME_LABEL</source>
         <translation>Apellido</translation>
     </message>
     <message>
-        <location filename="../../client/src/Login.cpp" line="139"/>
+        <location filename="../../client/src/Login.cpp" line="138"/>
         <source>REGISTER.ENTER_YOUR_LAST_NAME</source>
         <translation>Pérez</translation>
     </message>
     <message>
-        <location filename="../../client/src/Login.cpp" line="150"/>
+        <location filename="../../client/src/Login.cpp" line="149"/>
         <source>REGISTER.DATE_OF_BIRTH</source>
         <translation>Fecha de nacimiento</translation>
     </message>
     <message>
-        <location filename="../../client/src/Login.cpp" line="161"/>
+        <location filename="../../client/src/Login.cpp" line="160"/>
         <source>REGISTER.SELECT_YOUR_DOB</source>
         <translation>Seleccione su fecha de nacimiento</translation>
     </message>
     <message>
-        <location filename="../../client/src/Login.cpp" line="167"/>
+        <location filename="../../client/src/Login.cpp" line="166"/>
         <source>REGISTER.EMAIL_LABEL</source>
         <translation>Correo electrónico</translation>
     </message>
     <message>
-        <location filename="../../client/src/Login.cpp" line="171"/>
+        <location filename="../../client/src/Login.cpp" line="170"/>
         <source>REGISTER.ENTER_YOUR_EMAIL</source>
         <translation>Ingrese su correo electrónico</translation>
     </message>
     <message>
-        <location filename="../../client/src/Login.cpp" line="179"/>
+        <location filename="../../client/src/Login.cpp" line="178"/>
         <source>REGISTER.PASSWORD_LABEL</source>
         <translation>Contraseña</translation>
     </message>
     <message>
-        <location filename="../../client/src/Login.cpp" line="183"/>
+        <location filename="../../client/src/Login.cpp" line="182"/>
         <source>REGISTER.ENTER_YOUR_PASSWORD</source>
         <translation>Ingrese su contraseña</translation>
     </message>
     <message>
-        <location filename="../../client/src/Login.cpp" line="192"/>
+        <location filename="../../client/src/Login.cpp" line="191"/>
         <source>REGISTER.CONFIRM_PASSWORD_LABEL</source>
         <translation>Confirmar contraseña</translation>
     </message>
     <message>
-        <location filename="../../client/src/Login.cpp" line="196"/>
+        <location filename="../../client/src/Login.cpp" line="195"/>
         <source>REGISTER.ENTER_YOUR_CONFIRM_PASSWORD</source>
         <translation>Ingrese su contraseña nuevamente</translation>
     </message>
     <message>
-        <location filename="../../client/src/Login.cpp" line="213"/>
+        <location filename="../../client/src/Login.cpp" line="212"/>
         <source>LOGIN.BACK_TO_LOGIN</source>
         <translation>Volver a iniciar sesión</translation>
     </message>
     <message>
-        <location filename="../../client/src/Login.cpp" line="287"/>
+        <location filename="../../client/src/Login.cpp" line="285"/>
         <source>LOGIN.ADMIN</source>
         <translation type="unfinished">Administrador</translation>
     </message>
     <message>
-        <location filename="../../client/src/Login.cpp" line="288"/>
+        <location filename="../../client/src/Login.cpp" line="286"/>
         <source>LOGIN.USER</source>
         <translation type="unfinished">Usuario</translation>
     </message>
@@ -200,7 +224,7 @@
     <name>NotConnectedLayout</name>
     <message>
         <location filename="../../client/src/NotConnectedLayout.cpp" line="58"/>
-        <location filename="../../client/src/NotConnectedLayout.cpp" line="74"/>
+        <location filename="../../client/src/NotConnectedLayout.cpp" line="77"/>
         <source>LOGIN.LOGIN_FAILED</source>
         <translation>Inicio de sesión fallido</translation>
     </message>
@@ -208,9 +232,8 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../client/src/main.cpp" line="38"/>
         <source>K.Hello</source>
-        <translation>Hola</translation>
+        <translation type="vanished">Hola</translation>
     </message>
 </context>
 <context>

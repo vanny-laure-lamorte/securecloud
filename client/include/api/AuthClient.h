@@ -1,6 +1,7 @@
 #pragma once
 #include "core/ClientState.h"
 #include "core/HttpGatewayClient.h"
+#include "core/UserDto.h"
 #include <json/json.h>
 #include <string>
 
@@ -67,6 +68,13 @@ public:
      * Shared client state (authentication, JWT, etc.)
      */
     std::shared_ptr<ClientState> state_;
+
+    /**
+     * Retrieves user information by user ID.
+     * @param id The ID of the user to retrieve.
+     * @return A UserDto containing the user's information, or an empty UserDto if retrieval fails.
+     */
+    UserDto getUserById(int id);
 private:
     HttpGatewayClient &http_;
 };

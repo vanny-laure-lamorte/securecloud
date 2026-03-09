@@ -63,7 +63,7 @@ void ClientService::pingService(const std::string& serviceName)
 QVector<QPair<int, QString>> ClientService::getGroups()
 {
     QVector<QPair<int, QString>> groupsOut;
-
+    qDebug() << "getGroups userId =" << userId();
     const auto groups = messaging_.getGroupsNameForUser(userId());
     for (const auto& [groupId, groupName] : groups)
     {
@@ -73,13 +73,58 @@ QVector<QPair<int, QString>> ClientService::getGroups()
     return groupsOut;
 }
 
-QVector<QPair<int, QString>> ClientService::getMessages(int id, const std::string& type)
+QVector<QPair<int, QString>> ClientService::getContacts()
 {
-    QVector<QPair<int, QString>> messagesOut;
-    const auto messages = messaging_.getMessagesForGroupOrUser(userId(), type, id);
-    for (const auto& [senderId, content] : messages)
+    QVector<QPair<int, QString>> contactsOut;
+    qDebug() << "getContacts userId =" << userId();
+    std::list<int> contactIds = messaging_.getContactIdsForUser(userId());
+    QSet<int> seen;
+
+    for (int contactId : contactIds)
     {
-        messagesOut.append(QPair<int, QString>(senderId, QString::fromStdString(content)));
+        if (seen.contains(contactId))
+            continue;
+
+        seen.insert(contactId);
+
+        UserDto user = auth_.getUserById(contactId);
+
+        if (user.id != -1 && !user.username.empty())
+        {
+            contactsOut.append(QPair<int, QString>(
+                user.id,
+                QString::fromStdString(user.username)
+            ));
+        }
+    }
+
+    return contactsOut;
+}
+
+QVector<ChatMessage> ClientService::getMessages(int id, const std::string& type)
+{
+    QVector<ChatMessage> messagesOut;
+    const auto rawMessages = messaging_.getMessagesForGroupOrUser(userId(), type, id);
+
+    QHash<int, QString> senderNamesCache;
+
+    for (const auto& rawMessage : rawMessages)
+    {
+        int senderId = rawMessage.senderId;
+        QString senderName;
+
+        if (!senderNamesCache.contains(senderId))
+        {
+            UserDto user = auth_.getUserById(senderId);
+            senderNamesCache.insert(senderId, QString::fromStdString(user.username));
+        }
+        senderName = senderNamesCache.value(senderId, "Unknown");
+
+        messagesOut.append(ChatMessage{
+            senderId,
+            senderName,
+            QString::fromStdString(rawMessage.content)
+        });
     }
 
     return messagesOut;

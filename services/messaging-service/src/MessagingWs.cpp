@@ -177,7 +177,7 @@ void MessagingWs::handleNewMessage(const WebSocketConnectionPtr &wsConn,
             if (!repo) {
                 std::cerr << "[Messaging] messageRepo not initialized\n";
             } else {
-                repo->insertPersonalMessage(toUserId, senderId, content);
+                repo->insertPersonalMessage(senderId, toUserId, content);
             }
         } catch (const std::exception &e) {
             std::cerr << "Failed to insert personal message: " << e.what() << std::endl;
@@ -223,7 +223,7 @@ void MessagingWs::handleNewMessage(const WebSocketConnectionPtr &wsConn,
             if (!repo) {
                 std::cerr << "[Messaging] messageRepo not initialized\n";
             } else {
-                repo->insertGroupMessage(groupId, senderId, content);
+                repo->insertGroupMessage(senderId, groupId, content);
             }
         } catch (const std::exception &e) {
             std::cerr << "Failed to insert group message: " << e.what() << std::endl;
