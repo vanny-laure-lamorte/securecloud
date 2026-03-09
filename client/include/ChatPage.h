@@ -17,7 +17,6 @@ class ChatPage : public QWidget
 public:
     explicit ChatPage(ClientService *service, QWidget *parent = nullptr);
     void loadConversation(int chatId, const QString& conversationName, const QString& type = "personal");
-    void setConversationType(const QString& type) { conversationType = type.toStdString(); }
 
 private:
     void clearMessages();

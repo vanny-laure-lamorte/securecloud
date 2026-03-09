@@ -288,7 +288,6 @@ Home::Home(ClientService* service, QWidget *parent)
 
             connect(channelBtn, &QPushButton::clicked, this, [this, group, chatPage]() {
                 chatPage->loadConversation(group.first, group.second, "group");
-                chatPage->setConversationType("group");
             });
 
             channelLayout->addWidget(channelBtn);
@@ -312,7 +311,6 @@ Home::Home(ClientService* service, QWidget *parent)
 
             connect(contactBtn, &QPushButton::clicked, this, [this, contact, chatPage]() {
                 chatPage->loadConversation(contact.first, contact.second, "personal");
-                chatPage->setConversationType("personal");
             });
 
             channelLayout->addWidget(contactBtn);

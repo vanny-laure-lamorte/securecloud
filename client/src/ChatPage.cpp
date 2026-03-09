@@ -134,13 +134,14 @@ ChatPage::ChatPage(ClientService* service, QWidget *parent)
         QString text = messageInput->text().trimmed();
 
         if (!text.isEmpty() && activeChatId != -1) {
-            if(conversationType == "personal")
+            if (conversationType == "personal")
                 service->sendPersonal(activeChatId, text.toStdString());
-            else if(conversationType == "group")
+            else if (conversationType == "group")
                 service->sendGroup(activeChatId, text.toStdString());
 
+            addMessage(service->userId(), "Vous", text);
+
             messageInput->clear();
-            loadConversation(activeChatId, userNameLabel->text());
 
             QScrollBar* scrollBar = messagesScrollArea->verticalScrollBar();
             scrollBar->setValue(scrollBar->maximum());
@@ -200,6 +201,7 @@ void ChatPage::addMessage(int senderId, const QString& senderName, const QString
 void ChatPage::loadConversation(int chatId, const QString& conversationName, const QString& type)
 {
     activeChatId = chatId;
+    conversationType = type.toStdString();
     userNameLabel->setText(conversationName);
 
     clearMessages();
