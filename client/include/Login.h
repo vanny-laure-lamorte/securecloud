@@ -1,16 +1,17 @@
 #ifndef LOGIN_H
 #define LOGIN_H
 
-#include <QWidget>
-
-#include "LanguageSelector.h"
 #include "ChatPage.h"
+#include "LanguageSelector.h"
+#include "TranslationManager.h"
+
+#include <QWidget>
 
 class Login : public QWidget
 {
     Q_OBJECT
 public:
-    explicit Login(QWidget *parent = nullptr);
+    explicit Login(QWidget *parent = nullptr, TranslationManager *tm = nullptr);
 
 signals:
     /**
@@ -37,6 +38,14 @@ signals:
         const QString &lastName,
         const QString &dob);
 
+    /**
+     * Signal emitted when the language is changed in the language selector, with the new language code.
+     * @param lang The new language code selected by the user.
+     */
+    void languageChanged(const QString& lang);
+
+private:
+    TranslationManager *translationManager_;
 };
 
 #endif // LOGIN_H
