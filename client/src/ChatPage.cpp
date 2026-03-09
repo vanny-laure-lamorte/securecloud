@@ -53,7 +53,7 @@ ChatPage::ChatPage(ClientService* service, QWidget *parent)
 
     QVector<QString> messages;
     QVector<QPair <int, QString>> personalMessages = service->getMessages(2, "personal");
-    for (const auto& [senderId, content] : personalMessages) {
+    if (personalMessages.isEmpty()) {
         chatView = new QTextEdit(this);
         chatView->setReadOnly(true);
         chatView->setStyleSheet(R"(
@@ -62,13 +62,26 @@ ChatPage::ChatPage(ClientService* service, QWidget *parent)
             padding:10px;
             font-size:14px;
         )");
-        if (senderId == service->userId())
-            chatView->append("<b>Vous :</b> " + content);
-        else
-            chatView->append("<b>Other :</b> " + content);
-
+        chatView->append(tr("CHAT_PAGE.NO_MESSAGES"));
         mainLayout->addWidget(chatView, 1);
     }
+    else {
+        for (const auto& [senderId, content] : personalMessages) {
+            chatView = new QTextEdit(this);
+            chatView->setReadOnly(true);
+            chatView->setStyleSheet(R"(
+                background-color:#ffffff;
+                border:none;
+                padding:10px;
+                font-size:14px;
+            )");
+            if (senderId == service->userId())
+                chatView->append("<b>Vous :</b> " + content);
+            else
+                chatView->append("<b>Other :</b> " + content);
+
+            mainLayout->addWidget(chatView, 1);
+    }}
 
     // --- Input zone ---
     QFrame* inputFrame = new QFrame(this);
