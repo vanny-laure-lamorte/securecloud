@@ -1,4 +1,7 @@
 #include "SettingPage.h"
+
+
+
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>

@@ -132,9 +132,9 @@ UserProfile UserRepository::getUserAllInfo(int &userId)
     drogon::orm::Result res = client->execSqlSync(
         "SELECT u.username, u.first_name, u.last_name, u.created_at, u.updated_at, r.role_name, r.role_description, c.email "
         "FROM users u "
-        "JOIN connexion c ON u.user_id = c.user_id "
-        "JOIN roles r ON u.role_id = r.id "
-        "WHERE c.email = $1",
+        "LEFT JOIN connexion c ON u.user_id = c.user_id "
+        "LEFT JOIN roles r ON u.role_id = r.id "
+        "WHERE u.user_id = $1",
         userId);
 
     if (res.empty())

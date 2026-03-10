@@ -1,8 +1,10 @@
 #include "Home.h"
+#include <QDebug>
 
-Home::Home(ClientService* service, QWidget *parent)
+Home::Home(ClientService *service, QWidget *parent)
     : QWidget(parent)
 {
+
     // --- Layout principal horizontal ---
     QHBoxLayout *mainLayout = new QHBoxLayout(this);
     mainLayout->setContentsMargins(0, 0, 0, 0);
@@ -60,14 +62,14 @@ Home::Home(ClientService* service, QWidget *parent)
     SettingPage *settingPage = new SettingPage();
 
     /*
-    *  * 2. Group Page
-    * 3. Contact Page
-    * 4. Calendar Page
-    * 5. Activity Page
-    * 6. Filter Page
-    * 8. Emergency Page
-    * 7. Setting Page
-    */
+     *  * 2. Group Page
+     * 3. Contact Page
+     * 4. Calendar Page
+     * 5. Activity Page
+     * 6. Filter Page
+     * 8. Emergency Page
+     * 7. Setting Page
+     */
     stackedContent->addWidget(chatPage);
     stackedContent->addWidget(groupPage);
     stackedContent->addWidget(contactPage);
@@ -105,8 +107,7 @@ Home::Home(ClientService* service, QWidget *parent)
 
         // Connexion lambda avec l'indice correct
         connect(btn, &QPushButton::clicked, [stackedContent, i]()
-            { stackedContent->setCurrentIndex(i);
-        });
+                { stackedContent->setCurrentIndex(i); });
     }
     leftLayout->addStretch();
 
@@ -119,9 +120,8 @@ Home::Home(ClientService* service, QWidget *parent)
     emergencyBtn->setObjectName("emergencyBtn");
 
     leftLayout->addWidget(emergencyBtn, 0, Qt::AlignHCenter);
-        connect(emergencyBtn, &QPushButton::clicked, [stackedContent]() {
-        stackedContent->setCurrentIndex(6);
-    });
+    connect(emergencyBtn, &QPushButton::clicked, [stackedContent]()
+            { stackedContent->setCurrentIndex(6); });
 
     // Button Settings
     QPushButton *settingsBtn = new QPushButton(leftSidebar);
@@ -132,9 +132,8 @@ Home::Home(ClientService* service, QWidget *parent)
     settingsBtn->setObjectName("NoBackgroundBtn");
     leftLayout->addWidget(settingsBtn, 0, Qt::AlignHCenter);
 
-    connect(settingsBtn, &QPushButton::clicked, [this, stackedContent]() {
-            stackedContent->setCurrentIndex(7);
-    });
+    connect(settingsBtn, &QPushButton::clicked, [this, stackedContent]()
+            { stackedContent->setCurrentIndex(7); });
 
     // Button Logout
     QPushButton *logoutBtn = new QPushButton(leftSidebar);
@@ -145,9 +144,8 @@ Home::Home(ClientService* service, QWidget *parent)
     logoutBtn->setObjectName("NoBackgroundBtn");
     leftLayout->addWidget(logoutBtn, 0, Qt::AlignHCenter);
 
-    connect(logoutBtn, &QPushButton::clicked, [this, stackedContent](){
-            emit logoutRequested();
-    });
+    connect(logoutBtn, &QPushButton::clicked, [this, stackedContent]()
+            { emit logoutRequested(); });
 
     // --- Separator between left and right sidebar ---
     QFrame *separator = new QFrame(this);
@@ -182,8 +180,10 @@ Home::Home(ClientService* service, QWidget *parent)
     userInfoLayout->setContentsMargins(0, 0, 0, 0);
     userInfoLayout->setSpacing(0);
 
+    UserInfoDto userinfo = service->getUserInfos();
+
     // User name
-    QLabel *userName = new QLabel("John Doe");
+    QLabel *userName = new QLabel(userinfo.username.c_str());
     userName->setStyleSheet("color:white; font-weight:bold; font-size:12px; line-height:12px;");
     userName->setContentsMargins(0, 0, 0, 0);
     userName->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
@@ -191,7 +191,7 @@ Home::Home(ClientService* service, QWidget *parent)
     userInfoLayout->addWidget(userName);
 
     // User role
-    QLabel *userRole = new QLabel(tr("MAIN_PAGE.USER_ROLE"));
+    QLabel *userRole = new QLabel(QString::fromStdString(userinfo.roleName));
     userRole->setStyleSheet("color:#cccccc; font-size:10px;");
     userRole->setContentsMargins(0, 0, 0, 0);
     userRole->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
@@ -236,8 +236,7 @@ Home::Home(ClientService* service, QWidget *parent)
         btn->setToolTip(btnData.text);
         btn->setStyleSheet(
             "QPushButton { border-radius: 15px; background-color: #00473c; }"
-            "QPushButton:hover { background-color: #017f6a; }"
-        );
+            "QPushButton:hover { background-color: #017f6a; }");
         iconsLayout->addWidget(btn);
     }
 
@@ -274,21 +273,23 @@ Home::Home(ClientService* service, QWidget *parent)
     QVector<QString> channels;
     QVector<QPair<int, QString>> groups = service->getGroups();
 
-    if (groups.isEmpty()) {
+    if (groups.isEmpty())
+    {
         QLabel *lbl = new QLabel(tr("MAIN_PAGE.NO_CHANNELS"), channelSidebar);
         lbl->setObjectName("lbl");
         channelLayout->addWidget(lbl);
-    } else {
-        for (const auto& group : groups)
+    }
+    else
+    {
+        for (const auto &group : groups)
         {
-            QPushButton* channelBtn = new QPushButton(group.second, channelSidebar);
+            QPushButton *channelBtn = new QPushButton(group.second, channelSidebar);
             channelBtn->setObjectName("lbl");
             channelBtn->setCursor(Qt::PointingHandCursor);
             channelBtn->setFlat(true);
 
-            connect(channelBtn, &QPushButton::clicked, this, [this, group, chatPage]() {
-                chatPage->loadConversation(group.first, group.second, "group");
-            });
+            connect(channelBtn, &QPushButton::clicked, this, [this, group, chatPage]()
+                    { chatPage->loadConversation(group.first, group.second, "group"); });
 
             channelLayout->addWidget(channelBtn);
         }
@@ -297,21 +298,23 @@ Home::Home(ClientService* service, QWidget *parent)
     // Contacts section
     QVector<QPair<int, QString>> contacts = service->getContacts();
 
-    if (contacts.isEmpty()) {
-        QLabel* lbl = new QLabel(tr("MAIN_PAGE.NO_CONTACTS"), channelSidebar);
+    if (contacts.isEmpty())
+    {
+        QLabel *lbl = new QLabel(tr("MAIN_PAGE.NO_CONTACTS"), channelSidebar);
         lbl->setObjectName("lbl");
         channelLayout->addWidget(lbl);
-    } else {
-        for (const auto& contact : contacts)
+    }
+    else
+    {
+        for (const auto &contact : contacts)
         {
-            QPushButton* contactBtn = new QPushButton(contact.second, channelSidebar);
+            QPushButton *contactBtn = new QPushButton(contact.second, channelSidebar);
             contactBtn->setObjectName("lbl");
             contactBtn->setCursor(Qt::PointingHandCursor);
             contactBtn->setFlat(true);
 
-            connect(contactBtn, &QPushButton::clicked, this, [this, contact, chatPage]() {
-                chatPage->loadConversation(contact.first, contact.second, "personal");
-            });
+            connect(contactBtn, &QPushButton::clicked, this, [this, contact, chatPage]()
+                    { chatPage->loadConversation(contact.first, contact.second, "personal"); });
 
             channelLayout->addWidget(contactBtn);
         }
@@ -327,7 +330,8 @@ Home::Home(ClientService* service, QWidget *parent)
     scrollArea->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
     contentLayout->addWidget(scrollArea);
 
-    if (!groups.isEmpty()) {
+    if (!groups.isEmpty())
+    {
         chatPage->loadConversation(groups[0].first, groups[0].second, "group");
     }
 
