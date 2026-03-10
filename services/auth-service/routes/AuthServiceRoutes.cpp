@@ -44,7 +44,7 @@ void AuthServiceRoutes::registerRoutes()
             auto resp = HttpResponse::newHttpJsonResponse(respJson);
             resp->setStatusCode(k200OK);
             cb(resp);
-        }, {Post});
+        }, {Get});
 
     app().registerHandler(
         "/auth/login",

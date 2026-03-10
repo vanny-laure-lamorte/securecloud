@@ -2,6 +2,7 @@
 #include "core/ClientState.h"
 #include "core/HttpGatewayClient.h"
 #include "core/UserDto.h"
+#include "core/UserInfoDto.h"
 #include <json/json.h>
 #include <string>
 
@@ -75,6 +76,9 @@ public:
      * @return A UserDto containing the user's information, or an empty UserDto if retrieval fails.
      */
     UserDto getUserById(int id);
+
+    UserInfoDto getUserInfos(int userId);
+
 private:
     HttpGatewayClient &http_;
 };

@@ -160,3 +160,53 @@ UserDto AuthClient::getUserById(int id)
 
     return user;
 }
+
+
+UserInfoDto AuthClient::getUserInfos(int userId)
+{
+    Json::Value payload;
+
+    payload["userId"] = userId;
+
+    auto req = HttpRequest::newHttpJsonRequest(payload);
+    req->setMethod(Get);
+    req->setPath("/auth/user-info");
+
+    auto [code, body] = http_.send(req);
+    HttpUtils::logServiceCall("Auth", "getUserInfoById", code, body);
+
+    if (!HttpUtils::isSuccess(code))
+        return {""};
+
+    UserInfoDto userAllUserInfos{};
+
+    try
+    {
+        Json::Value jsonResponse;
+        Json::CharReaderBuilder readerBuilder;
+        std::string errs;
+        std::istringstream s(body);
+
+        if (Json::parseFromStream(readerBuilder, s, &jsonResponse, &errs))
+        {
+          userAllUserInfos.username = jsonResponse["username"].asString();
+          userAllUserInfos.email = jsonResponse["email"].asString();
+          userAllUserInfos.firstName = jsonResponse["firstName"].asString();
+          userAllUserInfos.lastName = jsonResponse["lastName"].asString();
+          userAllUserInfos.roleName = jsonResponse["roleName"].asString();
+          userAllUserInfos.roleDescription = jsonResponse["roleDescription"].asString();
+          userAllUserInfos.createdAt = jsonResponse["createdAt"].asString();
+          userAllUserInfos.updatedAt = jsonResponse["updatedAt"].asString();
+        }
+        else
+        {
+            std::cerr << "Failed to parse JSON: " << errs << "\n";
+        }
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << "Exception while parsing JSON: " << e.what() << "\n";
+    }
+
+    return userAllUserInfos;
+}

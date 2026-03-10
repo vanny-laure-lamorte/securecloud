@@ -60,6 +60,11 @@ void ClientService::pingService(const std::string& serviceName)
     audit_.pingService(serviceName);
 }
 
+UserInfoDto ClientService::getUserInfos()
+{
+    return auth_.getUserInfos(userId());
+}
+
 QVector<QPair<int, QString>> ClientService::getGroups()
 {
     QVector<QPair<int, QString>> groupsOut;

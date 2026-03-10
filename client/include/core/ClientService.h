@@ -6,6 +6,8 @@
 #include "core/WsGatewayClient.h"
 #include "core/ClientState.h"
 #include "core/ChatMessage.h"
+#include "core/UserInfoDto.h"
+
 #include <string>
 #include <QMetaObject>
 
@@ -147,6 +149,8 @@ public:
      */
     QVector<ChatMessage> getMessages(int id, const std::string& type);
 
+    UserInfoDto getUserInfos();
+
 private:
     /**
      * Establishes a WebSocket connection using the provided JWT for authentication.
@@ -179,7 +183,6 @@ private:
                                int groupId,
                                const std::string& msg);
 
-private:
     AuthClient& auth_;
     AuditClient& audit_;
     MessagingApiClient& messaging_;
